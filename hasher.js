@@ -340,7 +340,24 @@ var hasher = {
         }
       }
     },
+    // Net
     net2 : {
+      id: tabs.net+"dec2ip",
+      tab : tabs.net,
+      title: "Dec to IP",
+      calculate: function (input) {
+        var ipcalc = hasher.ipcalc;
+        ipcalc.parse(input);
+        if (ipcalc.getIp() != null) {
+          return ipcalc.intToOctetString(ipcalc.getIp());
+        } else if (!ipcalc.isIpValid()) {
+          return "Invalid IP";
+        } else {
+          return "";
+        }
+      }
+    },
+    net3 : {
       id: tabs.net+"ip2bin",
       tab : tabs.net,
       title: "IP to Bin",
@@ -355,7 +372,7 @@ var hasher = {
         }
       }
     },
-    net3 : {
+    net4 : {
       id: tabs.net+"ip2hex",
       tab : tabs.net,
       title: "IP to Hex",
@@ -369,7 +386,7 @@ var hasher = {
         }
       }
     },
-    net4 : {
+    net5 : {
       id: tabs.net+"network",
       tab : tabs.net,
       title: "Network / netmask",
@@ -385,7 +402,7 @@ var hasher = {
         }
       }
     },
-    net5 : {
+    net6 : {
       id: tabs.net+"hostmin",
       tab : tabs.net,
       title: "Min host",
@@ -399,7 +416,7 @@ var hasher = {
         }
       }
     },
-    net6 : {
+    net7 : {
       id: tabs.net+"hostmax",
       tab : tabs.net,
       title: "Max host",
@@ -413,7 +430,7 @@ var hasher = {
         }
       }
     },
-    net7 : {
+    net8 : {
       id: tabs.net+"broadcast",
       tab : tabs.net,
       title: "Broadcast",
@@ -427,7 +444,7 @@ var hasher = {
         }
       }
     },
-    net8 : {
+    net9 : {
       id: tabs.net+"hostnum",
       tab : tabs.net,
       title: "Hosts",
