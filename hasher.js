@@ -378,6 +378,8 @@ var hasher = {
         ipcalc.parse(input);
         if (ipcalc.getNetmask() != null) {
           return ipcalc.intToOctetString(ipcalc.getNetwork()) + "/" + ipcalc.intToOctetString(ipcalc.getNetmask());
+        } else if (!ipcalc.isNetmaskValid()) {
+          return "Invalid netmask";
         } else {
           return "";
         }
