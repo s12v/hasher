@@ -1,5 +1,7 @@
 
 body {
+/*  margin: 0;*/
+/*  padding: 0;*/
   min-width: 600px;
 /*  min-height: 700px;*/
   overflow-x: hidden;
@@ -17,8 +19,10 @@ ul.buttons li, a.button {
   border: 1px solid #d9d9d9;
   border-radius: 3px;
   color: #444;
-  margin:0;
-  padding: 7px 10px;
+  margin: 0;
+  height: 28px;
+  line-height: 28px;
+  padding: 0px 10px;
   cursor: pointer;
   font-family: sans-serif;
   font-weight: bold;
@@ -26,10 +30,15 @@ ul.buttons li, a.button {
   text-decoration: none;
   text-shadow: 0 1px 0 #ffffff;
 }
+ul.buttons li {
+  margin-right: 5px;
+}
 ul.buttons li.l1 {
+  margin: 0;  
   border-radius: 3px 0 0 3px;
 }
 ul.buttons li.l2 {
+  margin: 0;  
   border-radius: 0;
   border-left: none;
 }
@@ -54,7 +63,6 @@ ul.buttons li.on {
 ul.buttons li.l2.on, ul.buttons li.l3.on {
   margin-left: -1px;
 }
-
 
 #input {
   margin-top: 5px;
@@ -159,16 +167,25 @@ ul.buttons li.l2.on, ul.buttons li.l3.on {
 #info {
   float: right;
   text-align: right;
-  font-size: 11px;
-  font-weight: bold;
-  padding: 8px 0px;
+  height: 30px; 
+  line-height: 30px;
 }
-#info a {
+/*#info a {
   color: #999;
   text-decoration: none;
 }
 #info a:hover {
   color: #555;
+}*/
+
+.buttons-2 {
+  opacity: 0.4;
+  cursor: pointer;
+  padding: 6px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  vertical-align: top;
+/*  margin-top: 2px;*/
 }
 
 .screens {
