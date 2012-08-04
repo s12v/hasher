@@ -181,9 +181,9 @@ ul.buttons li.l2.on, ul.buttons li.l3.on {
 .buttons-2 {
   opacity: 0.4;
   cursor: pointer;
-  padding: 6px;
-  border: 1px solid transparent;
-  border-radius: 3px;
+  padding: 7px;
+/*  border: 1px solid transparent;*/
+/*  border-radius: 3px;*/
   vertical-align: top;
 /*  margin-top: 2px;*/
 }
