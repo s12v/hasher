@@ -26,11 +26,16 @@ $(document).ready(function() {
   $("#button-popout").click(function () {
     if (typeof chrome.extension != "undefined") {
       //chrome.extension.getBackgroundPage().separatePopup = true;
+/*      
       chrome.windows.create({
         url: 'popup.html',
         type: 'popup',
         width: 700,
         height: 800
+      });
+*/      
+      chrome.tabs.create({
+        url: 'popup.html'
       });
     }
   });
