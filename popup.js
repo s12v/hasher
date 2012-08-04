@@ -60,35 +60,17 @@ $(document).ready(function() {
   $(".buttons-2").mouseenter(function(){
     $(this).animate(
       {
-        opacity: '0.8',
-        mybordercolor: 100
+        opacity: 0.8
       },
-      {
-        duration: 150,
-        step: function(now, fx) {
-          if (fx.prop == 'mybordercolor') {
-            var hexValue = (255 - Math.round(60*now/100)).toString(16);
-            $(this).css('border-color', '#'+hexValue+hexValue+hexValue);
-          }
-        }
-      }
+      150
     );
   });
   $(".buttons-2").mouseleave(function(){
     $(this).animate(
       {
-        opacity: '0.4',
-        mybordercolor: 0
+        opacity: 0.4
       },
-      {
-        duration: 300,
-        step: function(now, fx) {
-          if (fx.prop == 'mybordercolor') {
-            var hexValue = (255 - Math.round(60*now/100)).toString(16);
-            $(this).css('border-color', '#'+hexValue+hexValue+hexValue);
-          }
-        }
-      }
+      300
     );
   });
   
