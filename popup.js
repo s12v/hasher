@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
 /*
- * I decided to leave popout button on the popout page,
+ * I decided to leave popout button on the popout page
  *
   if (typeof chrome.extension != "undefined") {
     if (chrome.extension.getBackgroundPage().separatePopup == true) {
