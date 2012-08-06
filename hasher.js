@@ -895,10 +895,10 @@ var hasher = {
         $("#"+this.elements[i].id+"-value").click(function () {
           $("#output .note").hide();
           var id = this.id.toString().replace("-value", "");
-          if ($("#"+id).val().length > 0) {
-            $("#"+id+"-note").text("copied").show('fast');
-            copyToClipboard(id);
-          }
+//          if ($("#"+id).val().length > 0) {
+//            $("#"+id+"-note").text("copied").show('fast');
+//            copyToClipboard(id);
+//          }
         });
       }
     }
