@@ -1,8 +1,8 @@
 
-This is standalone version of Chrome extension
+This is standalone version of Chrome extension  
 https://chrome.google.com/webstore/detail/kignjplbjlocolcfldfhbonmbblpfbjb
 
-Source code is located on github:
+Source code is located on github:  
 https://github.com/s12v/hasher
 https://github.com/s12v/hasher/tree/gh-pages
 
