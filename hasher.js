@@ -12,10 +12,17 @@ var tabs = {
 
 /*
  *  Copy to clipboard
+ *  (actually, only select content)
  */
-function copyToClipboard(id) {
+//function copyToClipboard(id) {
+//  $("#"+id).select(); 
+//  document.execCommand('copy');
+//}
+/*
+ *  Select contents
+ */
+function selectAll(id) {
   $("#"+id).select(); 
-  document.execCommand('copy');
 }
 
 
@@ -895,10 +902,11 @@ var hasher = {
         $("#"+this.elements[i].id+"-value").click(function () {
           $("#output .note").hide();
           var id = this.id.toString().replace("-value", "");
-//          if ($("#"+id).val().length > 0) {
+          if ($("#"+id).val().length > 0) {
 //            $("#"+id+"-note").text("copied").show('fast');
 //            copyToClipboard(id);
-//          }
+            selectAll(id);
+          }
         });
       }
     }
