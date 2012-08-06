@@ -1,12 +1,15 @@
+# Hasher standalone
+Located at:  
+http://s12v.github.com/hasher/
 
-This is standalone version of Chrome extension  
+This is standalone version of Chrome extension:  
 https://chrome.google.com/webstore/detail/kignjplbjlocolcfldfhbonmbblpfbjb
 
 Source code is located on github:  
 https://github.com/s12v/hasher
 https://github.com/s12v/hasher/tree/gh-pages
 
-This extension is used to compute cryptographic hashes and do common conversions. It might be useful for programmers and system administrators. It's entirely implemented in JavaScript, all calculations are performed on client side, so it's safe.
+This tool is used to compute cryptographic hashes and do common conversions. It might be useful for programmers and system administrators. It's entirely implemented in JavaScript, all calculations are performed on client side, so it's safe.
 
 * <b>Hash</b>: MD5, SHA-1, SHA-2 (224, 256, 384, 512), RIPEMD-160, MD4, Whirpool
 * <b>HMAC:</b> MD5, SHA-1, SHA-2 (224, 256, 384, 512), RIPEMD-160, MD4
