@@ -1,3 +1,10 @@
+# Hasher (Chrome extension)
+Chrome web store:  
+https://chrome.google.com/webstore/detail/kignjplbjlocolcfldfhbonmbblpfbjb
+
+Standalone version for other browsers:  
+http://s12v.github.com/hasher/
+
 This extension is used to compute cryptographic hashes and do common conversions. It might be useful for programmers and system administrators. It's entirely implemented in JavaScript, all calculations are performed on client side, so it's safe.
 
 * <b>Hash</b>: MD5, SHA-1, SHA-2 (224, 256, 384, 512), RIPEMD-160, MD4, Whirpool
