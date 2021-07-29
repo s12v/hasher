@@ -3,7 +3,7 @@ Chrome web store:
 https://chrome.google.com/webstore/detail/kignjplbjlocolcfldfhbonmbblpfbjb
 
 Standalone version for other browsers:  
-http://s12v.github.com/hasher/
+https://s12v.github.io/hasher/
 
 The extension is used to compute cryptographic hashes and perform conversions. 
 It is useful for programmers and system administrators. 
