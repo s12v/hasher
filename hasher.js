@@ -1258,7 +1258,7 @@ var hasher = {
       if (element.tab == this.tab) {
         html +=
           '<div class="element">'+
-            '<div>'+
+            '<div class="element-head">'+
               '<span id="'+element.id+'-title" class="title">'+
                 element.title+
               '</span>'+
@@ -1267,7 +1267,7 @@ var hasher = {
               '<span id="'+element.id+'-note" class="note" hidden></span>'+
             '</div>'+
             '<div id="'+element.id+'-value" class="value">'+
-              '<textarea id="'+element.id+'" rows="1"></textarea>';
+              '<textarea id="'+element.id+'" rows="1" readonly spellcheck="false"></textarea>';
         // ruler
         if (element.ruler != undefined) {
           html += '<div id="'+element.id+'-ruler" class="ruler"></div>';

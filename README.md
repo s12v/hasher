@@ -1,5 +1,9 @@
 # Hasher (browser extension)
 
+[![CI](https://github.com/s12v/hasher/actions/workflows/ci.yml/badge.svg)](https://github.com/s12v/hasher/actions/workflows/ci.yml)
+[![Pages](https://github.com/s12v/hasher/actions/workflows/pages.yml/badge.svg)](https://s12v.github.io/hasher/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Developer's toolbox: hashes, HMAC, CRC, ciphers, IP/subnet, time, number and string conversions.
 Everything runs locally in the popup — nothing is sent anywhere.
 
@@ -31,16 +35,16 @@ Every `calculate()` in `hasher.js` is checked against vectors produced with `ope
 * <b>Hash</b>: MD5, SHA-1, SHA-2 (224, 256, 384, 512), SHA-3 (256, 512), Keccak-256, RIPEMD-160, MD4, Whirlpool
 * <b>HMAC:</b> MD5, SHA-1, SHA-2 (224, 256, 384, 512), RIPEMD-160, MD4
 * <b>CRC:</b> CRC-8, CRC-16, FCS-16, FCS/CRC-32
+* <b>Password:</b> passphrases from the EFF large wordlist (words, separator, digits, capitalize) and passwords (length, symbols) with the entropy estimate — a port of [ppgen](https://github.com/s12v/ppgen); UUID v4, UUID v7, ULID
 * <b>Cipher</b> <i>(interoperable with OpenSSL)</i>: AES-256, DES, Triple DES, Rabbit, RC4, RC4Drop. CBC/Pkcs7 is used.
 * <b>Net:</b> Subnet calculator, Ip ↔ Dec, Ip → Bin, Ip → Hex
 * <b>Time:</b> Unix (s or ms) ↔ Datetime, Unix ↔ RFC-1123, Unix ↔ ISO 8601
 * <b>Numbers:</b> Dec ↔ Hex, Dec ↔ Bin, Dec ↔ Roman
 * <b>Strings:</b> length (chars / UTF-8 bytes), ASCII ↔ Hex, UTF-8 ↔ Hex, UTF-16 ↔ Hex
+* <b>JSON:</b> pretty-print (optionally with sorted keys), minify, quote/unquote as a JSON string, syntax errors with position
 * <b>Encode:</b> Base64, ROT-13, JavaScript encodeURI(), encodeURIComponent(), HTML special chars encode/decode
 * <b>JWT:</b> decode, claims with expiry as local time, verify HS256/384/512 with a secret
-* <b>JSON:</b> pretty-print (optionally with sorted keys), minify, quote/unquote as a JSON string, syntax errors with position
 * <b>Cron:</b> crontab expression → plain English (crontab.guru style) and the next 5 run times
-* <b>Random:</b> passphrases from the EFF large wordlist (words, separator, digits, capitalize) and passwords (length, symbols) with the entropy estimate — a port of [ppgen](https://github.com/s12v/ppgen); UUID v4, UUID v7, ULID
 
 Usage: enter text and click on the result — it is copied to clipboard.
 **mask** hides the input (for hashing passwords); **Now** on the Time tab inserts the current Unix time.

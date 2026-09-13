@@ -24,139 +24,100 @@
   <body>
 
     <div id="screen-1" class="screens">
-      <div id="info"><a href="#info"><img id="button-info" class="buttons-2" src="images/info.png" width="16" height="16" title="About" alt="" /></a><span id="popout"><span class="separator"></span><img id="button-popout" class="buttons-2" src="images/popout.png" width="16" height="16" title="Open in new tab" alt="" /></span></div>
-      <ul id="tabs" class="buttons"><li id="hash" class="on l1">Hash</li><li id="hmac" class="l2">HMAC</li><li id="crc" class="l2">CRC</li><li id="cipher" class="l3">Cipher</li><li id="net">Net</li><li id="time">Time</li><li id="number" class="l1">Num</li><li id="string" class="l3">Strings</li><li id="encode">Encode</li><li id="password">Random</li><li id="cron">Cron</li><li id="json">JSON</li><li id="jwt">JWT</li></ul>
-      <!-- input -->
-      <div id="input">
-        <div class="title">
-          Input:
-          <span id="input-options">
-            <label title="Hide what you type (single line)"><input type="checkbox" id="input-mask" /> mask</label>
-            <button type="button" id="input-now" class="button" title="Current Unix time" hidden>Now</button>
-          </span>
+      <div id="header">
+        <ul id="tabs"><li id="hash" class="on">Hash</li><li id="hmac">HMAC</li><li id="crc">CRC</li><li id="password">Password</li><li id="cipher">Cipher</li><li id="net">Net</li><li id="time">Time</li><li id="number">Num</li><li id="string">Strings</li><li id="json">JSON</li><li id="encode">Encode</li><li id="cron">Cron</li><li id="jwt">JWT</li></ul>
+        <div id="tools">
+          <a href="#info" id="button-info" class="icon-button" title="About">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="M8 7.2v4"/><circle cx="8" cy="4.8" r=".7" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <button type="button" id="button-popout" class="icon-button" title="Open in a tab">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2.5h4v4"/><path d="M13.5 2.5 7.5 8.5"/><path d="M6.5 3.5h-3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3"/></svg>
+          </button>
         </div>
-        <textarea id="input-value" style="min-width: 400px;" autofocus></textarea>
-        <input id="input-masked" type="password" hidden />
-        <div id="input-password-wrapper" hidden>
-          <div class="title">
-            Password:
+      </div>
+
+      <div id="main">
+        <!-- input -->
+        <div id="input">
+          <div class="label-row">
+            <span class="label">Input</span>
+            <span id="input-options">
+              <label title="Hide what you type (single line)"><input type="checkbox" id="input-mask" /> mask</label>
+              <button type="button" id="input-now" class="button" title="Current Unix time" hidden>Now</button>
+            </span>
           </div>
-          <input id="input-password" type="password" />
+          <textarea id="input-value" rows="2" autofocus spellcheck="false"></textarea>
+          <input id="input-masked" type="password" hidden />
+          <div id="input-password-wrapper" hidden>
+            <div class="label-row">
+              <span class="label">Password</span>
+            </div>
+            <input id="input-password" type="password" />
+          </div>
         </div>
-      </div>
 
-      <!-- password generator settings (Password tab) -->
-      <div id="password-options" hidden>
-        <div class="title">Passphrase:</div>
-        <div class="row">
-          <label>words <input id="pp-words" type="number" min="1" max="64" value="5" /></label>
-          <label>separator <input id="pp-separator" type="text" value="-" maxlength="3" /></label>
-          <label>digits <input id="pp-digits" type="number" min="0" max="8" value="0" /></label>
-          <label><input id="pp-capitalize" type="checkbox" /> capitalize</label>
+        <!-- password generator settings (Password tab) -->
+        <div id="password-options" hidden>
+          <div class="row">
+            <span class="label">Passphrase</span>
+            <label>words <input id="pp-words" type="number" min="1" max="64" value="5" /></label>
+            <label>separator <input id="pp-separator" type="text" value="-" maxlength="3" /></label>
+            <label>digits <input id="pp-digits" type="number" min="0" max="8" value="0" /></label>
+            <label><input id="pp-capitalize" type="checkbox" /> capitalize</label>
+          </div>
+          <div class="row">
+            <span class="label">Password</span>
+            <label>length <input id="pw-length" type="number" min="1" max="256" value="16" /></label>
+            <label><input id="pw-symbols" type="checkbox" /> symbols</label>
+            <button type="button" id="pw-generate" class="button primary">Generate</button>
+          </div>
         </div>
-        <div class="title">Password:</div>
-        <div class="row">
-          <label>length <input id="pw-length" type="number" min="1" max="256" value="16" /></label>
-          <label><input id="pw-symbols" type="checkbox" /> symbols</label>
-          <button type="button" id="pw-generate" class="button">Generate</button>
-        </div>
-      </div>
 
-      <!-- output -->
-      <div id="output">
+        <!-- output -->
+        <div id="output">
+        </div>
       </div>
     </div>
-    
+
     <div id="screen-2" class="screens" hidden>
+      <div id="main">
+        <div class="about-head">
+          <a href="#" class="button">&larr; Back</a>
+          <h1>Hasher</h1>
+          <a href="https://chrome.google.com/webstore/detail/kignjplbjlocolcfldfhbonmbblpfbjb/reviews" class="button" target="_blank">Rate &amp; review</a>
+        </div>
 
-      <div style="position: absolute;">
-        <a href="#" class="button">Back</a>
+        <p>
+          A developer's toolbox: hashes, ciphers and everyday conversions. Everything is computed locally in the popup &mdash; nothing leaves your browser.
+        </p>
+
+        <ul class="features">
+          <li><b>Hash</b> MD5, SHA-1, SHA-2 (224, 256, 384, 512), SHA-3 (256, 512), Keccak-256, RIPEMD-160, MD4, Whirlpool</li>
+          <li><b>HMAC</b> MD5, SHA-1, SHA-2 (224, 256, 384, 512), RIPEMD-160, MD4</li>
+          <li><b>CRC</b> CRC-8, CRC-16, FCS-16, FCS/CRC-32</li>
+          <li><b>Password</b> passphrases from the <a href="https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases" target="_blank">EFF wordlist</a> (7776 words, ~12.9 bits each), random passwords, UUID v4 / v7, ULID &mdash; all from the browser's CSPRNG</li>
+          <li><b>Cipher</b> AES-256, DES, Triple DES, Rabbit, RC4, RC4Drop; CBC/PKCS#7, <span class="help" title='openssl enc -aes-256-cbc -md md5 -in infile -out outfile -pass pass:"Secret Passphrase" -e -base64'>interoperable with OpenSSL</span></li>
+          <li><b>Net</b> subnet calculator, IP &harr; decimal, IP &rarr; binary, IP &rarr; hex</li>
+          <li><b>Time</b> Unix time (seconds or milliseconds) &harr; local / UTC datetime, RFC-1123, ISO 8601</li>
+          <li><b>Num</b> decimal &harr; hex, binary, Roman</li>
+          <li><b>Strings</b> length in characters and bytes, ASCII / UTF-8 / UTF-16 &harr; hex</li>
+          <li><b>JSON</b> pretty-print (optionally with sorted keys), minify, quote / unquote as a JSON string, syntax errors with the position</li>
+          <li><b>Encode</b> Base64, ROT-13, encodeURI, encodeURIComponent, HTML special characters</li>
+          <li><b>Cron</b> crontab expression &rarr; plain English and the next 5 runs; lists, ranges, steps, names, @daily and friends</li>
+          <li><b>JWT</b> decode, claims with expiry as local time, HS256 / HS384 / HS512 verification with the secret</li>
+        </ul>
+
+        <p>
+          Enter text, click a result to copy it. The last tab is remembered.
+          Keyboard: <kbd>Alt</kbd>+<kbd>1</kbd>&hellip;<kbd>9</kbd>, <kbd>Alt</kbd>+<kbd>0</kbd> jump to a tab, <kbd>Alt</kbd>+<kbd>[</kbd> / <kbd>Alt</kbd>+<kbd>]</kbd> go to the previous / next one.
+        </p>
+
+        <p class="fine-print">
+          MIT license, <a href="https://github.com/s12v/hasher" target="_blank">source on GitHub</a>.
+          Uses <a href="https://github.com/brix/crypto-js" target="_blank">crypto-js</a>, <a href="https://github.com/emn178/js-sha3" target="_blank">js-sha3</a> and the <a href="https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt" target="_blank">EFF large wordlist</a> (CC BY 4.0).
+        </p>
       </div>
-
-      <div style="position: absolute; right: 10px;">
-        <a href="https://chrome.google.com/webstore/detail/kignjplbjlocolcfldfhbonmbblpfbjb/reviews" class="button" target="_blank" title="Rate &amp; review!">
-          <img src="images/star.png" alt="" style="border: 0; vertical-align: middle;" /><img src="images/star.png" alt="" style="border: 0; vertical-align: middle;" /><img src="images/star.png" alt="" style="border: 0; vertical-align: middle;" /><img src="images/star.png" alt="" style="border: 0; vertical-align: middle;" /><img src="images/star.png" alt="" style="border: 0; vertical-align: middle;" />
-        </a>
-      </div>
-      
-      <h1 style="text-align: center;">
-        About
-      </h1>
-
-      <p>
-        This extension is used to compute cryptographic hashes and do common conversions. It might be useful for programmers and system administrators.
-        It's entirely implemented in JavaScript, all calculations are performed on client side, so <b>it's safe</b>.
-      </p>
-
-      <ul>
-        <li>
-          <b>Hash</b>:
-          MD5, SHA-1, SHA-2 (224, 256, 384, 512), SHA-3 (256, 512), Keccak-256, RIPEMD-160, MD4, Whirlpool
-        </li>
-        <li>
-          <b>HMAC</b>:
-          MD5, SHA-1, SHA-2 (224, 256, 384, 512), RIPEMD-160, MD4
-        </li>
-        <li>
-          <b>CRC</b>:
-          CRC-8, CRC-16, FCS-16, FCS/CRC-32
-        </li>
-        <li>
-          <b>Cipher</b> <i title='openssl enc -aes-256-cbc -md md5 -in infile -out outfile -pass pass:"Secret Passphrase" -e -base64' style="cursor: help; border-bottom: 1px dashed currentColor;">(interoperable with OpenSSL)</i>:
-          AES-256, DES, Triple DES, Rabbit, RC4, RC4Drop. CBC/Pkcs7 is used.
-        </li>
-        <li>
-          <b>Net</b>:
-          Subnet calculator, Ip &harr; Dec, Ip &rarr; Bin, Ip &rarr; Hex
-        </li>
-        <li>
-          <b>Time</b>:
-          Unix &harr; Datetime, Unix &harr; RFC-1123, Unix &harr; ISO 8601
-        </li>
-        <li>
-          <b>Numbers</b>:
-          Dec &harr; Hex, Dec &harr; Bin, Dec &harr; Roman
-        </li>
-        <li>
-          <b>Strings</b>:
-          ASCII &harr; Hex, UTF-8 &harr; Hex, UTF-16 &harr; Hex
-        </li>
-        <li>
-          <b>Encode</b>:
-          Base64, ROT-13, JavaScript encodeURI(), encodeURIComponent(), HTML special chars encode/decode
-        </li>
-        <li>
-          <b>JWT</b>:
-          decode header and payload, exp / nbf / iat as local time with "expires in 2 hours", verify HS256 / HS384 / HS512 with the secret in the password field
-        </li>
-        <li>
-          <b>JSON</b>:
-          pretty-print (2 spaces, optionally with sorted keys), minify, quote as a JSON string / unquote; syntax errors are reported with the position
-        </li>
-        <li>
-          <b>Cron</b>:
-          crontab expression &rarr; plain English and the next 5 runs. Five fields, lists, ranges, steps, names (jan, mon), @daily and friends
-        </li>
-        <li>
-          <b>Random</b>:
-          passphrases from the <a href="https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases" target="_blank">EFF wordlist</a> (7776 words, ~12.9 bits each), passwords, UUID v4 / v7, ULID &mdash; all from the browser's CSPRNG
-        </li>
-      </ul>
-
-      <p>
-        <b>Usage:</b> enter text and click on the result. It will be <b>copied to clipboard</b>.
-        The last tab is remembered. <b>Keyboard:</b> Alt+1&hellip;9 and Alt+0 jump to a tab, Alt+[ and Alt+] go to the previous / next one.
-      </p>
-
-      <p>
-        Extension is using <a href="https://github.com/brix/crypto-js" target="_blank">crypto-js</a>, <a href="https://github.com/emn178/js-sha3" target="_blank">js-sha3</a>, the <a href="https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt" target="_blank">EFF large wordlist</a> (CC BY 4.0) and other open-source libraries.<br/>
-        MIT license. See the source code on&nbsp;<a href="https://github.com/s12v/hasher" target="_blank">github</a>.
-      </p>
-
-      <p>
-        Developed by <a href="https://snov.me/" target="_blank">Sergey Novikov</a>
-      </p>
     </div>
-    
+
   </body>
 </html>
