@@ -121,7 +121,8 @@ document.addEventListener("DOMContentLoaded", function () {
   var crEvery = document.getElementById("cr-every");
   var crEveryUnit = document.getElementById("cr-every-unit");
   var crMinute = document.getElementById("cr-minute");
-  var crTime = document.getElementById("cr-time");
+  var crHour = document.getElementById("cr-hour");
+  var crMin = document.getElementById("cr-min");
   var crDay = document.getElementById("cr-day");
   var crMonth = document.getElementById("cr-month");
   var crDays = cronOptions.querySelectorAll("#cr-days-wrap input");
@@ -145,7 +146,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (crMode.value == "custom") {
       return;
     }
-    var time = /^(\d{1,2}):(\d{2})/.exec(crTime.value) || [0, 0, 0];
     var days = [];
     crDays.forEach(function (box) {
       if (box.checked) {
@@ -155,8 +155,8 @@ document.addEventListener("DOMContentLoaded", function () {
     var expr = cron.build({
       mode : crMode.value,
       every : crEvery.value,
-      minute : crMode.value == "hourly" ? crMinute.value : parseInt(time[2], 10),
-      hour : parseInt(time[1], 10),
+      minute : crMode.value == "hourly" ? crMinute.value : crMin.value,
+      hour : crHour.value,
       days : days,
       day : crDay.value,
       month : crMonth.value
@@ -173,7 +173,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (o) {
       if (o.every != undefined) crEvery.value = o.every;
       if (o.mode == "hourly") crMinute.value = o.minute;
-      if (o.hour != undefined) crTime.value = (o.hour < 10 ? "0" : "") + o.hour + ":" + (o.minute < 10 ? "0" : "") + o.minute;
+      if (o.hour != undefined) {
+        crHour.value = o.hour;
+        crMin.value = o.minute;
+      }
       if (o.day != undefined) crDay.value = o.day;
       if (o.month != undefined) crMonth.value = o.month;
       if (o.days) {

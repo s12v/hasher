@@ -227,7 +227,6 @@ textarea,
 input[type="text"],
 input[type="password"],
 input[type="number"],
-input[type="time"],
 select {
   font: 12px/16px var(--mono);
   padding: 6px 8px;
@@ -356,9 +355,15 @@ label {
 }
 #password-options input[type="number"],
 #cron-options input[type="number"],
-#cron-options input[type="time"],
 #cron-options select {
   padding: 4px 6px;
+}
+#cron-options .cr-time {
+  font-family: var(--mono);
+}
+#cron-options .cr-colon {
+  margin: 0 -2px;
+  font-family: var(--mono);
 }
 #password-options input[type="number"],
 #cron-options input[type="number"] {
