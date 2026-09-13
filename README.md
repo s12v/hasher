@@ -51,8 +51,8 @@ directory over HTTP (`python3 -m http.server`) — `file://` blocks the wordlist
 
 ## Features
 
-* <b>Hash</b>: MD5, SHA-1, SHA-2 (224, 256, 384, 512), SHA-3 (256, 512), Keccak-256, RIPEMD-160, MD4, Whirlpool
-* <b>HMAC:</b> MD5, SHA-1, SHA-2 (224, 256, 384, 512), RIPEMD-160, MD4
+* <b>Hash</b>: SHA-256, SHA-512, SHA-1, MD5, SHA-3 (256, 512), Keccak-256, SHA-384, SHA-224, RIPEMD-160, BLAKE2b (256, 512); SRI string for `<script integrity>`; base64 hints for SHA-256/512
+* <b>HMAC:</b> SHA-256, SHA-1, SHA-512, SHA-384, MD5 (base64 hints for SHA-256/512)
 * <b>CRC:</b> CRC-8, CRC-16, FCS-16, FCS/CRC-32
 * <b>Password:</b> passphrases from the EFF large wordlist (words, separator, digits, capitalize) and passwords (length, symbols) with the entropy estimate — a port of [ppgen](https://github.com/s12v/ppgen)
 * <b>UUID:</b> UUID v4, UUID v7, ULID
@@ -74,5 +74,5 @@ The last tab and the theme (the icon toggles between following the OS and the op
 ## License
 
 MIT. Bundled libraries: [crypto-js](https://github.com/brix/crypto-js) (MIT),
-[js-sha3](https://github.com/emn178/js-sha3) (MIT), [EFF large wordlist](https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases) (CC BY 4.0), MD4 by Paul Johnston (BSD),
-Whirlpool by Sean Catchpole (public domain), CRC tables by AnDan Software.
+[js-sha3](https://github.com/emn178/js-sha3) (MIT), [blakejs](https://github.com/dcposch/blakejs) (MIT),
+[EFF large wordlist](https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases) (CC BY 4.0), CRC tables by AnDan Software.

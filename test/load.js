@@ -16,7 +16,7 @@ function popupScripts() {
 }
 
 function load() {
-  const ctx = vm.createContext({ console, crypto: require('node:crypto').webcrypto });
+  const ctx = vm.createContext({ console, crypto: require('node:crypto').webcrypto, TextEncoder });
   ctx.window = ctx;
   for (const src of popupScripts()) {
     vm.runInContext(fs.readFileSync(path.join(root, src), 'utf8'), ctx, { filename: src });

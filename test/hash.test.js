@@ -1,9 +1,9 @@
 'use strict';
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { calc } = require('./load');
+const { calc, ctx } = require('./load');
 
-// printf '%s' "$input" | openssl dgst -<alg>   (md4/whirlpool: -provider legacy -provider default)
+// printf '%s' "$input" | openssl dgst -<alg>; blake2b: python3 hashlib.blake2b(digest_size=32|64)
 const vectors = {
   '': {
     md5: 'd41d8cd98f00b204e9800998ecf8427e',
@@ -16,8 +16,8 @@ const vectors = {
     'sha3-512': 'a69f73cca23a9ac5c8b567dc185a756e97c982164fe25859e0d1dcc1475c80a615b2123af1f5f94c11e3e9402c3ac558f500199d95b6d3e301758586281dcd26',
     keccak256: 'c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470',
     ripemd160: '9c1185a5c5e9fc54612808977ee8f548b2258d31',
-    md4: '31d6cfe0d16ae931b73c59d7e0c089c0',
-    whirpool: '19fa61d75522a4669b44e39c1d2e1726c530232130d407f89afee0964997f7a73e83be698b288febcf88e3e03c4f0757ea8964e59b63d93708b138cc42a66eb3',
+    'blake2b-256': '0e5751c026e543b2e8ab2eb06099daa1d1e5df47778f7787faab45cdf12fe3a8',
+    'blake2b-512': '786a02f742015903c6c6fd852552d272912f4740e15847618a86e217f71f5419d25e1031afee585313896444934eb04b903a685b1448b755d56f701afe9be2ce',
   },
   abc: {
     md5: '900150983cd24fb0d6963f7d28e17f72',
@@ -30,8 +30,8 @@ const vectors = {
     'sha3-512': 'b751850b1a57168a5693cd924b6b096e08f621827444f70d884f5d0240d2712e10e116e9192af3c91a7ec57647e3934057340b4cf408d5a56592f8274eec53f0',
     keccak256: '4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45',
     ripemd160: '8eb208f7e05d987a9b044a8e98c6b087f15a0bfc',
-    md4: 'a448017aaf21d8525fc10ae87aa6729d',
-    whirpool: '4e2448a4c6f486bb16b6562c73b4020bf3043e3a731bce721ae1b303d97e6d4c7181eebdb6c57e277d0e34957114cbd6c797fc9d95d8b582d225292076d4eef5',
+    'blake2b-256': 'bddd813c634239723171ef3fee98579b94964e3bb1cb3e427262c8c068d52319',
+    'blake2b-512': 'ba80a53f981c4d0d6a2797b69f12f6e94c212f14685ac4b74b12bb6fdbffa2d17d87c5392aab792dc252d5de4533cc9518d38aa8dbf1925ab92386edd4009923',
   },
   // non-ASCII: every algorithm must hash the UTF-8 bytes
   'привет': {
@@ -44,8 +44,8 @@ const vectors = {
     'sha3-256': '6e8786aa5ae32fe05fde8e4b81528ebc561b83804dcedf3949f2bb674bc2f714',
     'sha3-512': '52a377f2b7013b1f0588628fb050e4210596d2e210c2e1e873650909c6783e175c473eee0bdf26c340c32343d2a4b872327b996ee1a19c7dbbe830ce04eb0da8',
     ripemd160: 'e4edcab443b82c7f7af71b8cb9f3a7639919b6d7',
-    md4: 'd1b696647e0677ff8c43eb8a311a4322',
-    whirpool: 'a629fec2f9f8a425fbff7790465e11935e907fff78e48c009e0d6de0012bb9bd579989365ae455f55f21f5d9b4c9d8ca6f8e864b4822393c1c215f027d9f84d3',
+    'blake2b-256': '6589635c7c64e2bcc7a4cb1f02120d026db6ddd8de6379edc3514d97319aa563',
+    'blake2b-512': '8bd1c44777fa8b6d28aec2b328ad4a10b41688d7d5c0598e3879374f28cf771f05c36a68e0d1b1c54df044306bae07caa6578830617c9a37518b89ee5ef5f024',
   },
 };
 
@@ -56,3 +56,16 @@ for (const [input, digests] of Object.entries(vectors)) {
     });
   }
 }
+
+test('SRI and base64 hints', () => {
+  // printf 'hello' | openssl dgst -sha384 -binary | base64
+  assert.equal(calc('1sri', 'hello'), 'sha384-WeF0h3dEjGnea4ANejO7+5/xtGPkQ1TDVTvNucZm+pASWjx5+QOXvfX2oT3oKGhP');
+  // printf 'hello' | openssl dgst -sha256 -binary | base64
+  assert.equal(ctx.hasher.elements.h4.hint('hello'), 'base64: LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ=');
+  assert.match(ctx.hasher.elements.h6.hint('hello'), /^base64: [A-Za-z0-9+/]{86}==$/);
+});
+
+test('row order: most used first, MD4 and Whirlpool gone', () => {
+  const titles = Object.values(ctx.hasher.elements).filter((e) => e.tab === ctx.tabs.hash).map((e) => e.title);
+  assert.deepEqual(Array.from(titles), ['SHA-256', 'SHA-512', 'SHA-1', 'MD5', 'SHA3-256', 'SHA3-512', 'Keccak-256', 'SHA-384', 'SHA-224', 'RIPEMD-160', 'BLAKE2b-256', 'BLAKE2b-512', 'SRI']);
+});
