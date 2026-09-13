@@ -90,9 +90,9 @@ document.addEventListener("DOMContentLoaded", function () {
   loadWordlist();
 
   // Open in a separate tab (pop-out); unavailable in the standalone web version
-  var popout = document.getElementById("popout");
+  var popout = document.getElementById("button-popout");
   if (typeof chrome != "undefined" && chrome.tabs && chrome.tabs.create) {
-    document.getElementById("button-popout").addEventListener("click", function () {
+    popout.addEventListener("click", function () {
       chrome.tabs.create({
         url: "popup.html"
       });
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // show/hide optional fields
     passwordWrapper.hidden = !(hasher.tab == tabs.hmac || hasher.tab == tabs.cipher || hasher.tab == tabs.jwt);
-    passwordWrapper.querySelector(".title").textContent = hasher.tab == tabs.jwt ? "Secret:" : "Password:";
+    passwordWrapper.querySelector(".label").textContent = hasher.tab == tabs.jwt ? "Secret" : "Password";
     inputNow.hidden = hasher.tab != tabs.time;
     inputWrapper.hidden = hasher.tab == tabs.password;
     passwordOptions.hidden = hasher.tab != tabs.password;
