@@ -1,38 +1,59 @@
 'use strict';
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { calc } = require('./load');
+const { ctx, calc } = require('./load');
 
-const ciphers = ['aes256', 'des', 'tripledes', 'rabbit', 'rc4', 'rc4drop'];
+const { hasher } = ctx;
 
-for (const c of ciphers) {
-  test(`${c} round trip`, () => {
-    const encrypted = calc('4' + c, 'secret text', 'pass');
-    assert.match(encrypted, /^U2FsdGVkX1/, 'OpenSSL "Salted__" format');
-    assert.equal(calc(`4${c}-d`, encrypted, 'pass'), 'secret text');
-    assert.equal(calc(`4${c}-d`, encrypted, 'wrong'), '', 'wrong password gives empty output, not garbage');
-  });
+// printf 'secret text' | openssl enc -aes-256-cbc -pbkdf2 -pass pass:pass -e -a
+const PBKDF2 = 'U2FsdGVkX19/wP57wXQH6WeYfPp1B7RGj/7Da1Lf6eg=';
+// printf 'привет 😀' | openssl enc -aes-256-cbc -pbkdf2 -pass pass:'пароль' -e -a
+const PBKDF2_UTF8 = 'U2FsdGVkX19cuYk6fwmNkHBQXW3GjsMyC+c79yRtgnLidB1wiolqFQOn6SF0JGoG';
+// printf 'secret text' | openssl enc -aes-256-cbc -md md5 -pass pass:pass -e -a
+const LEGACY = 'U2FsdGVkX19RXEFdiB3NH/mqOBk9VRrXXIaXaQ+jEp8=';
 
-  test(`${c} uses a fresh salt every time`, () => {
-    assert.notEqual(calc('4' + c, 'secret text', 'pass'), calc('4' + c, 'secret text', 'pass'));
-  });
-}
-
-// printf 'secret text' | openssl enc -<cipher> -md md5 -pass pass:pass -e -a
-test('decrypts openssl enc output', () => {
-  assert.equal(calc('4aes256-d', 'U2FsdGVkX19RXEFdiB3NH/mqOBk9VRrXXIaXaQ+jEp8=', 'pass'), 'secret text');
-  assert.equal(calc('4des-d', 'U2FsdGVkX18RNX28WoSaR6SoCd8oWsvQb1/jmEn4Utw=', 'pass'), 'secret text');
-  assert.equal(calc('4tripledes-d', 'U2FsdGVkX180jZ+5CO7Q2Zz60syQLSIol8SnQAX2zBw=', 'pass'), 'secret text');
+test('rows', () => {
+  const titles = Object.values(hasher.elements).filter((e) => e.tab === ctx.tabs.cipher).map((e) => e.title);
+  assert.deepEqual(Array.from(titles), ['AES-256-CBC', 'AES-256-CBC, legacy KDF', 'AES-256 decrypt']);
 });
 
-test('garbage input does not throw', () => {
-  for (const c of ciphers) {
-    assert.equal(calc(`4${c}-d`, 'not base64 !!!', 'pass'), '');
-    assert.equal(calc(`4${c}-d`, '', 'pass'), '');
-  }
+test('decrypts what openssl enc -pbkdf2 wrote', () => {
+  assert.equal(calc('4aes256-d', PBKDF2, 'pass'), 'secret text');
+  assert.equal(calc('4aes256-d', PBKDF2_UTF8, 'пароль'), 'привет 😀');
+  assert.equal(hasher.elements.ci3.hint(PBKDF2, 'pass'), 'PBKDF2 payload');
+  assert.equal(hasher.elements.ci3.tone(PBKDF2, 'pass'), 'ok');
 });
 
-test('non-ASCII plaintext survives the round trip', () => {
-  const encrypted = calc('4aes256', 'привет 😀', 'пароль');
-  assert.equal(calc('4aes256-d', encrypted, 'пароль'), 'привет 😀');
+test('decrypts the legacy -md md5 format too', () => {
+  assert.equal(calc('4aes256-d', LEGACY, 'pass'), 'secret text');
+  assert.equal(hasher.elements.ci3.hint(LEGACY, 'pass'), 'legacy MD5-KDF payload');
+});
+
+test('encrypt round trips through both formats and looks like openssl output', () => {
+  const modern = calc('4aes256', 'secret text', 'pass');
+  assert.match(modern, /^U2FsdGVkX1/, 'Salted__ header');
+  assert.equal(calc('4aes256-d', modern, 'pass'), 'secret text');
+  assert.equal(hasher.elements.ci3.hint(modern, 'pass'), 'PBKDF2 payload');
+  const legacy = calc('4aes256-legacy', 'secret text', 'pass');
+  assert.match(legacy, /^U2FsdGVkX1/);
+  assert.equal(calc('4aes256-d', legacy, 'pass'), 'secret text');
+  assert.notEqual(modern, calc('4aes256', 'secret text', 'pass'), 'fresh salt every time');
+});
+
+test('wrong password and garbage give nothing, with a red hint', () => {
+  assert.equal(calc('4aes256-d', PBKDF2, 'wrong'), '');
+  assert.equal(hasher.elements.ci3.hint(PBKDF2, 'wrong'), 'a Salted__ payload, but not for this password');
+  assert.equal(hasher.elements.ci3.hint('plain text to encrypt', 'pass'), '', 'plain text is not called a failed decrypt');
+  assert.equal(hasher.elements.ci3.tone('plain text to encrypt', 'pass'), '');
+  assert.equal(hasher.elements.ci3.tone(PBKDF2, 'wrong'), 'bad');
+  assert.equal(calc('4aes256-d', 'not base64 !!!', 'pass'), '');
+  assert.equal(calc('4aes256-d', 'U2FsdGVkX1', 'pass'), '', 'truncated payload');
+  assert.equal(calc('4aes256-d', '', 'pass'), '');
+});
+
+test('without a password nothing is produced', () => {
+  assert.equal(calc('4aes256', 'secret text', ''), '');
+  assert.equal(hasher.elements.ci1.hint('secret text', ''), 'enter a password');
+  assert.equal(calc('4aes256-legacy', 'secret text', ''), '');
+  assert.equal(calc('4aes256-d', PBKDF2, ''), '');
 });

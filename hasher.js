@@ -111,6 +111,73 @@ function parseJson(input) {
 }
 
 /*
+ *  What `openssl enc -aes-256-cbc -pbkdf2` writes: "Salted__", 8 salt bytes, then
+ *  AES-256-CBC / PKCS#7 ciphertext; key and IV come from PBKDF2-HMAC-SHA256 with
+ *  openssl's default 10000 iterations. Derivations are cached per password + salt.
+ */
+var aesPbkdf2 = {
+  ITERATIONS : 10000,
+  cache : {},
+  keyIv : function (password, salt) {
+    var id = password + "\u0000" + salt.toString();
+    if (!this.cache[id]) {
+      var kiv = CryptoJS.PBKDF2(password, salt, { keySize : 48 / 4, iterations : this.ITERATIONS, hasher : CryptoJS.algo.SHA256 });
+      this.cache = {}; // keep one: typing changes the password, not the salt
+      this.cache[id] = {
+        key : CryptoJS.lib.WordArray.create(kiv.words.slice(0, 8), 32),
+        iv : CryptoJS.lib.WordArray.create(kiv.words.slice(8, 12), 16)
+      };
+    }
+    return this.cache[id];
+  },
+  encrypt : function (text, password) {
+    var salt = CryptoJS.lib.WordArray.random(8);
+    var k = this.keyIv(password, salt);
+    var ct = CryptoJS.AES.encrypt(text, k.key, { iv : k.iv, mode : CryptoJS.mode.CBC, padding : CryptoJS.pad.Pkcs7 }).ciphertext;
+    return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Latin1.parse("Salted__").concat(salt).concat(ct));
+  },
+  /* plaintext, or null when the input is not a Salted__ payload or the password is wrong */
+  decrypt : function (base64, password) {
+    var raw;
+    try {
+      raw = CryptoJS.enc.Base64.parse(base64.trim());
+    } catch (err) {
+      return null;
+    }
+    if (raw.sigBytes < 32 || CryptoJS.enc.Latin1.stringify(CryptoJS.lib.WordArray.create(raw.words.slice(0, 2), 8)) != "Salted__") {
+      return null;
+    }
+    var salt = CryptoJS.lib.WordArray.create(raw.words.slice(2, 4), 8);
+    var body = CryptoJS.lib.WordArray.create(raw.words.slice(4), raw.sigBytes - 16);
+    var k = this.keyIv(password, salt);
+    try {
+      var words = CryptoJS.AES.decrypt({ ciphertext : body }, k.key, { iv : k.iv, mode : CryptoJS.mode.CBC, padding : CryptoJS.pad.Pkcs7 });
+      if (words.sigBytes < 0) {
+        return null;
+      }
+      return CryptoJS.enc.Utf8.stringify(words);
+    } catch (err) {
+      return null;
+    }
+  }
+};
+
+/*
+ *  Legacy openssl format (-md md5, EVP_BytesToKey): what CryptoJS does by default
+ */
+function aesLegacyDecrypt(base64, password) {
+  try {
+    var words = CryptoJS.AES.decrypt(base64.trim(), password);
+    if (words.sigBytes <= 0) {
+      return null;
+    }
+    return CryptoJS.enc.Utf8.stringify(words);
+  } catch (err) {
+    return null;
+  }
+}
+
+/*
  *  Same object with keys sorted recursively (arrays keep their order)
  */
 function sortKeys(value) {
@@ -392,134 +459,49 @@ var hasher = {
       }
     },
 
-    // Cipher
+    // Cipher (the Password field is the passphrase)
     ci1: {
       id : tabs.cipher+"aes256",
       tab : tabs.cipher,
-      title : "AES-256",
+      title : "AES-256-CBC",
       calculate : function (input, password) {
-        return CryptoJS.AES.encrypt(input, password);
+        return password.length ? aesPbkdf2.encrypt(input, password) : "";
       },
-      hint : function () {
-        return "CBC / PKCS#7 \u00b7 openssl enc -aes-256-cbc -md md5 -a";
+      hint : function (input, password) {
+        return password.length ? "openssl enc -aes-256-cbc -pbkdf2 -a \u00b7 PBKDF2-SHA256, 10000 iterations" : "enter a password";
       }
     },
     ci2: {
-      id : tabs.cipher+"des",
+      id : tabs.cipher+"aes256-legacy",
       tab : tabs.cipher,
-      title : "DES",
+      title : "AES-256-CBC, legacy KDF",
       calculate : function (input, password) {
-        return CryptoJS.DES.encrypt(input, password);
+        return password.length ? CryptoJS.AES.encrypt(input, password).toString() : "";
+      },
+      hint : function (input, password) {
+        return password.length ? "openssl enc -aes-256-cbc -md md5 -a \u00b7 EVP_BytesToKey, for old readers" : "";
       }
     },
     ci3: {
-      id : tabs.cipher+"tripledes",
-      tab : tabs.cipher,
-      title : "TripleDES",
-      calculate : function (input, password) {
-        return CryptoJS.TripleDES.encrypt(input, password);
-      }
-    },
-    ci4: {
-      id : tabs.cipher+"rabbit",
-      tab : tabs.cipher,
-      title : "Rabbit",
-      calculate : function (input, password) {
-        return CryptoJS.Rabbit.encrypt(input, password);
-      }
-    },
-    ci5: {
-      id : tabs.cipher+"rc4",
-      tab : tabs.cipher,
-      title : "RC4",
-      calculate : function (input, password) {
-        return CryptoJS.RC4.encrypt(input, password);
-      }
-    },
-    ci6: {
-      id : tabs.cipher+"rc4drop",
-      tab : tabs.cipher,
-      title : "RC4Drop",
-      calculate : function (input, password) {
-        return CryptoJS.RC4Drop.encrypt(input, password);
-      }
-    },
-    ci7: {
       id : tabs.cipher+"aes256-d",
       tab : tabs.cipher,
       title : "AES-256 decrypt",
       calculate : function (input, password) {
-        try {
-          var words = CryptoJS.AES.decrypt(input, password);
-          return CryptoJS.enc.Utf8.stringify(words);
-        } catch (err) {
-          return "";
-        }
-      }
-    },
-    ci8: {
-      id : tabs.cipher+"des-d",
-      tab : tabs.cipher,
-      title : "DES decrypt",
-      calculate : function (input, password) {
-        try {
-          var words = CryptoJS.DES.decrypt(input, password);
-          return CryptoJS.enc.Utf8.stringify(words);
-        } catch (err) {
-          return "";
-        }
-      }
-    },
-    ci9: {
-      id : tabs.cipher+"tripledes-d",
-      tab : tabs.cipher,
-      title : "TripleDES decrypt",
-      calculate : function (input, password) {
-        try {
-          var words = CryptoJS.TripleDES.decrypt(input, password);
-          return CryptoJS.enc.Utf8.stringify(words);
-        } catch (err) {
-          return "";
-        }
-      }
-    },
-    ci10: {
-      id : tabs.cipher+"rabbit-d",
-      tab : tabs.cipher,
-      title : "Rabbit decrypt",
-      calculate : function (input, password) {
-        try {
-          var words = CryptoJS.Rabbit.decrypt(input, password);
-          return CryptoJS.enc.Utf8.stringify(words);
-        } catch (err) {
-          return "";
-        }
-      }
-    },
-    ci11: {
-      id : tabs.cipher+"rc4-d",
-      tab : tabs.cipher,
-      title : "RC4 decrypt",
-      calculate : function (input, password) {
-        try {
-          var words = CryptoJS.RC4.decrypt(input, password);
-          return CryptoJS.enc.Utf8.stringify(words);
-        } catch (err) {
-          return "";
-        }
-      }
-    },
-    ci12: {
-      id : tabs.cipher+"rc4drop-d",
-      tab : tabs.cipher,
-      title : "RC4Drop decrypt",
-      calculate : function (input, password) {
-        try {
-          var words = CryptoJS.RC4Drop.decrypt(input, password);
-          return CryptoJS.enc.Utf8.stringify(words);
-        } catch (err) {
-          return "";
-        }
+        if (!password.length) return "";
+        var text = aesPbkdf2.decrypt(input, password);
+        if (text === null) text = aesLegacyDecrypt(input, password);
+        return text === null ? "" : text;
+      },
+      hint : function (input, password) {
+        // only speak up for something that looks like a payload (base64 of "Salted__")
+        if (!password.length || input.trim().indexOf("U2FsdGVkX1") != 0) return "";
+        if (aesPbkdf2.decrypt(input, password) !== null) return "PBKDF2 payload";
+        if (aesLegacyDecrypt(input, password) !== null) return "legacy MD5-KDF payload";
+        return "a Salted__ payload, but not for this password";
+      },
+      tone : function (input, password) {
+        if (!password.length || input.trim().indexOf("U2FsdGVkX1") != 0) return "";
+        return this.calculate(input, password).length ? "ok" : "bad";
       }
     },
 
