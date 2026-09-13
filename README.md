@@ -37,6 +37,7 @@ Every `calculate()` in `hasher.js` is checked against vectors produced with `ope
 * <b>Numbers:</b> Dec ↔ Hex, Dec ↔ Bin, Dec ↔ Roman
 * <b>Strings:</b> length (chars / UTF-8 bytes), ASCII ↔ Hex, UTF-8 ↔ Hex, UTF-16 ↔ Hex
 * <b>Encode:</b> Base64, ROT-13, JavaScript encodeURI(), encodeURIComponent(), HTML special chars encode/decode
+* <b>JWT:</b> decode, claims with expiry as local time, verify HS256/384/512 with a secret
 * <b>JSON:</b> pretty-print (optionally with sorted keys), minify, quote/unquote as a JSON string, syntax errors with position
 * <b>Cron:</b> crontab expression → plain English (crontab.guru style) and the next 5 run times
 * <b>Password:</b> random passphrases from the EFF large wordlist (words, separator, digits, capitalize) and random passwords (length, symbols), with the entropy estimate; a port of [ppgen](https://github.com/s12v/ppgen)

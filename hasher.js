@@ -10,7 +10,8 @@ var tabs = {
   string : 9,
   password : 10,
   cron : 11,
-  json : 12
+  json : 12,
+  jwt : 13
 };
 
 /*
@@ -1046,6 +1047,73 @@ var hasher = {
         var parsed = parseJson(input);
         if (parsed.empty || parsed.error || typeof parsed.value != "string") return "";
         return parsed.value;
+      }
+    },
+
+
+    // JWT (the Password field is the HMAC secret)
+    w1: {
+      id : tabs.jwt+"header",
+      tab : tabs.jwt,
+      title : "Header",
+      calculate : function (input) {
+        if (input.trim().length == 0) return "";
+        try {
+          return JSON.stringify(jwt.parse(input).header, null, 2);
+        } catch (err) {
+          return "Invalid: " + err.message;
+        }
+      }
+    },
+    w2: {
+      id : tabs.jwt+"payload",
+      tab : tabs.jwt,
+      title : "Payload",
+      expanded : true,
+      calculate : function (input) {
+        if (input.trim().length == 0) return "";
+        try {
+          return JSON.stringify(jwt.parse(input).payload, null, 2);
+        } catch (err) {
+          return "";
+        }
+      }
+    },
+    w3: {
+      id : tabs.jwt+"claims",
+      tab : tabs.jwt,
+      title : "Claims",
+      expanded : true,
+      calculate : function (input) {
+        if (input.trim().length == 0) return "";
+        try {
+          return jwt.describeClaims(jwt.parse(input).payload, new Date()).join("\n");
+        } catch (err) {
+          return "";
+        }
+      }
+    },
+    w4: {
+      id : tabs.jwt+"signature",
+      tab : tabs.jwt,
+      title : "Signature",
+      calculate : function (input, password) {
+        if (input.trim().length == 0) return "";
+        var parsed;
+        try {
+          parsed = jwt.parse(input);
+        } catch (err) {
+          return "";
+        }
+        var alg = parsed.header.alg || "?";
+        if (password.length == 0) {
+          return alg + (jwt.HMAC[alg] ? ": enter the secret above to verify" : ": cannot verify here (only HS256/384/512)");
+        }
+        var ok = jwt.verify(parsed, password);
+        if (ok === null) {
+          return alg + ": cannot verify here (only HS256/384/512)";
+        }
+        return alg + (ok ? ": valid, signed with this secret" : ": INVALID for this secret");
       }
     }
   },
