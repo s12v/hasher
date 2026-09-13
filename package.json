@@ -5,7 +5,8 @@
   "description": "Developer's toolbox browser extension: hashes, HMAC, CRC, ciphers, IP/subnet, time, number and string conversions",
   "license": "MIT",
   "scripts": {
-    "test": "node --test \"test/*.test.js\""
+    "test": "node --test \"test/*.test.js\"",
+    "build": "node scripts/build.js"
   },
   "engines": {
     "node": ">=20"
