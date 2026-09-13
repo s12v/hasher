@@ -86,14 +86,14 @@ function timeInput(input) {
 }
 
 /*
- *  Number of leading 1 bits in a netmask (int)
+ *  IP tab: { version, address, prefix } for the input, { error } when it is not an address
  */
-function maskBits(mask) {
-  var bits = 0;
-  while (bits < 32 && (mask & (0x80000000 >>> bits)) != 0) {
-    bits++;
+function parseIp(input) {
+  try {
+    return ip.parse(input);
+  } catch (err) {
+    return { error : err.message };
   }
-  return bits;
 }
 
 /*
@@ -136,17 +136,24 @@ var aesPbkdf2 = {
     var ct = CryptoJS.AES.encrypt(text, k.key, { iv : k.iv, mode : CryptoJS.mode.CBC, padding : CryptoJS.pad.Pkcs7 }).ciphertext;
     return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Latin1.parse("Salted__").concat(salt).concat(ct));
   },
-  /* plaintext, or null when the input is not a Salted__ payload or the password is wrong */
-  decrypt : function (base64, password) {
+  /* base64 of "Salted__", 8 salt bytes and at least one whole cipher block? (a shorter or
+     unaligned payload would make CryptoJS invent a random salt and decrypt into noise) */
+  isSalted : function (base64) {
     var raw;
     try {
       raw = CryptoJS.enc.Base64.parse(base64.trim());
     } catch (err) {
+      return false;
+    }
+    return raw.sigBytes >= 32 && (raw.sigBytes - 16) % 16 == 0 &&
+      CryptoJS.enc.Latin1.stringify(CryptoJS.lib.WordArray.create(raw.words.slice(0, 2), 8)) == "Salted__";
+  },
+  /* plaintext, or null when the input is not a Salted__ payload or the password is wrong */
+  decrypt : function (base64, password) {
+    if (!this.isSalted(base64)) {
       return null;
     }
-    if (raw.sigBytes < 32 || CryptoJS.enc.Latin1.stringify(CryptoJS.lib.WordArray.create(raw.words.slice(0, 2), 8)) != "Salted__") {
-      return null;
-    }
+    var raw = CryptoJS.enc.Base64.parse(base64.trim());
     var salt = CryptoJS.lib.WordArray.create(raw.words.slice(2, 4), 8);
     var body = CryptoJS.lib.WordArray.create(raw.words.slice(4), raw.sigBytes - 16);
     var k = this.keyIv(password, salt);
@@ -166,6 +173,9 @@ var aesPbkdf2 = {
  *  Legacy openssl format (-md md5, EVP_BytesToKey): what CryptoJS does by default
  */
 function aesLegacyDecrypt(base64, password) {
+  if (!aesPbkdf2.isSalted(base64)) {
+    return null;
+  }
   try {
     var words = CryptoJS.AES.decrypt(base64.trim(), password);
     if (words.sigBytes <= 0) {
@@ -196,7 +206,6 @@ function sortKeys(value) {
 
 
 var hasher = {
-  ipcalc : new ipCalc(),
   tab : tabs.hash,
   /* Generator settings, kept in sync with the Password tab controls by popup.js */
   options : {
@@ -505,144 +514,146 @@ var hasher = {
       }
     },
 
-    // Net
+    // IP (tab id "net"): IPv4 or IPv6 address, prefix or decimal in the input
     net1 : {
-      id: tabs.net+"ip2dec",
+      id: tabs.net+"address",
       tab : tabs.net,
-      title: "IP to Dec",
+      title: "Address",
       calculate: function (input) {
-        var ipcalc = hasher.ipcalc;
-        ipcalc.parse(input);
-        if (ipcalc.getIp() != null) {
-          return ipcalc.getIp();
-        } else {
-          return "";
-        }
+        var p = parseIp(input);
+        if (p.error) return "Invalid: " + p.error;
+        return p.version == 4 ? ip.v4(p.address) : ip.v6(p.address);
+      },
+      hint: function (input) {
+        var p = parseIp(input);
+        if (p.error) return "";
+        return (p.version == 4 ? "IPv4 \u00b7 " : "IPv6 \u00b7 ") + ip.type(p.address, p.version);
       }
     },
-    // Net
     net2 : {
-      id: tabs.net+"dec2ip",
+      id: tabs.net+"expanded",
       tab : tabs.net,
-      title: "Dec to IP",
+      title: "Expanded",
       calculate: function (input) {
-        var ipcalc = hasher.ipcalc;
-        ipcalc.parse(input);
-        if (ipcalc.getIp() != null) {
-          return ipcalc.intToOctetString(ipcalc.getIp());
-        } else if (!ipcalc.isIpValid()) {
-          return "Invalid IP";
-        } else {
-          return "";
-        }
+        var p = parseIp(input);
+        return (p.error || p.version != 6) ? "" : ip.v6Expanded(p.address);
       }
     },
     net3 : {
-      id: tabs.net+"ip2bin",
+      id: tabs.net+"decimal",
       tab : tabs.net,
-      title: "IP to Bin",
+      title: "Decimal",
       calculate: function (input) {
-        var ipcalc = hasher.ipcalc;
-        ipcalc.parse(input);
-        if (ipcalc.getIp() != null) {
-          return ipcalc.getPaddedBinString(ipcalc.getIp());
-        } else {
-          return "";
-        }
+        var p = parseIp(input);
+        return p.error ? "" : p.address.toString();
       }
     },
     net4 : {
-      id: tabs.net+"ip2hex",
+      id: tabs.net+"hex",
       tab : tabs.net,
-      title: "IP to Hex",
+      title: "Hex",
       calculate: function (input) {
-        var ipcalc = hasher.ipcalc;
-        ipcalc.parse(input);
-        if (ipcalc.getIp() != null) {
-          return ipcalc.getIp().toString(16);
-        } else {
-          return "";
-        }
+        var p = parseIp(input);
+        return p.error ? "" : ip.hex(p.address, p.version);
       }
     },
     net5 : {
-      id: tabs.net+"network",
+      id: tabs.net+"binary",
       tab : tabs.net,
-      title: "Network / netmask",
+      title: "Binary",
       calculate: function (input) {
-        var ipcalc = hasher.ipcalc;
-        ipcalc.parse(input);
-        if (ipcalc.getNetmask() != null) {
-          return ipcalc.intToOctetString(ipcalc.getNetwork()) + "/" + ipcalc.intToOctetString(ipcalc.getNetmask());
-        } else if (!ipcalc.isNetmaskValid()) {
-          return "Invalid netmask";
-        } else {
-          return "";
-        }
-      },
-      hint: function (input) {
-        var ipcalc = hasher.ipcalc;
-        ipcalc.parse(input);
-        return ipcalc.getNetmask() != null ? "/" + maskBits(ipcalc.getNetmask()) : "";
+        var p = parseIp(input);
+        return (p.error || p.version != 4) ? "" : ip.v4Binary(p.address);
       }
     },
     net6 : {
-      id: tabs.net+"hostmin",
+      id: tabs.net+"ptr",
       tab : tabs.net,
-      title: "Min host",
+      title: "PTR",
       calculate: function (input) {
-        var ipcalc = hasher.ipcalc;
-        ipcalc.parse(input);
-        if (ipcalc.getNetmask() != null) {
-          return ipcalc.intToOctetString(ipcalc.gethHostMin());
-        } else {
-          return "";
-        }
+        var p = parseIp(input);
+        return p.error ? "" : ip.ptr(p.address, p.version);
+      },
+      hint: function () {
+        return "reverse DNS name";
       }
     },
     net7 : {
-      id: tabs.net+"hostmax",
+      id: tabs.net+"network",
       tab : tabs.net,
-      title: "Max host",
+      title: "Network",
       calculate: function (input) {
-        var ipcalc = hasher.ipcalc;
-        ipcalc.parse(input);
-        if (ipcalc.getNetmask() != null) {
-          return ipcalc.intToOctetString(ipcalc.gethHostMax());
-        } else {
-          return "";
-        }
+        var p = parseIp(input);
+        if (p.error || p.prefix === null) return "";
+        var r = ip.range(p);
+        return (p.version == 4 ? ip.v4(r.network) : ip.v6(r.network)) + "/" + p.prefix;
       }
     },
     net8 : {
+      id: tabs.net+"netmask",
+      tab : tabs.net,
+      title: "Netmask",
+      calculate: function (input) {
+        var p = parseIp(input);
+        if (p.error || p.prefix === null || p.version != 4) return "";
+        return ip.v4(ip.range(p).mask);
+      },
+      hint: function (input) {
+        var p = parseIp(input);
+        if (p.error || p.prefix === null || p.version != 4) return "";
+        return "wildcard " + ip.v4(ip.range(p).wildcard);
+      }
+    },
+    net9 : {
+      id: tabs.net+"first",
+      tab : tabs.net,
+      title: "First host",
+      calculate: function (input) {
+        var p = parseIp(input);
+        if (p.error || p.prefix === null) return "";
+        var r = ip.range(p);
+        return p.version == 4 ? ip.v4(ip.v4HostMin(r, p.prefix)) : ip.v6(r.network);
+      }
+    },
+    net10 : {
+      id: tabs.net+"last",
+      tab : tabs.net,
+      title: "Last host",
+      calculate: function (input) {
+        var p = parseIp(input);
+        if (p.error || p.prefix === null) return "";
+        var r = ip.range(p);
+        return p.version == 4 ? ip.v4(ip.v4HostMax(r, p.prefix)) : ip.v6(r.last);
+      }
+    },
+    net11 : {
       id: tabs.net+"broadcast",
       tab : tabs.net,
       title: "Broadcast",
       calculate: function (input) {
-        var ipcalc = hasher.ipcalc;
-        ipcalc.parse(input);
-        if (ipcalc.getNetmask() != null) {
-          return ipcalc.intToOctetString(ipcalc.getBroadcast());
-        } else {
-          return "";
-        }
+        var p = parseIp(input);
+        if (p.error || p.prefix === null || p.version != 4 || p.prefix >= 31) return "";
+        return ip.v4(ip.range(p).last);
       }
     },
-    net9 : {
-      id: tabs.net+"hostnum",
+    net12 : {
+      id: tabs.net+"hosts",
       tab : tabs.net,
       title: "Hosts",
       calculate: function (input) {
-        var ipcalc = hasher.ipcalc;
-        ipcalc.parse(input);
-        if (ipcalc.getNetmask() != null) {
-          return ipcalc.gethHostCount();
-        } else {
-          return "";
-        }
+        var p = parseIp(input);
+        if (p.error || p.prefix === null) return "";
+        var r = ip.range(p);
+        return (p.version == 4 ? ip.v4Hosts(r, p.prefix) : r.count).toString();
+      },
+      hint: function (input) {
+        var p = parseIp(input);
+        if (p.error || p.prefix === null) return "";
+        var r = ip.range(p);
+        if (p.version == 6) return "2^" + (128 - p.prefix) + " addresses";
+        return p.prefix >= 31 ? (p.prefix == 32 ? "host route" : "point-to-point, RFC 3021") : "of " + r.count + " addresses";
       }
     },
-
 
     // Time
     time1 : {

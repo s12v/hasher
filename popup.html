@@ -12,7 +12,7 @@
     <script src="lib/snov/numbers.js"></script>
     <script src="lib/snov/romanconverter.js"></script>
     <script src="lib/snov/rot13.js"></script>
-    <script src="lib/snov/ipcalc.js"></script>
+    <script src="lib/snov/ip.js"></script>
     <script src="lib/snov/passgen.js"></script>
     <script src="lib/snov/ids.js"></script>
     <script src="lib/snov/cron.js"></script>
@@ -25,7 +25,7 @@
 
     <div id="card">
       <div id="header">
-        <ul id="tabs"><li id="hash" class="on"><span>Hash</span></li><li id="hmac"><span>HMAC</span></li><li id="crc"><span>CRC</span></li><li id="password"><span>Password</span></li><li id="uuid"><span>UUID</span></li><li id="cipher"><span>Cipher</span></li><li id="net"><span>Net</span></li><li id="time"><span>Time</span></li><li id="number"><span>Num</span></li><li id="string"><span>Strings</span></li><li id="json"><span>JSON</span></li><li id="diff"><span>Diff</span></li><li id="encode"><span>Encode</span></li><li id="cron"><span>Cron</span></li><li id="jwt"><span>JWT</span></li></ul>
+        <ul id="tabs"><li id="hash" class="on"><span>Hash</span></li><li id="hmac"><span>HMAC</span></li><li id="crc"><span>CRC</span></li><li id="password"><span>Password</span></li><li id="uuid"><span>UUID</span></li><li id="cipher"><span>Cipher</span></li><li id="net"><span>IP</span></li><li id="time"><span>Time</span></li><li id="number"><span>Num</span></li><li id="string"><span>Strings</span></li><li id="json"><span>JSON</span></li><li id="diff"><span>Diff</span></li><li id="encode"><span>Encode</span></li><li id="cron"><span>Cron</span></li><li id="jwt"><span>JWT</span></li></ul>
         <div id="tools">
           <button type="button" id="button-theme" class="icon-button" title="Theme: system (follows the OS)">
             <svg class="theme-system" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor" stroke="none"/></svg>
@@ -167,7 +167,7 @@
           <li><b>Password</b> passphrases from the <a href="https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases" target="_blank">EFF wordlist</a> (7776 words, ~12.9 bits each) and random passwords, from the browser's CSPRNG</li>
           <li><b>UUID</b> UUID v4, UUID v7 and ULID</li>
           <li><b>Cipher</b> AES-256-CBC with a passphrase, byte-compatible with <span class="help" title="openssl enc -aes-256-cbc -pbkdf2 -a -pass pass:&quot;Secret Passphrase&quot;">openssl enc -pbkdf2</span> (and the legacy -md md5 format); decrypt reads both</li>
-          <li><b>Net</b> subnet calculator, IP &harr; decimal, IP &rarr; binary, IP &rarr; hex</li>
+          <li><b>IP</b> IPv4 and IPv6: canonical form, decimal, hex, binary, PTR name, address type (private, link-local, ULA, documentation&hellip;); for a prefix &mdash; network, netmask and wildcard, first / last host, broadcast, host count</li>
           <li><b>Time</b> Unix time (seconds or milliseconds), ISO 8601, RFC-1123 or "2019-02-27 09:36:55" in &rarr; all of them out</li>
           <li><b>Num</b> decimal &harr; hex, binary, Roman</li>
           <li><b>Strings</b> length in characters and bytes, ASCII / UTF-8 / UTF-16 &harr; hex, code points</li>
