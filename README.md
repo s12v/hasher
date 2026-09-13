@@ -59,7 +59,7 @@ directory over HTTP (`python3 -m http.server`) — `file://` blocks the wordlist
 * <b>Cron:</b> schedule builder (every N minutes, hourly, daily, weekly with weekdays, monthly, yearly) ↔ crontab expression, plain English and the next 5 run times
 
 Usage: enter text and click on the result — it is copied to clipboard.
-**mask** hides the input (for hashing passwords); **Now** on the Time tab inserts the current Unix time.
+**mask** on the Hash and HMAC tabs hides the input (for hashing passwords); **Now** on the Time tab inserts the current Unix time.
 The last tab and the theme (system / light / dark, the sun icon) are remembered. Keyboard: Alt+1…9 / Alt+0 jump to a tab, Alt+[ / Alt+] go to the previous / next one.
 
 ## License
