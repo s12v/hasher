@@ -16,6 +16,16 @@ Chrome Web Store listing is being republished. Until then, load it unpacked:
 2. Open `chrome://extensions`, enable **Developer mode**
 3. **Load unpacked** → select the `hasher` directory
 
+## Development
+
+No build step. Tests run on Node 20+ without dependencies:
+
+```
+npm test
+```
+
+Every `calculate()` in `hasher.js` is checked against vectors produced with `openssl dgst` / `openssl enc`.
+
 ## Features
 
 * <b>Hash</b>: MD5, SHA-1, SHA-2 (224, 256, 384, 512), SHA-3 (256, 512), Keccak-256, RIPEMD-160, MD4, Whirlpool
