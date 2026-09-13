@@ -1459,6 +1459,19 @@ var hasher = {
         return JSON.stringify(doc.value).length + " chars";
       }
     },
+    j6: {
+      id : tabs.json+"yaml",
+      tab : tabs.json,
+      title : "YAML",
+      calculate : function (input) {
+        var doc = jsonInput(input);
+        if (doc.empty || doc.error || doc.plain) return "";
+        return yaml.emit(hasher.jsonValue(doc.value)).replace(/\n$/, "");
+      },
+      hint : function () {
+        return "block style, strings quoted only where YAML would misread them";
+      }
+    },
     j4: {
       id : tabs.json+"string",
       tab : tabs.json,
