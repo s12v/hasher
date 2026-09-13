@@ -998,7 +998,7 @@ var hasher = {
       },
       hint : function () {
         var bits = passgen.passphraseBits(hasher.options.passphrase);
-        return bits ? "~" + bits.toFixed(1) + " bits" : "loading wordlist\u2026";
+        return bits ? "entropy: ~" + bits.toFixed(1) + " bits" : "loading wordlist\u2026";
       }
     },
     p2: {
@@ -1009,7 +1009,7 @@ var hasher = {
         return passgen.password(hasher.options.password);
       },
       hint : function () {
-        return "~" + passgen.passwordBits(hasher.options.password).toFixed(1) + " bits";
+        return "entropy: ~" + passgen.passwordBits(hasher.options.password).toFixed(1) + " bits";
       }
     },
     p3: {
