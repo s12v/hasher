@@ -93,7 +93,7 @@
 
 body {
   margin: 0;
-  min-width: 760px;
+  min-width: 780px;
   overflow-x: hidden;
   font: 13px/1.4 var(--font);
   background: var(--bg);
@@ -115,7 +115,7 @@ html.page body {
   padding: 24px 16px;
 }
 html.page #card {
-  width: 760px;
+  width: 780px;
   max-width: 100%;
   margin: 0 auto;
   background: var(--bg);
@@ -176,7 +176,7 @@ html.page #header {
 }
 #tabs li span {
   display: block;
-  padding: 4px 4px;
+  padding: 4px 3px;
   border-radius: 6px;
 }
 #tabs li:hover {

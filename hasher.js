@@ -13,7 +13,8 @@ var tabs = {
   json : 12,
   jwt : 13,
   uuid : 14,
-  diff : 15
+  diff : 15,
+  url : 16
 };
 
 /*
@@ -91,6 +92,17 @@ function timeInput(input) {
 function parseNumber(input) {
   try {
     return numbers.parse(input);
+  } catch (err) {
+    return { error : err.message };
+  }
+}
+
+/*
+ *  URL tab: { url, assumed } for the input, { error } when it is not a URL
+ */
+function parseUrl(input) {
+  try {
+    return urls.parse(input);
   } catch (err) {
     return { error : err.message };
   }
@@ -1565,6 +1577,128 @@ var hasher = {
       }
     },
 
+    // URL
+    url1: {
+      id : tabs.url+"scheme",
+      tab : tabs.url,
+      title : "Scheme",
+      calculate : function (input) {
+        if (input.trim().length == 0) return "";
+        var p = parseUrl(input);
+        return p.error ? "Invalid: " + p.error : p.url.protocol.replace(/:$/, "");
+      },
+      hint : function (input) {
+        var p = parseUrl(input);
+        return (!p.error && p.assumed) ? "no scheme given, https assumed" : "";
+      }
+    },
+    url2: {
+      id : tabs.url+"host",
+      tab : tabs.url,
+      title : "Host",
+      calculate : function (input) {
+        var p = parseUrl(input);
+        return p.error ? "" : p.url.hostname;
+      },
+      hint : function (input) {
+        var p = parseUrl(input);
+        if (p.error || !p.url.hostname) return "";
+        var unicode = urls.toUnicode(p.url.hostname);
+        return unicode != p.url.hostname ? "IDN: " + unicode : "";
+      }
+    },
+    url3: {
+      id : tabs.url+"port",
+      tab : tabs.url,
+      title : "Port",
+      calculate : function (input) {
+        var p = parseUrl(input);
+        if (p.error || !p.url.hostname) return "";
+        return p.url.port || urls.DEFAULT_PORTS[p.url.protocol] || "";
+      },
+      hint : function (input) {
+        var p = parseUrl(input);
+        return (!p.error && !p.url.port && urls.DEFAULT_PORTS[p.url.protocol]) ? "default for " + p.url.protocol.replace(/:$/, "") : "";
+      }
+    },
+    url4: {
+      id : tabs.url+"path",
+      tab : tabs.url,
+      title : "Path",
+      calculate : function (input) {
+        var p = parseUrl(input);
+        return p.error ? "" : p.url.pathname;
+      },
+      hint : function (input) {
+        var p = parseUrl(input);
+        if (p.error) return "";
+        try {
+          var decoded = decodeURIComponent(p.url.pathname);
+          return decoded != p.url.pathname ? "decoded: " + decoded : "";
+        } catch (err) {
+          return "";
+        }
+      }
+    },
+    url5: {
+      id : tabs.url+"query",
+      tab : tabs.url,
+      title : "Query",
+      calculate : function (input) {
+        var p = parseUrl(input);
+        return p.error ? "" : urls.query(p.url);
+      },
+      hint : function (input) {
+        var p = parseUrl(input);
+        if (p.error) return "";
+        var n = Array.from(p.url.searchParams.keys()).length;
+        return n ? n + " parameter" + (n == 1 ? "" : "s") + ", decoded" : "";
+      }
+    },
+    url6: {
+      id : tabs.url+"fragment",
+      tab : tabs.url,
+      title : "Fragment",
+      calculate : function (input) {
+        var p = parseUrl(input);
+        return p.error ? "" : p.url.hash.replace(/^#/, "");
+      }
+    },
+    url7: {
+      id : tabs.url+"credentials",
+      tab : tabs.url,
+      title : "Credentials",
+      calculate : function (input) {
+        var p = parseUrl(input);
+        if (p.error || !(p.url.username || p.url.password)) return "";
+        return p.url.username + (p.url.password ? ":" + p.url.password : "");
+      },
+      tone : function () {
+        return "bad";
+      }
+    },
+    url8: {
+      id : tabs.url+"origin",
+      tab : tabs.url,
+      title : "Origin",
+      calculate : function (input) {
+        var p = parseUrl(input);
+        return (p.error || p.url.origin == "null") ? "" : p.url.origin;
+      }
+    },
+    url9: {
+      id : tabs.url+"normalized",
+      tab : tabs.url,
+      title : "Normalized",
+      calculate : function (input) {
+        var p = parseUrl(input);
+        return p.error ? "" : p.url.href;
+      },
+      hint : function () {
+        return "as the browser would send it";
+      }
+    },
+
     // Diff (input vs hasher.options.other)
     d1: {
       id : tabs.diff+"changes",
@@ -1615,6 +1749,7 @@ var hasher = {
     cron : "Enter a crontab expression.",
     json : "Paste JSON to format it.",
     jwt : "Paste a token to decode it.",
+    url : "Enter a URL to take it apart.",
     diff : "Enter two texts to compare."
   },
   /* tabs whose rows do not need input at all */
