@@ -110,6 +110,9 @@ document.addEventListener("DOMContentLoaded", function () {
       length : document.getElementById("pw-length").value,
       symbols : document.getElementById("pw-symbols").checked
     };
+    hasher.options.key = {
+      bytes : document.getElementById("pk-bytes").value
+    };
     hasher.update();
   };
   passwordOptions.querySelectorAll("input").forEach(function (field) {

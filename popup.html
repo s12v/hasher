@@ -85,6 +85,10 @@
             <span class="label">Password</span>
             <label>length <input id="pw-length" type="number" min="1" max="256" value="16" /></label>
             <label><input id="pw-symbols" type="checkbox" /> symbols</label>
+          </div>
+          <div class="row">
+            <span class="label">Key</span>
+            <label>bytes <input id="pk-bytes" type="number" min="1" max="1024" value="32" /></label>
             <button type="button" id="pw-generate" class="button primary">Generate</button>
           </div>
         </div>
@@ -165,7 +169,7 @@
           <li><b>Hash</b> SHA-256, SHA-512, SHA-1, MD5, SHA-3 (256, 512), Keccak-256, SHA-384, SHA-224, RIPEMD-160, BLAKE2b (256, 512), SRI for &lt;script integrity&gt;</li>
           <li><b>HMAC</b> SHA-256, SHA-1, SHA-512, SHA-384, MD5 &mdash; webhook signatures, TOTP, JWT HS*</li>
           <li><b>CRC</b> CRC-32, CRC-32C, CRC-16 (MODBUS, CCITT-FALSE, XMODEM), CRC-8, CRC-64/XZ, Adler-32</li>
-          <li><b>Password</b> passphrases from the <a href="https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases" target="_blank">EFF wordlist</a> (7776 words, ~12.9 bits each) and random passwords, from the browser's CSPRNG</li>
+          <li><b>Password</b> passphrases from the <a href="https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases" target="_blank">EFF wordlist</a> (7776 words, ~12.9 bits each), random passwords and random keys (hex / Base64, like <code>openssl rand</code>), all from the browser's CSPRNG</li>
           <li><b>UUID</b> UUID v4, UUID v7 and ULID</li>
           <li><b>Cipher</b> AES-256-CBC with a passphrase, byte-compatible with <span class="help" title="openssl enc -aes-256-cbc -pbkdf2 -a -pass pass:&quot;Secret Passphrase&quot;">openssl enc -pbkdf2</span> (and the legacy -md md5 format); decrypt reads both</li>
           <li><b>IP</b> IPv4 and IPv6: canonical form, decimal, hex, binary, PTR name, address type (private, link-local, ULA, documentation&hellip;); for a prefix &mdash; network, netmask and wildcard, first / last host, broadcast, host count</li>

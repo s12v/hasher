@@ -242,6 +242,7 @@ var hasher = {
   options : {
     passphrase : { words : 4, separator : "-", digits : 2, capitalize : false },
     password : { length : 16, symbols : false },
+    key : { bytes : 32 },
     json : { sorted : false },
     diff : { other : "", ignoreWhitespace : false, ignoreCase : false }
   },
@@ -931,8 +932,8 @@ var hasher = {
       tab : tabs.string,
       title: "Hex to UTF-8",
       calculate: function (input) {
-        if (/[^0-9a-f]/i.test(input)) {
-          return "NaN";
+        if (/[^0-9a-f]/i.test(input) || input.length % 2 != 0) {
+          return ""; // not hex: nothing to decode
         }
         try {
           var words = CryptoJS.enc.Hex.parse(input);
@@ -967,8 +968,8 @@ var hasher = {
         return "big-endian";
       },
       calculate: function (input) {
-        if (/[^0-9a-f]/i.test(input)) {
-          return "NaN";
+        if (/[^0-9a-f]/i.test(input) || input.length % 2 != 0) {
+          return ""; // not hex: nothing to decode
         }
         try {
           var words = CryptoJS.enc.Hex.parse(input);
@@ -1272,6 +1273,24 @@ var hasher = {
       },
       hint : function () {
         return "entropy: ~" + passgen.passwordBits(hasher.options.password).toFixed(1) + " bits";
+      }
+    },
+    p6: {
+      id : tabs.password+"key",
+      tab : tabs.password,
+      title : "Random key, hex",
+      calculate : function () {
+        return basex.hex(ids.randomBytes(passgen.clamp(hasher.options.key.bytes, 1, 1024, 32)));
+      },
+      hint : function () {
+        var n = passgen.clamp(hasher.options.key.bytes, 1, 1024, 32);
+        return "entropy: " + (n * 8) + " bits \u00b7 openssl rand -hex " + n;
+      },
+      alt : {
+        title : "Base64",
+        calculate : function () {
+          return basex.base64(ids.randomBytes(passgen.clamp(hasher.options.key.bytes, 1, 1024, 32)));
+        }
       }
     },
     p3: {
