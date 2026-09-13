@@ -29,6 +29,7 @@ npm test
 ```
 
 Every `calculate()` in `hasher.js` is checked against vectors produced with `openssl dgst` / `openssl enc`.
+On GitHub Actions `npm run test:ci` runs the same tests and adds a pass/fail summary and per-test annotations to the pull request.
 
 To try it as an extension, load the directory unpacked (see Install). To try the standalone page, serve the
 directory over HTTP (`python3 -m http.server`) — `file://` blocks the wordlist fetch on the Password tab.
