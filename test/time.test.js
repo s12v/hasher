@@ -18,7 +18,7 @@ test('unix seconds', () => {
 
 test('row order', () => {
   const titles = Object.values(ctx.hasher.elements).filter((e) => e.tab === ctx.tabs.time).map((e) => e.title);
-  assert.deepEqual(Array.from(titles), ['Unixtime', 'Unixtime (ms)', 'ISO 8601', 'RFC-1123', 'DATETIME (UTC)', 'DATETIME (local)']);
+  assert.deepEqual(Array.from(titles), ['Unixtime', 'Unixtime (ms)', 'ISO 8601', 'RFC-1123', 'DATETIME (UTC)', 'DATETIME (local)', 'Duration']);
 });
 
 test('every output format parses back to the same instant', () => {
