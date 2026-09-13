@@ -19,13 +19,6 @@ var TAB_META = {
 
 document.addEventListener("DOMContentLoaded", function () {
 
-  // The standalone web page shows the popup as a card on a desk; the extension
-  // popup and the popped-out tab fill their window
-  var isExtension = typeof chrome != "undefined" && chrome.tabs && chrome.tabs.create;
-  if (!isExtension) {
-    document.documentElement.classList.add("page");
-  }
-
   // localStorage may be unavailable (private mode, blocked storage); the popup works without it
   var remember = function (key, value) {
     try {
