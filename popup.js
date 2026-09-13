@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
   var inputNow = document.getElementById("input-now");
   var inputPassword = document.getElementById("input-password");
   var passwordWrapper = document.getElementById("input-password-wrapper");
+  var inputWrapper = document.getElementById("input");
+  var passwordOptions = document.getElementById("password-options");
   var tabItems = document.querySelectorAll("#tabs li");
 
   /*
@@ -40,6 +42,53 @@ document.addEventListener("DOMContentLoaded", function () {
     field.focus();
   });
 
+  // Password tab: settings -> hasher.options, then regenerate
+  var readPasswordOptions = function () {
+    hasher.options.passphrase = {
+      words : document.getElementById("pp-words").value,
+      separator : document.getElementById("pp-separator").value,
+      digits : document.getElementById("pp-digits").value,
+      capitalize : document.getElementById("pp-capitalize").checked
+    };
+    hasher.options.password = {
+      length : document.getElementById("pw-length").value,
+      symbols : document.getElementById("pw-symbols").checked
+    };
+    hasher.update();
+  };
+  passwordOptions.querySelectorAll("input").forEach(function (field) {
+    field.addEventListener("input", readPasswordOptions);
+  });
+  document.getElementById("pw-generate").addEventListener("click", function () {
+    hasher.update();
+  });
+
+  // Wordlist is gzip-compressed; DecompressionStream is native in every MV3-capable browser
+  var loadWordlist = function () {
+    fetch("lib/wordlist/eff_large_wordlist.txt.gz")
+      .then(function (response) {
+        return response.arrayBuffer();
+      })
+      .then(function (buf) {
+        // a static host may already have inflated it (Content-Encoding: gzip): check the magic
+        var head = new Uint8Array(buf, 0, 2);
+        if (head[0] == 0x1f && head[1] == 0x8b) {
+          return new Response(new Response(buf).body.pipeThrough(new DecompressionStream("gzip"))).text();
+        }
+        return new TextDecoder().decode(buf);
+      })
+      .then(function (text) {
+        passgen.setWords(text);
+        if (hasher.tab == tabs.password) {
+          hasher.update();
+        }
+      })
+      .catch(function (err) {
+        console.error("wordlist", err);
+      });
+  };
+  loadWordlist();
+
   // Open in a separate tab (pop-out); unavailable in the standalone web version
   var popout = document.getElementById("popout");
   if (typeof chrome != "undefined" && chrome.tabs && chrome.tabs.create) {
@@ -66,10 +115,14 @@ document.addEventListener("DOMContentLoaded", function () {
       // show/hide optional fields
       passwordWrapper.hidden = !(hasher.tab == tabs.hmac || hasher.tab == tabs.cipher);
       inputNow.hidden = hasher.tab != tabs.time;
+      inputWrapper.hidden = hasher.tab == tabs.password;
+      passwordOptions.hidden = hasher.tab != tabs.password;
 
       hasher.init();
       hasher.update();
-      hasher.inputField().focus();
+      if (!inputWrapper.hidden) {
+        hasher.inputField().focus();
+      }
     });
   });
 
