@@ -166,7 +166,7 @@
           <li><b>CRC</b> CRC-32, CRC-32C, CRC-16 (MODBUS, CCITT-FALSE, XMODEM), CRC-8, CRC-64/XZ, Adler-32</li>
           <li><b>Password</b> passphrases from the <a href="https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases" target="_blank">EFF wordlist</a> (7776 words, ~12.9 bits each) and random passwords, from the browser's CSPRNG</li>
           <li><b>UUID</b> UUID v4, UUID v7 and ULID</li>
-          <li><b>Cipher</b> AES-256, DES, Triple DES, Rabbit, RC4, RC4Drop; CBC/PKCS#7, <span class="help" title='openssl enc -aes-256-cbc -md md5 -in infile -out outfile -pass pass:"Secret Passphrase" -e -base64'>interoperable with OpenSSL</span></li>
+          <li><b>Cipher</b> AES-256-CBC with a passphrase, byte-compatible with <span class="help" title="openssl enc -aes-256-cbc -pbkdf2 -a -pass pass:&quot;Secret Passphrase&quot;">openssl enc -pbkdf2</span> (and the legacy -md md5 format); decrypt reads both</li>
           <li><b>Net</b> subnet calculator, IP &harr; decimal, IP &rarr; binary, IP &rarr; hex</li>
           <li><b>Time</b> Unix time (seconds or milliseconds), ISO 8601, RFC-1123 or "2019-02-27 09:36:55" in &rarr; all of them out</li>
           <li><b>Num</b> decimal &harr; hex, binary, Roman</li>

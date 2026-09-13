@@ -3,7 +3,7 @@ var TAB_META = {
   hash : { rows : 2 },
   hmac : { rows : 2 },
   crc : { rows : 2 },
-  cipher : { rows : 2 },
+  cipher : { rows : 2, placeholder : "text to encrypt, or a Salted__ base64 payload to decrypt" },
   net : { rows : 1, placeholder : "10.0.12.42/22" },
   time : { rows : 1, placeholder : "unix seconds or ms, ISO 8601, RFC-1123, 2019-02-27 09:36:55 \u2014 empty is now" },
   number : { rows : 1, placeholder : "42 / 2a / 101010 / XLII" },
