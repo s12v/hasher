@@ -45,22 +45,24 @@
       <div id="screen-1" class="screen">
         <!-- input -->
         <div id="input">
-          <div class="label-row">
-            <span class="label">Input</span>
-            <span id="input-options">
-              <span id="input-counter"></span>
-              <label title="Hide what you type (single line)"><input type="checkbox" id="input-mask" /> mask</label>
-              <button type="button" id="input-now" class="button" title="Current Unix time" hidden>Now</button>
-            </span>
+          <div id="input-main">
+            <div class="label-row">
+              <span class="label">Input</span>
+              <span id="input-options">
+                <span id="input-counter"></span>
+                <label title="Hide what you type (single line)"><input type="checkbox" id="input-mask" /> mask</label>
+                <button type="button" id="input-now" class="button" title="Current Unix time" hidden>Now</button>
+              </span>
+            </div>
+            <textarea id="input-value" rows="2" autofocus spellcheck="false"></textarea>
+            <input id="input-masked" type="password" hidden />
           </div>
-          <textarea id="input-value" rows="2" autofocus spellcheck="false"></textarea>
-          <input id="input-masked" type="password" hidden />
           <div id="input-other-wrapper" hidden>
             <div class="label-row">
               <span class="label">Compare with</span>
               <span id="input-other-counter" class="counter"></span>
             </div>
-            <textarea id="input-other" rows="3" spellcheck="false" placeholder="changed text"></textarea>
+            <textarea id="input-other" rows="6" spellcheck="false" placeholder="changed text"></textarea>
           </div>
           <div id="input-password-wrapper" hidden>
             <div class="label-row">
@@ -168,7 +170,7 @@
           <li><b>Num</b> decimal &harr; hex, binary, Roman</li>
           <li><b>Strings</b> length in characters and bytes, ASCII / UTF-8 / UTF-16 &harr; hex, code points</li>
           <li><b>JSON</b> pretty-print, minify (both with optional sorted keys), quote / unquote as a JSON string, syntax errors with the position</li>
-          <li><b>Diff</b> compare two texts line by line with the changed characters highlighted; unified diff to copy; ignore whitespace / case</li>
+          <li><b>Diff</b> compare two texts side by side, line by line, with the changed characters highlighted; ignore whitespace / case</li>
           <li><b>Encode</b> Base64, ROT-13, encodeURI, encodeURIComponent, HTML special characters</li>
           <li><b>Cron</b> schedule builder (every N minutes, hourly, daily, weekly with weekdays, monthly, yearly) &harr; crontab expression, plain-English description and the next 5 runs; lists, ranges, steps, names, @daily and friends</li>
           <li><b>JWT</b> decode, claims with expiry as local time, HS256 / HS384 / HS512 verification with the secret</li>

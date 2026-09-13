@@ -329,6 +329,18 @@ label {
 #input-other-wrapper {
   margin-top: 6px;
 }
+/* Diff: the two texts side by side */
+#input.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 12px;
+}
+#input.columns #input-other-wrapper {
+  margin-top: 0;
+}
+#input.columns #input-password-wrapper {
+  grid-column: 1 / -1;
+}
 #input-other-wrapper .counter {
   font-size: 12px;
   color: var(--muted);
@@ -479,6 +491,15 @@ label {
 #output .value:hover {
   border-color: var(--accent-border);
 }
+#output .value.static {
+  cursor: default;
+}
+#output .value.static:hover {
+  border-color: var(--border);
+}
+#output .value.static .text {
+  user-select: text;
+}
 #output .text {
   font: 12px/16px var(--mono);
   white-space: pre-wrap;
@@ -486,6 +507,9 @@ label {
   max-height: 160px;
   overflow: auto;
   color: var(--fg);
+}
+#output .text.tall {
+  max-height: 440px;
 }
 #output .value[data-tone="ok"] .text {
   color: var(--success);

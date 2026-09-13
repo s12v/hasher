@@ -9,7 +9,7 @@ var TAB_META = {
   number : { rows : 1, placeholder : "42 / 2a / 101010 / XLII" },
   string : { rows : 2 },
   json : { rows : 4, placeholder : '{"b":2,"a":1}' },
-  diff : { rows : 3, placeholder : "original text" },
+  diff : { rows : 6, placeholder : "original text" },
   encode : { rows : 2 },
   cron : { rows : 1, placeholder : "*/15 9-17 * * mon-fri" },
   jwt : { rows : 3, placeholder : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\u2026" }
@@ -339,6 +339,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("json-options").hidden = hasher.tab != tabs.json;
     otherWrapper.hidden = hasher.tab != tabs.diff;
     diffOptions.hidden = hasher.tab != tabs.diff;
+    inputWrapper.classList.toggle("columns", hasher.tab == tabs.diff);
 
     var meta = TAB_META[li.id] || {};
     inputValue.rows = meta.rows || 2;

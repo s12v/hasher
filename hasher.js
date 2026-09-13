@@ -1235,6 +1235,8 @@ var hasher = {
       tab : tabs.diff,
       title : "Changes",
       html : true,
+      tall : true,
+      nocopy : true,
       calculate : function (input) {
         var ops = diff.lines(input, hasher.options.diff.other, hasher.options.diff);
         var s = diff.stats(ops);
@@ -1253,14 +1255,6 @@ var hasher = {
       tone : function (input) {
         var s = diff.stats(diff.lines(input, hasher.options.diff.other, hasher.options.diff));
         return (s.added == 0 && s.removed == 0 && (input.length || hasher.options.diff.other.length)) ? "ok" : "";
-      }
-    },
-    d2: {
-      id : tabs.diff+"unified",
-      tab : tabs.diff,
-      title : "Unified diff",
-      calculate : function (input) {
-        return diff.unified(diff.lines(input, hasher.options.diff.other, hasher.options.diff));
       }
     }
   },
@@ -1306,7 +1300,7 @@ var hasher = {
     var self = this;
     document.getElementById("output").addEventListener("click", function (e) {
       var box = e.target.closest(".value");
-      if (!box) {
+      if (!box || box.classList.contains("static")) {
         return;
       }
       var text = document.getElementById(box.id.replace("-value", "")).textContent;
@@ -1398,10 +1392,10 @@ var hasher = {
                 element.title+
               '</span>'+
               '<span id="'+element.id+'-hint" class="hint"></span>'+
-              '<span id="'+element.id+'-copy" class="copy">copy</span>'+
+              (element.nocopy ? '' : '<span id="'+element.id+'-copy" class="copy">copy</span>')+
             '</div>'+
-            '<div id="'+element.id+'-value" class="value">'+
-              '<div id="'+element.id+'" class="text"></div>'+
+            '<div id="'+element.id+'-value" class="value' + (element.nocopy ? ' static' : '') + '">'+
+              '<div id="'+element.id+'" class="text' + (element.tall ? ' tall' : '') + '"></div>'+
             '</div>'+
           '</div>';
       }

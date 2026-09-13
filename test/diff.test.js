@@ -89,7 +89,6 @@ test('elements', () => {
   assert.equal(hasher.elements.d1.hint('a\nc\n'), '+1 −1 lines');
   assert.equal(hasher.elements.d1.tone('a\nc\n'), '');
   assert.match(calc('15changes', 'a\nc\n'), /d-del.*d-add/s);
-  assert.equal(calc('15unified', 'a\nc\n'), ['--- a', '+++ b', '@@ -1,2 +1,2 @@', ' a', '-c', '+b'].join('\n'));
   hasher.options.diff.ignoreCase = true;
   assert.equal(hasher.elements.d1.hint('A\nB\n'), 'identical');
   hasher.options.diff = { other: '', ignoreWhitespace: false, ignoreCase: false };
