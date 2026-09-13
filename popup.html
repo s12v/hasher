@@ -27,8 +27,10 @@
       <div id="header">
         <ul id="tabs"><li id="hash" class="on"><span>Hash</span></li><li id="hmac"><span>HMAC</span></li><li id="crc"><span>CRC</span></li><li id="password"><span>Password</span></li><li id="uuid"><span>UUID</span></li><li id="cipher"><span>Cipher</span></li><li id="net"><span>Net</span></li><li id="time"><span>Time</span></li><li id="number"><span>Num</span></li><li id="string"><span>Strings</span></li><li id="json"><span>JSON</span></li><li id="encode"><span>Encode</span></li><li id="cron"><span>Cron</span></li><li id="jwt"><span>JWT</span></li></ul>
         <div id="tools">
-          <button type="button" id="button-theme" class="icon-button" title="Theme: system">
-            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="4.5"/><path d="M8 .8v1.6M8 13.6v1.6M.8 8h1.6M13.6 8h1.6M2.9 2.9l1.1 1.1M12 12l1.1 1.1M13.1 2.9 12 4M4 12l-1.1 1.1"/></svg>
+          <button type="button" id="button-theme" class="icon-button" title="Theme: system (follows the OS)">
+            <svg class="theme-system" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor" stroke="none"/></svg>
+            <svg class="theme-light" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" hidden><circle cx="8" cy="8" r="4.5"/><path d="M8 .8v1.6M8 13.6v1.6M.8 8h1.6M13.6 8h1.6M2.9 2.9l1.1 1.1M12 12l1.1 1.1M13.1 2.9 12 4M4 12l-1.1 1.1"/></svg>
+            <svg class="theme-dark" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" hidden><path d="M13.5 9.8A6 6 0 0 1 6.2 2.5a6 6 0 1 0 7.3 7.3z"/></svg>
           </button>
           <a href="#info" id="button-info" class="icon-button" title="About">
             <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="M8 7.2v4"/><circle cx="8" cy="4.8" r=".7" fill="currentColor" stroke="none"/></svg>

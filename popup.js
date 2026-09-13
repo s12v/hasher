@@ -243,7 +243,11 @@ document.addEventListener("DOMContentLoaded", function () {
       theme = "system";
       document.documentElement.removeAttribute("data-theme");
     }
-    themeButton.title = "Theme: " + theme;
+    var titles = { system : "Theme: system (follows the OS)", light : "Theme: light", dark : "Theme: dark" };
+    themeButton.title = titles[theme];
+    ["system", "light", "dark"].forEach(function (name) {
+      themeButton.querySelector(".theme-" + name).hidden = name != theme;
+    });
     return theme;
   };
   var theme = applyTheme(remember("theme"));
