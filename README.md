@@ -58,7 +58,7 @@ directory over HTTP (`python3 -m http.server`) — `file://` blocks the wordlist
 * <b>UUID:</b> UUID v4, UUID v7, ULID
 * <b>Cipher</b> <i>(interoperable with OpenSSL)</i>: AES-256, DES, Triple DES, Rabbit, RC4, RC4Drop. CBC/Pkcs7 is used.
 * <b>Net:</b> Subnet calculator, Ip ↔ Dec, Ip → Bin, Ip → Hex
-* <b>Time:</b> Unix (s or ms) ↔ Datetime, Unix ↔ RFC-1123, Unix ↔ ISO 8601
+* <b>Time:</b> Unix time (s or ms), ISO 8601, RFC-1123 or `2019-02-27 09:36:55` in → Unix s / ms, ISO 8601, RFC-1123, DATETIME UTC / local out
 * <b>Numbers:</b> Dec ↔ Hex, Dec ↔ Bin, Dec ↔ Roman
 * <b>Strings:</b> length (chars / UTF-8 bytes), ASCII ↔ Hex, UTF-8 ↔ Hex, UTF-16 ↔ Hex, code points
 * <b>JSON:</b> pretty-print, minify (both with optional sorted keys), quote/unquote as a JSON string, syntax errors with position

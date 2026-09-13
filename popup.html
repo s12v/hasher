@@ -51,7 +51,7 @@
               <span id="input-options">
                 <span id="input-counter"></span>
                 <label title="Hide what you type (single line)"><input type="checkbox" id="input-mask" /> mask</label>
-                <button type="button" id="input-now" class="button" title="Current Unix time" hidden>Now</button>
+                <button type="button" id="input-now" class="button primary" title="Current Unix time" hidden>Now</button>
               </span>
             </div>
             <textarea id="input-value" rows="2" autofocus spellcheck="false"></textarea>
@@ -169,7 +169,7 @@
           <li><b>UUID</b> UUID v4, UUID v7 and ULID</li>
           <li><b>Cipher</b> AES-256, DES, Triple DES, Rabbit, RC4, RC4Drop; CBC/PKCS#7, <span class="help" title='openssl enc -aes-256-cbc -md md5 -in infile -out outfile -pass pass:"Secret Passphrase" -e -base64'>interoperable with OpenSSL</span></li>
           <li><b>Net</b> subnet calculator, IP &harr; decimal, IP &rarr; binary, IP &rarr; hex</li>
-          <li><b>Time</b> Unix time (seconds or milliseconds) &harr; local / UTC datetime, RFC-1123, ISO 8601</li>
+          <li><b>Time</b> Unix time (seconds or milliseconds), ISO 8601, RFC-1123 or "2019-02-27 09:36:55" in &rarr; all of them out</li>
           <li><b>Num</b> decimal &harr; hex, binary, Roman</li>
           <li><b>Strings</b> length in characters and bytes, ASCII / UTF-8 / UTF-16 &harr; hex, code points</li>
           <li><b>JSON</b> pretty-print, minify (both with optional sorted keys), quote / unquote as a JSON string, syntax errors with the position</li>

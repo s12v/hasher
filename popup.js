@@ -5,7 +5,7 @@ var TAB_META = {
   crc : { rows : 2 },
   cipher : { rows : 2 },
   net : { rows : 1, placeholder : "10.0.12.42/22" },
-  time : { rows : 1, placeholder : "unix seconds, ms, or a date \u2014 empty is now" },
+  time : { rows : 1, placeholder : "unix seconds or ms, ISO 8601, RFC-1123, 2019-02-27 09:36:55 \u2014 empty is now" },
   number : { rows : 1, placeholder : "42 / 2a / 101010 / XLII" },
   string : { rows : 2 },
   json : { rows : 4, placeholder : '{"b":2,"a":1}' },

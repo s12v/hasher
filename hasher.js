@@ -54,10 +54,21 @@ function parseDate(input) {
     return null;
   }
   var date;
+  var local = /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?$/.exec(str);
   if (/^\d+$/.test(str)) {
     var num = parseInt(str, 10);
     date = new Date(str.length >= 13 ? num : num * 1000);
+  } else if (local) {
+    // DATETIME (local): "2019-02-27 09:36:55", also a bare date; no zone means local time
+    var f = [+local[1], local[2] - 1, +local[3], +(local[4] || 0), +(local[5] || 0), +(local[6] || 0)];
+    date = new Date(f[0], f[1], f[2], f[3], f[4], f[5], local[7] ? +(local[7] + "00").slice(0, 3) : 0);
+    // Date() rolls "2019-13-45" over into a real date; refuse fields that did not survive as typed
+    if (date.getFullYear() != f[0] || date.getMonth() != f[1] || date.getDate() != f[2] ||
+        date.getHours() != f[3] || date.getMinutes() != f[4] || date.getSeconds() != f[5]) {
+      return null;
+    }
   } else {
+    // ISO 8601 with a zone ("2019-02-27T09:36:55Z", "+02:00"), RFC-1123, and whatever else Date() reads
     date = new Date(str);
   }
   return isNaN(date.getTime()) ? null : date;
@@ -631,26 +642,22 @@ var hasher = {
         return date ? date.getTime() : "";
       }
     },
-    time2 : {
-      id: tabs.time+"ts2date",
+    time5 : {
+      id: tabs.time+"date2iso",
       tab : tabs.time,
-      title: "Local time",
+      title: "ISO 8601",
       calculate: function (input) {
         var date = timeInput(input);
-        return date ? date.toLocaleString() : "";
+        return date ? date.toISOString() : "";
       }
     },
-    time3 : {
-      id: tabs.time+"date2sql",
+    time4 : {
+      id: tabs.time+"ts2RFC1123",
       tab : tabs.time,
-      title: "DATETIME (local)",
+      title: "RFC-1123",
       calculate: function (input) {
-        var d = timeInput(input);
-        if (!d) {
-          return "";
-        }
-        return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + " " +
-          pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + ":" + pad2(d.getSeconds());
+        var date = timeInput(input);
+        return date ? date.toUTCString() : "";
       }
     },
     time31 : {
@@ -666,22 +673,17 @@ var hasher = {
           pad2(d.getUTCHours()) + ":" + pad2(d.getUTCMinutes()) + ":" + pad2(d.getUTCSeconds());
       }
     },
-    time4 : {
-      id: tabs.time+"ts2RFC1123",
+    time3 : {
+      id: tabs.time+"date2sql",
       tab : tabs.time,
-      title: "RFC-1123",
+      title: "DATETIME (local)",
       calculate: function (input) {
-        var date = timeInput(input);
-        return date ? date.toUTCString() : "";
-      }
-    },
-    time5 : {
-      id: tabs.time+"date2iso",
-      tab : tabs.time,
-      title: "ISO 8601",
-      calculate: function (input) {
-        var date = timeInput(input);
-        return date ? date.toISOString() : "";
+        var d = timeInput(input);
+        if (!d) {
+          return "";
+        }
+        return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + " " +
+          pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + ":" + pad2(d.getSeconds());
       }
     },
 
