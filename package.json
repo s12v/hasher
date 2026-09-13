@@ -1,6 +1,6 @@
 {
   "name": "hasher",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": true,
   "description": "Developer's toolbox browser extension: hashes, HMAC, CRC, ciphers, IP/subnet, time, number and string conversions",
   "license": "MIT",
