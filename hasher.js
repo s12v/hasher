@@ -121,7 +121,7 @@ var hasher = {
   tab : tabs.hash,
   /* Generator settings, kept in sync with the Password tab controls by popup.js */
   options : {
-    passphrase : { words : 5, separator : "-", digits : 0, capitalize : false },
+    passphrase : { words : 4, separator : "-", digits : 2, capitalize : false },
     password : { length : 16, symbols : false },
     json : { sorted : false }
   },
