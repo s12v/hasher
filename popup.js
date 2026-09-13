@@ -70,15 +70,19 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // "mask": swap the textarea for a password-type field, keeping the text
-  inputMask.addEventListener("change", function () {
+  var applyMask = function () {
     var from = hasher.inputField();
     var to = inputMask.checked ? inputMasked : inputValue;
+    if (from === to) {
+      return;
+    }
     to.value = from.value;
     from.hidden = true;
     to.hidden = false;
     hasher.update();
     to.focus();
-  });
+  };
+  inputMask.addEventListener("change", applyMask);
 
   // "Now" (Time tab): current Unix time as input
   inputNow.addEventListener("click", function () {
@@ -282,6 +286,13 @@ document.addEventListener("DOMContentLoaded", function () {
     passwordWrapper.hidden = !(hasher.tab == tabs.hmac || hasher.tab == tabs.cipher || hasher.tab == tabs.jwt);
     passwordWrapper.querySelector(".label").textContent = hasher.tab == tabs.jwt ? "Secret" : "Password";
     inputNow.hidden = hasher.tab != tabs.time;
+    // masking the input only makes sense where a password gets hashed
+    var maskable = hasher.tab == tabs.hash || hasher.tab == tabs.hmac;
+    inputMask.parentNode.hidden = !maskable;
+    if (!maskable && inputMask.checked) {
+      inputMask.checked = false;
+      applyMask();
+    }
     inputWrapper.hidden = hasher.tab == tabs.password || hasher.tab == tabs.uuid;
     passwordOptions.hidden = hasher.tab != tabs.password;
     uuidOptions.hidden = hasher.tab != tabs.uuid;
