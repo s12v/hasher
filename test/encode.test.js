@@ -8,23 +8,20 @@ const { hasher, basex } = ctx;
 test('base64 and base64url', () => {
   assert.equal(calc('7base64', 'héllo'), 'aMOpbGxv');
   assert.equal(calc('7base64', '?>'), 'Pz4=');
-  assert.equal(hasher.elements.e1.alt.calculate('?>'), 'Pz4', 'url alphabet, no padding');
-  assert.equal(hasher.elements.e1.alt.calculate('ÿþý'), 'w7_DvsO9', 'url alphabet: _ instead of /');
+  assert.equal(calc('7base64url', '?>'), 'Pz4', 'url alphabet, no padding');
+  assert.equal(calc('7base64url', 'ÿþý'), 'w7_DvsO9', 'url alphabet: _ instead of /');
   assert.equal(calc('7base64', 'ÿþý'), 'w7/DvsO9');
   assert.equal(calc('7base64-d', 'aMOpbGxv'), 'héllo');
   assert.equal(calc('7base64-d', 'Pz4'), '?>', 'missing padding is fine');
   assert.equal(calc('7base64-d', 'Pz4='), '?>');
   assert.equal(calc('7base64-d', 'aMOp bGxv\n'), 'héllo', 'whitespace ignored');
-  assert.equal(hasher.elements.e2.alt.calculate('aMOpbGxv'), '68c3a96c6c6f', 'hex column');
   assert.equal(calc('7base64-d', 'not base64 !!'), '');
-  assert.equal(hasher.elements.e2.alt.calculate('not base64 !!'), '');
   assert.equal(calc('7base64', ''), '');
 });
 
 test('binary decodes show up as hex with a hint', () => {
-  assert.equal(calc('7base64-d', '//79'), '', 'not UTF-8');
-  assert.equal(hasher.elements.e2.alt.calculate('//79'), 'fffefd');
-  assert.equal(hasher.elements.e2.hint('//79'), 'binary, not text — see the hex');
+  assert.equal(calc('7base64-d', '//79'), 'fffefd', 'not UTF-8: hex instead');
+  assert.equal(hasher.elements.e2.hint('//79'), 'binary, shown as hex');
   assert.equal(hasher.elements.e2.hint('aMOpbGxv'), '');
 });
 
@@ -37,7 +34,6 @@ test('base32', () => {
   assert.equal(calc('7base32-d', 'mzxw6ytboi'), 'foobar', 'lowercase, no padding');
   assert.equal(calc('7base32-d', 'JBSW Y3DP'), 'Hello', 'spaces ignored');
   assert.equal(calc('7base32-d', 'MZXW6YTBOI1'), '', 'not base32');
-  assert.equal(hasher.elements.e12.alt.calculate('MZXW6YTB'), '666f6f6261');
 });
 
 test('base58', () => {
@@ -79,7 +75,7 @@ test('rot13', () => {
 
 test('row order', () => {
   const titles = Object.values(hasher.elements).filter((e) => e.tab === ctx.tabs.encode).map((e) => e.title);
-  assert.deepEqual(Array.from(titles), ['Base64', 'Base64 decode', 'Base32', 'Base32 decode', 'Base58', 'Base58 decode',
+  assert.deepEqual(Array.from(titles), ['Base64', 'Base64url', 'Base64 decode', 'Base32', 'Base32 decode', 'Base58', 'Base58 decode',
     'JavaScript encodeURI()', 'JavaScript encodeURIComponent()', 'JavaScript decodeURI()', 'JavaScript decodeURIComponent()',
     'HTML special chars', 'HTML special chars decode', 'ROT13 encode/decode']);
 });

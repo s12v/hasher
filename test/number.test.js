@@ -9,7 +9,7 @@ test('decimal in, everything out', () => {
   assert.equal(calc('8dec', '2024'), '2024');
   assert.equal(hasher.elements.n1.hint('2024'), 'read as decimal · 11 bits · 1.98 KiB (2.02 kB) if bytes');
   assert.equal(calc('8hex', '2024'), '0x7e8');
-  assert.equal(hasher.elements.n2.alt.calculate('2024'), '0o3750');
+  assert.equal(calc('8oct', '2024'), '0o3750');
   assert.equal(calc('8bin', '2024'), '00000111 11101000');
   assert.equal(calc('8roman', '2024'), 'MMXXIV');
   assert.equal(calc('8float64', '2024'), '', 'integers have no IEEE-754 rows');
@@ -60,7 +60,7 @@ test('floating point and IEEE-754', () => {
   assert.equal(calc('8dec', '3.14'), '3.14');
   assert.equal(hasher.elements.n1.hint('3.14'), 'floating point');
   assert.equal(calc('8float64', '3.14'), '0x40091eb851eb851f');
-  assert.equal(hasher.elements.n5.alt.calculate('3.14'), '0x4048f5c3');
+  assert.equal(calc('8float32', '3.14'), '0x4048f5c3');
   assert.equal(calc('8float64', '-2.5'), '0xc004000000000000');
   assert.equal(calc('8float64', '.5'), '0x3fe0000000000000');
   assert.equal(calc('8hex', '3.14'), '', 'no integer rows for a float');
@@ -87,5 +87,5 @@ test('invalid', () => {
 
 test('row order', () => {
   const titles = Object.values(hasher.elements).filter((e) => e.tab === ctx.tabs.number).map((e) => e.title);
-  assert.deepEqual(Array.from(titles), ['Decimal', 'Hex', 'Binary', 'Roman', 'IEEE-754 double']);
+  assert.deepEqual(Array.from(titles), ['Decimal', 'Hex', 'Octal', 'Binary', 'Roman', 'IEEE-754 double', 'IEEE-754 single']);
 });
