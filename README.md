@@ -40,7 +40,7 @@ Every `calculate()` in `hasher.js` is checked against vectors produced with `ope
 * <b>JWT:</b> decode, claims with expiry as local time, verify HS256/384/512 with a secret
 * <b>JSON:</b> pretty-print (optionally with sorted keys), minify, quote/unquote as a JSON string, syntax errors with position
 * <b>Cron:</b> crontab expression → plain English (crontab.guru style) and the next 5 run times
-* <b>Password:</b> random passphrases from the EFF large wordlist (words, separator, digits, capitalize) and random passwords (length, symbols), with the entropy estimate; a port of [ppgen](https://github.com/s12v/ppgen)
+* <b>Random:</b> passphrases from the EFF large wordlist (words, separator, digits, capitalize) and passwords (length, symbols) with the entropy estimate — a port of [ppgen](https://github.com/s12v/ppgen); UUID v4, UUID v7, ULID
 
 Usage: enter text and click on the result — it is copied to clipboard.
 **mask** hides the input (for hashing passwords); **Now** on the Time tab inserts the current Unix time.
