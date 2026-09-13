@@ -1,13 +1,22 @@
-# Hasher (Chrome extension)
-Chrome web store:  
-https://chrome.google.com/webstore/detail/kignjplbjlocolcfldfhbonmbblpfbjb
+# Hasher (browser extension)
+
+Developer's toolbox: hashes, HMAC, CRC, ciphers, IP/subnet, time, number and string conversions.
+Everything runs locally in the popup — nothing is sent anywhere.
+
+Manifest V3, no dependencies except bundled crypto libraries.
 
 Standalone version for other browsers:  
 https://s12v.github.io/hasher/
 
-The extension is used to compute cryptographic hashes and perform conversions. 
-It is useful for programmers and system administrators. 
-The extension is implemented in JavaScript. All calculations are performed on the client side.
+## Install
+
+Chrome Web Store listing is being republished. Until then, load it unpacked:
+
+1. `git clone https://github.com/s12v/hasher`
+2. Open `chrome://extensions`, enable **Developer mode**
+3. **Load unpacked** → select the `hasher` directory
+
+## Features
 
 * <b>Hash</b>: MD5, SHA-1, SHA-2 (224, 256, 384, 512), RIPEMD-160, MD4, Whirpool
 * <b>HMAC:</b> MD5, SHA-1, SHA-2 (224, 256, 384, 512), RIPEMD-160, MD4
@@ -18,3 +27,5 @@ The extension is implemented in JavaScript. All calculations are performed on th
 * <b>Numbers:</b> Dec ↔ Hex, Dec ↔ Bin, Dec ↔ Roman
 * <b>Strings:</b> ASCII ↔ Hex, UTF-8 ↔ Hex, UTF-16 ↔ Hex
 * <b>Encode:</b> Base64, ROT-13, JavaScript encodeURI(), encodeURIComponent(), HTML special chars encode/decode
+
+Usage: enter text and click on the result — it is copied to clipboard.
