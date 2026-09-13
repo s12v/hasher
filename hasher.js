@@ -847,36 +847,10 @@ var hasher = {
           out += ", " + input.length + " UTF-16 units";
         }
         return out;
-      }
-    },
-    s1 : {
-      id: tabs.string+"i1",
-      tab : tabs.string,
-      title: "ASCII to Hex",
-      calculate: function (input) {
-        try {
-          var words = CryptoJS.enc.Latin1.parse(input);
-          return CryptoJS.enc.Hex.stringify(words);
-        } catch (err) {
-          return "Parse error";
-        }
-      }
-    },
-    s2 : {
-      id: tabs.string+"i2",
-      tab : tabs.string,
-      title: "Hex to ASCII",
-      calculate: function (input) {
-        if (/[^0-9a-f]/i.test(input)) {
-          return "NaN";
-        }
-        try {
-          var words = CryptoJS.enc.Hex.parse(input);
-          return CryptoJS.enc.Latin1.stringify(words);
-        } catch (err) {
-          return "Parse error";
-        }
-        return "";
+      },
+      hint: function (input) {
+        var c = textcase.counts(input);
+        return input.length ? c.words + " words \u00b7 " + c.lines + " lines" : "";
       }
     },
     s3 : {
@@ -906,19 +880,22 @@ var hasher = {
         } catch (err) {
           return "Parse error";
         }
-        return "";
       }
     },
     s5 : {
       id: tabs.string+"utf16-hex",
       tab : tabs.string,
       title: "UTF-16 to Hex",
+      hint: function () {
+        return "big-endian";
+      },
       calculate: function (input) {
-        try {
-          var words = CryptoJS.enc.Utf16.parse(input);
-          return CryptoJS.enc.Hex.stringify(words);
-        } catch (err) {
-          return "Parse error";
+        return textcase.utf16hex(input, false);
+      },
+      alt: {
+        title: "Little-endian",
+        calculate: function (input) {
+          return textcase.utf16hex(input, true);
         }
       }
     },
@@ -926,6 +903,9 @@ var hasher = {
       id: tabs.string+"hex-utf16",
       tab : tabs.string,
       title: "Hex to UTF-16",
+      hint: function () {
+        return "big-endian";
+      },
       calculate: function (input) {
         if (/[^0-9a-f]/i.test(input)) {
           return "NaN";
@@ -936,7 +916,6 @@ var hasher = {
         } catch (err) {
           return "Parse error";
         }
-        return "";
       }
     },
     s7 : {
@@ -950,7 +929,76 @@ var hasher = {
         }).join(" ");
       }
     },
-
+    s8 : {
+      id: tabs.string+"upper",
+      tab : tabs.string,
+      title: "UPPER CASE",
+      calculate: function (input) {
+        return input.toUpperCase();
+      },
+      alt: {
+        title: "lower case",
+        calculate: function (input) {
+          return input.toLowerCase();
+        }
+      }
+    },
+    s9 : {
+      id: tabs.string+"title",
+      tab : tabs.string,
+      title: "Title Case",
+      calculate: function (input) {
+        return textcase.title(input);
+      },
+      alt: {
+        title: "Sentence case",
+        calculate: function (input) {
+          return textcase.sentence(input);
+        }
+      }
+    },
+    s10 : {
+      id: tabs.string+"camel",
+      tab : tabs.string,
+      title: "camelCase",
+      calculate: function (input) {
+        return textcase.camel(input);
+      },
+      alt: {
+        title: "PascalCase",
+        calculate: function (input) {
+          return textcase.pascal(input);
+        }
+      }
+    },
+    s11 : {
+      id: tabs.string+"snake",
+      tab : tabs.string,
+      title: "snake_case",
+      calculate: function (input) {
+        return textcase.snake(input);
+      },
+      alt: {
+        title: "kebab-case",
+        calculate: function (input) {
+          return textcase.kebab(input);
+        }
+      }
+    },
+    s12 : {
+      id: tabs.string+"constant",
+      tab : tabs.string,
+      title: "CONSTANT_CASE",
+      calculate: function (input) {
+        return textcase.constant(input);
+      },
+      alt: {
+        title: "slug",
+        calculate: function (input) {
+          return textcase.slug(input);
+        }
+      }
+    },
 
     // Encode
     e1: {

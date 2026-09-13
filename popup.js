@@ -7,7 +7,7 @@ var TAB_META = {
   net : { rows : 1, placeholder : "10.0.12.42/22, 2001:db8::1, ::ffff:192.0.2.1, or a decimal" },
   time : { rows : 1, placeholder : "unix seconds or ms, ISO 8601, RFC-1123, 2019-02-27 09:36:55 \u2014 empty is now" },
   number : { rows : 1, placeholder : "42 / 2a / 101010 / XLII" },
-  string : { rows : 2 },
+  string : { rows : 2, placeholder : "text, or hex to decode; fooBarBaz for the case conversions" },
   json : { rows : 4, placeholder : '{"b":2,"a":1}' },
   diff : { rows : 6, placeholder : "original text" },
   encode : { rows : 2 },
