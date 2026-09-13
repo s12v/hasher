@@ -87,6 +87,19 @@ function timeInput(input) {
 }
 
 /*
+ *  Time tab, Duration row: a bare number is seconds (milliseconds from 13 digits on, like parseDate),
+ *  "1h 30m" / "01:30:00" / "PT1H30M" are durations; { ms, seconds: bool } or null
+ */
+function durationInput(input) {
+  var str = input.trim();
+  if (/^\d+$/.test(str)) {
+    return { ms : str.length >= 13 ? parseInt(str, 10) : parseInt(str, 10) * 1000, seconds : str.length < 13 };
+  }
+  var ms = dates.parse(str);
+  return ms === null ? null : { ms : ms, seconds : false, written : true };
+}
+
+/*
  *  Num tab: numbers.parse() with an error string instead of a throw
  */
 function parseNumber(input) {
@@ -803,6 +816,10 @@ var hasher = {
         }
         return d.getUTCFullYear() + "-" + pad2(d.getUTCMonth() + 1) + "-" + pad2(d.getUTCDate()) + " " +
           pad2(d.getUTCHours()) + ":" + pad2(d.getUTCMinutes()) + ":" + pad2(d.getUTCSeconds());
+      },
+      hint: function (input) {
+        var d = timeInput(input);
+        return d ? dates.describe(d, true) : "";
       }
     },
     time3 : {
@@ -816,6 +833,37 @@ var hasher = {
         }
         return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + " " +
           pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + ":" + pad2(d.getSeconds());
+      },
+      hint: function (input) {
+        var d = timeInput(input);
+        return d ? dates.describe(d, false) : "";
+      }
+    },
+    time7 : {
+      id: tabs.time+"duration",
+      tab : tabs.time,
+      title: "Duration",
+      calculate: function (input) {
+        var dur = durationInput(input);
+        if (!dur) {
+          return "";
+        }
+        // "1h 30m" -> seconds; a number -> "1h 30m"
+        return dur.written ? String(dur.ms / 1000) : dates.format(dur.ms);
+      },
+      hint: function (input) {
+        var dur = durationInput(input);
+        if (!dur) {
+          return "";
+        }
+        if (dur.written) {
+          return "seconds \u00b7 " + dur.ms + " ms \u00b7 " + dates.format(dur.ms);
+        }
+        var out = dur.seconds ? "the number as seconds \u00b7 as milliseconds: " + dates.format(dur.ms / 1000) : "the number as milliseconds";
+        if (dur.ms >= 365.25 * 86400000) {
+          out += " \u00b7 \u2248 " + (Math.round(dur.ms / (365.25 * 86400000) * 10) / 10) + " years";
+        }
+        return out;
       }
     },
 
