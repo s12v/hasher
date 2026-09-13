@@ -20,8 +20,6 @@
   --warn-fg: #7d4e00;
   --tab-underline: #fd8c73;
   --focus: rgba(9, 105, 218, 0.3);
-  --desk: #eef1f4;
-  --card-shadow: 0 1px 3px rgba(31, 35, 40, 0.12), 0 8px 24px rgba(31, 35, 40, 0.12);
 
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
@@ -49,8 +47,6 @@
     --warn-subtle: #3b2300;
     --warn-fg: #f0c674;
     --focus: rgba(88, 166, 255, 0.35);
-    --desk: #010409;
-    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.5);
   }
 }
 :root[data-theme="dark"] {
@@ -73,8 +69,6 @@
   --warn-subtle: #3b2300;
   --warn-fg: #f0c674;
   --focus: rgba(88, 166, 255, 0.35);
-  --desk: #010409;
-  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 :root[data-theme="light"] {
   color-scheme: light;
@@ -108,26 +102,6 @@ a:hover {
   text-decoration: underline;
 }
 
-/* ---- the card: fills the popup; sits on a desk as a page ---- */
-
-html.page body {
-  background: var(--desk);
-  padding: 24px 16px;
-}
-html.page #card {
-  width: 780px;
-  max-width: 100%;
-  margin: 0 auto;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: var(--card-shadow);
-}
-html.page .screen {
-  max-height: 620px;
-  overflow-y: auto;
-}
 .screen::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -150,9 +124,6 @@ html.page .screen {
   padding: 8px 12px 0;
   border-bottom: 1px solid var(--border);
   background: var(--subtle);
-}
-html.page #header {
-  position: static;
 }
 #tabs {
   flex: 1;
