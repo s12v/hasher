@@ -188,6 +188,26 @@ function aesLegacyDecrypt(base64, password) {
 }
 
 /*
+ *  The JSON tab's document: a pasted JSON string literal whose content is JSON
+ *  ("{\"a\":1}") is unwrapped on the spot; a literal holding plain text is shown unquoted
+ */
+function jsonInput(input) {
+  var parsed = parseJson(input);
+  if (parsed.empty || parsed.error || typeof parsed.value != "string") {
+    return parsed;
+  }
+  try {
+    var inner = JSON.parse(parsed.value);
+    if (inner !== null && typeof inner == "object") {
+      return { value : inner, unwrapped : true };
+    }
+  } catch (err) {
+    // not JSON inside: plain text in a JSON string
+  }
+  return { value : parsed.value, plain : true };
+}
+
+/*
  *  Same object with keys sorted recursively (arrays keep their order)
  */
 function sortKeys(value) {
@@ -1299,18 +1319,20 @@ var hasher = {
       tab : tabs.json,
       title : "Pretty",
       calculate : function (input) {
-        var parsed = parseJson(input);
-        if (parsed.empty) return "";
-        if (parsed.error) return parsed.error;
-        return JSON.stringify(hasher.jsonValue(parsed.value), null, 2);
+        var doc = jsonInput(input);
+        if (doc.empty) return "";
+        if (doc.error) return doc.error;
+        if (doc.plain) return doc.value;
+        return JSON.stringify(hasher.jsonValue(doc.value), null, 2);
       },
       hint : function (input) {
-        var parsed = parseJson(input);
-        if (parsed.empty || parsed.error) return "";
-        var v = parsed.value;
+        var doc = jsonInput(input);
+        if (doc.empty || doc.error) return "";
+        if (doc.plain) return "a JSON string with plain text inside, shown unquoted";
+        var v = doc.value;
         var kind = Array.isArray(v) ? v.length + " items" : (v !== null && typeof v == "object") ? Object.keys(v).length + " keys" : typeof v;
         var lines = JSON.stringify(v, null, 2).split("\n").length;
-        return kind + ", " + lines + " lines" + (hasher.options.json.sorted ? ", sorted" : "");
+        return (doc.unwrapped ? "unquoted from a JSON string \u00b7 " : "") + kind + ", " + lines + " lines" + (hasher.options.json.sorted ? ", sorted" : "");
       }
     },
     j3: {
@@ -1318,14 +1340,14 @@ var hasher = {
       tab : tabs.json,
       title : "Minified",
       calculate : function (input) {
-        var parsed = parseJson(input);
-        if (parsed.empty || parsed.error) return "";
-        return JSON.stringify(hasher.jsonValue(parsed.value));
+        var doc = jsonInput(input);
+        if (doc.empty || doc.error || doc.plain) return "";
+        return JSON.stringify(hasher.jsonValue(doc.value));
       },
       hint : function (input) {
-        var parsed = parseJson(input);
-        if (parsed.empty || parsed.error) return "";
-        return JSON.stringify(parsed.value).length + " chars";
+        var doc = jsonInput(input);
+        if (doc.empty || doc.error || doc.plain) return "";
+        return JSON.stringify(doc.value).length + " chars";
       }
     },
     j4: {
@@ -1334,16 +1356,9 @@ var hasher = {
       title : "As a JSON string",
       calculate : function (input) {
         return input.length == 0 ? "" : JSON.stringify(input);
-      }
-    },
-    j5: {
-      id : tabs.json+"unstring",
-      tab : tabs.json,
-      title : "From a JSON string",
-      calculate : function (input) {
-        var parsed = parseJson(input);
-        if (parsed.empty || parsed.error || typeof parsed.value != "string") return "";
-        return parsed.value;
+      },
+      hint : function () {
+        return "paste it back to get the document out";
       }
     },
 
