@@ -420,13 +420,13 @@ label {
   display: none;
 }
 .chip:has(input:checked) {
-  background: var(--accent-subtle);
-  border-color: var(--accent-border);
-  color: var(--accent);
+  background: var(--fg);
+  border-color: var(--fg);
+  color: var(--bg);
   font-weight: 600;
 }
 .chip:hover {
-  border-color: var(--accent-border);
+  border-color: var(--muted);
 }
 
 /* ---- output ---- */
