@@ -139,12 +139,27 @@ var hasher = {
     diff : { other : "", ignoreWhitespace : false, ignoreCase : false }
   },
   elements: {
-    h1 : {
-      id : tabs.hash+"md5",
+    // Hash, most used first
+    h4 : {
+      id: tabs.hash+"sha256",
       tab : tabs.hash,
-      title : "MD5",
-      calculate : function (input) {
-        return CryptoJS.MD5(input);
+      title: "SHA-256",
+      calculate: function (input) {
+        return CryptoJS.SHA256(input);
+      },
+      hint: function (input) {
+        return "base64: " + CryptoJS.enc.Base64.stringify(CryptoJS.SHA256(input));
+      }
+    },
+    h6 : {
+      id: tabs.hash+"sha512",
+      tab : tabs.hash,
+      title: "SHA-512",
+      calculate: function (input) {
+        return CryptoJS.SHA512(input);
+      },
+      hint: function (input) {
+        return "base64: " + CryptoJS.enc.Base64.stringify(CryptoJS.SHA512(input));
       }
     },
     h2 : {
@@ -155,36 +170,12 @@ var hasher = {
         return CryptoJS.SHA1(input);
       }
     },
-    h3 : {
-      id: tabs.hash+"sha224",
+    h1 : {
+      id : tabs.hash+"md5",
       tab : tabs.hash,
-      title: "SHA-224",
-      calculate: function (input) {
-        return CryptoJS.SHA224(input);
-      }
-    },
-    h4 : {
-      id: tabs.hash+"sha256",
-      tab : tabs.hash,
-      title: "SHA-256",
-      calculate: function (input) {
-        return CryptoJS.SHA256(input);
-      }
-    },
-    h5 : {
-      id: tabs.hash+"sha384",
-      tab : tabs.hash,
-      title: "SHA-384",
-      calculate: function (input) {
-        return CryptoJS.SHA384(input);
-      }
-    },
-    h6 : {
-      id: tabs.hash+"sha512",
-      tab : tabs.hash,
-      title: "SHA-512",
-      calculate: function (input) {
-        return CryptoJS.SHA512(input);
+      title : "MD5",
+      calculate : function (input) {
+        return CryptoJS.MD5(input);
       }
     },
     h10 : {
@@ -211,6 +202,22 @@ var hasher = {
         return keccak256(input);
       }
     },
+    h5 : {
+      id: tabs.hash+"sha384",
+      tab : tabs.hash,
+      title: "SHA-384",
+      calculate: function (input) {
+        return CryptoJS.SHA384(input);
+      }
+    },
+    h3 : {
+      id: tabs.hash+"sha224",
+      tab : tabs.hash,
+      title: "SHA-224",
+      calculate: function (input) {
+        return CryptoJS.SHA224(input);
+      }
+    },
     h8 : {
       id: tabs.hash+"ripemd160",
       tab : tabs.hash,
@@ -219,30 +226,44 @@ var hasher = {
         return CryptoJS.RIPEMD160(input);
       }
     },
-    h7 : {
-      id: tabs.hash+"md4",
+    h13 : {
+      id: tabs.hash+"blake2b-256",
       tab : tabs.hash,
-      title: "MD4",
+      title: "BLAKE2b-256",
       calculate: function (input) {
-        return hex_md4(utf8(input));
+        return blake.blake2bHex(input, undefined, 32);
       }
     },
-    h9 : {
-      id: tabs.hash+"whirpool",
+    h14 : {
+      id: tabs.hash+"blake2b-512",
       tab : tabs.hash,
-      title: "Whirlpool",
+      title: "BLAKE2b-512",
       calculate: function (input) {
-        return Whirlpool(utf8(input));
+        return blake.blake2bHex(input, undefined, 64);
+      }
+    },
+    h15 : {
+      id: tabs.hash+"sri",
+      tab : tabs.hash,
+      title: "SRI",
+      calculate: function (input) {
+        return "sha384-" + CryptoJS.enc.Base64.stringify(CryptoJS.SHA384(input));
+      },
+      hint: function () {
+        return "integrity attribute for <script> / <link>";
       }
     },
 
-    // HMAC
-    hm1 : {
-      id : tabs.hmac+"md5",
+    // HMAC, most used first (the Password field is the key)
+    hm4: {
+      id : tabs.hmac+"sha256",
       tab : tabs.hmac,
-      title : "HMAC-MD5",
+      title : "HMAC-SHA256",
       calculate : function (input, password) {
-        return CryptoJS.HmacMD5(input, password);
+        return CryptoJS.HmacSHA256(input, password);
+      },
+      hint : function (input, password) {
+        return "base64: " + CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(input, password));
       }
     },
     hm2 : {
@@ -253,20 +274,15 @@ var hasher = {
         return CryptoJS.HmacSHA1(input, password);
       }
     },
-    hm3: {
-      id : tabs.hmac+"sha224",
+    hm6: {
+      id : tabs.hmac+"sha512",
       tab : tabs.hmac,
-      title : "HMAC-SHA224",
+      title : "HMAC-SHA512",
       calculate : function (input, password) {
-        return CryptoJS.HmacSHA224(input, password);
-      }
-    },
-    hm4: {
-      id : tabs.hmac+"sha256",
-      tab : tabs.hmac,
-      title : "HMAC-SHA256",
-      calculate : function (input, password) {
-        return CryptoJS.HmacSHA256(input, password);
+        return CryptoJS.HmacSHA512(input, password);
+      },
+      hint : function (input, password) {
+        return "base64: " + CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA512(input, password));
       }
     },
     hm5: {
@@ -277,28 +293,12 @@ var hasher = {
         return CryptoJS.HmacSHA384(input, password);
       }
     },
-    hm6: {
-      id : tabs.hmac+"sha512",
+    hm1 : {
+      id : tabs.hmac+"md5",
       tab : tabs.hmac,
-      title : "HMAC-SHA512",
+      title : "HMAC-MD5",
       calculate : function (input, password) {
-        return CryptoJS.HmacSHA512(input, password);
-      }
-    },
-    hm7: {
-      id : tabs.hmac+"ripemd160",
-      tab : tabs.hmac,
-      title : "HMAC-RIPEMD160",
-      calculate : function (input, password) {
-        return CryptoJS.HmacRIPEMD160(input, password);
-      }
-    },
-    hm8: {
-      id : tabs.hmac+"md4",
-      tab : tabs.hmac,
-      title : "HMAC-MD4",
-      calculate : function (input, password) {
-        return hex_hmac_md4(utf8(password), utf8(input));
+        return CryptoJS.HmacMD5(input, password);
       }
     },
 
