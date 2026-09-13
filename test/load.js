@@ -26,13 +26,34 @@ function load() {
 
 const ctx = load();
 
-// Runs one output element the way hasher.update() does and returns the displayed string
-function calc(id, input, password = '') {
-  const element = ctx.hasher.findById(id);
-  if (!element) {
+function element(id) {
+  const el = ctx.hasher.findById(id);
+  if (!el) {
     throw new Error(`no element with id ${id}`);
   }
-  return String(element.calculate(input, password));
+  return el;
 }
 
-module.exports = { ctx, calc, root, popupScripts };
+// calculate() may return a string, { value, hint, tone }, or a promise of either
+function unwrap(r) {
+  if (r !== null && typeof r === 'object' && 'value' in r) {
+    return { value: String(r.value == null ? '' : r.value), hint: r.hint || '', tone: r.tone || '' };
+  }
+  return { value: String(r), hint: '', tone: '' };
+}
+
+// Runs one output element the way hasher.update() does and returns the displayed string
+function calc(id, input, password = '') {
+  const r = element(id).calculate(input, password);
+  if (r && typeof r.then === 'function') {
+    throw new Error(`${id} is async: use run()`);
+  }
+  return unwrap(r).value;
+}
+
+// Same, for any element: resolves to { value, hint, tone }
+async function run(id, input, password = '') {
+  return unwrap(await element(id).calculate(input, password));
+}
+
+module.exports = { ctx, calc, run, root, popupScripts };

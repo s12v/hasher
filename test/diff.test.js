@@ -79,10 +79,11 @@ test('html rendering', () => {
 });
 
 test('elements', () => {
-  hasher.options.diff = { other: '', ignoreWhitespace: false, ignoreCase: false };
+  hasher.options.other = '';
+  hasher.options.diff = { ignoreWhitespace: false, ignoreCase: false };
   assert.equal(calc('15changes', ''), '');
   assert.equal(hasher.elements.d1.hint(''), '');
-  hasher.options.diff.other = 'a\nb\n';
+  hasher.options.other = 'a\nb\n';
   assert.equal(hasher.elements.d1.hint('a\nb\n'), 'identical');
   assert.equal(hasher.elements.d1.tone('a\nb\n'), 'ok');
   assert.equal(calc('15changes', 'a\nb\n'), '');
@@ -91,7 +92,8 @@ test('elements', () => {
   assert.match(calc('15changes', 'a\nc\n'), /d-del.*d-add/s);
   hasher.options.diff.ignoreCase = true;
   assert.equal(hasher.elements.d1.hint('A\nB\n'), 'identical');
-  hasher.options.diff = { other: '', ignoreWhitespace: false, ignoreCase: false };
+  hasher.options.other = '';
+  hasher.options.diff = { ignoreWhitespace: false, ignoreCase: false };
 });
 
 test('large inputs do not blow up', () => {
