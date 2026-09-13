@@ -1,6 +1,6 @@
 {
   "name": "Hasher",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "manifest_version": 3,
   "description": "Developer's toolbox. Calculates MD5, SHA-1, SHA-2, IP/Subnet, URL decode, Base64 and more",
   "offline_enabled": true,
