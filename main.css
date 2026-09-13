@@ -293,7 +293,7 @@ label {
 #input textarea {
   display: block;
   width: 100%;
-  min-height: 32px;
+  min-height: 48px;
   resize: vertical;
 }
 #input #input-masked,
