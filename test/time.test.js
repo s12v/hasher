@@ -36,10 +36,19 @@ test('epoch and small values', () => {
 
 test('garbage', () => {
   for (const id of ['6date2ts', '6date2ms', '6ts2date', '6date2sql', '6date2sqlutc', '6ts2RFC1123', '6date2iso']) {
-    assert.equal(calc(id, ''), '');
     assert.equal(calc(id, 'garbage'), '');
-    assert.equal(calc(id, '   '), '');
+    assert.equal(calc(id, '12:99:99 nope'), '');
   }
+});
+
+test('empty input is now', () => {
+  const before = Math.floor(Date.now() / 1000);
+  const ts = Number(calc('6date2ts', ''));
+  assert.ok(ts >= before && ts <= before + 2, `${ts} is not now`);
+  assert.match(calc('6date2iso', '   '), /^\d{4}-\d{2}-\d{2}T/);
+  assert.equal(ctx.hasher.elements.time1.hint(''), 'just now');
+  assert.match(ctx.hasher.elements.time1.hint('0'), /^\d+ years ago$/, 'epoch is in the past');
+  assert.equal(ctx.hasher.elements.time1.hint('garbage'), '');
 });
 
 test('parseDate', () => {

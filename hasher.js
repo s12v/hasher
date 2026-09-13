@@ -17,13 +17,20 @@ var tabs = {
 /*
  *  Copy to clipboard
  */
-function copyToClipboard(textarea) {
+function copyToClipboard(text) {
   var fallback = function () {
-    textarea.select();
-    document.execCommand('copy');
+    var scratch = document.createElement("textarea");
+    scratch.value = text;
+    scratch.setAttribute("readonly", "");
+    scratch.style.position = "fixed";
+    scratch.style.opacity = "0";
+    document.body.appendChild(scratch);
+    scratch.select();
+    document.execCommand("copy");
+    document.body.removeChild(scratch);
   };
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(textarea.value).catch(fallback);
+    navigator.clipboard.writeText(text).catch(fallback);
   } else {
     fallback();
   }
@@ -56,6 +63,24 @@ function parseDate(input) {
 
 function pad2(n) {
   return (n < 10) ? "0" + n : "" + n;
+}
+
+/*
+ *  Time tab: empty input means "now"
+ */
+function timeInput(input) {
+  return input.trim().length == 0 ? new Date() : parseDate(input);
+}
+
+/*
+ *  Number of leading 1 bits in a netmask (int)
+ */
+function maskBits(mask) {
+  var bits = 0;
+  while (bits < 32 && (mask & (0x80000000 >>> bits)) != 0) {
+    bits++;
+  }
+  return bits;
 }
 
 /*
@@ -96,7 +121,8 @@ var hasher = {
   /* Generator settings, kept in sync with the Password tab controls by popup.js */
   options : {
     passphrase : { words : 5, separator : "-", digits : 0, capitalize : false },
-    password : { length : 16, symbols : false }
+    password : { length : 16, symbols : false },
+    json : { sorted : false }
   },
   elements: {
     h1 : {
@@ -269,6 +295,9 @@ var hasher = {
       title: "CRC-8",
       calculate: function (input) {
         return Hex8(Crc8Str(utf8(input)));
+      },
+      hint: function (input) {
+        return input.length ? String(Crc8Str(utf8(input)) >>> 0) : "";
       }
     },
     c2 : {
@@ -277,6 +306,9 @@ var hasher = {
       title: "CRC-16",
       calculate: function (input) {
         return Hex16(Crc16Str(utf8(input)));
+      },
+      hint: function (input) {
+        return input.length ? String(Crc16Str(utf8(input)) >>> 0) : "";
       }
     },
     c3 : {
@@ -285,6 +317,9 @@ var hasher = {
       title: "FCS-16",
       calculate: function (input) {
         return Hex16(Fcs16Str(utf8(input)));
+      },
+      hint: function (input) {
+        return input.length ? String(Fcs16Str(utf8(input)) >>> 0) : "";
       }
     },
     c4 : {
@@ -293,6 +328,9 @@ var hasher = {
       title: "FCS/CRC-32",
       calculate: function (input) {
         return Hex32(Crc32Str(utf8(input)));
+      },
+      hint: function (input) {
+        return input.length ? String(Crc32Str(utf8(input)) >>> 0) : "";
       }
     },
 
@@ -304,6 +342,9 @@ var hasher = {
       title : "AES-256",
       calculate : function (input, password) {
         return CryptoJS.AES.encrypt(input, password);
+      },
+      hint : function () {
+        return "CBC / PKCS#7 \u00b7 openssl enc -aes-256-cbc -md md5 -a";
       }
     },
     ci2: {
@@ -461,7 +502,6 @@ var hasher = {
       id: tabs.net+"ip2bin",
       tab : tabs.net,
       title: "IP to Bin",
-      ruler: 1,
       calculate: function (input) {
         var ipcalc = hasher.ipcalc;
         ipcalc.parse(input);
@@ -500,6 +540,11 @@ var hasher = {
         } else {
           return "";
         }
+      },
+      hint: function (input) {
+        var ipcalc = hasher.ipcalc;
+        ipcalc.parse(input);
+        return ipcalc.getNetmask() != null ? "/" + maskBits(ipcalc.getNetmask()) : "";
       }
     },
     net6 : {
@@ -566,8 +611,12 @@ var hasher = {
       tab : tabs.time,
       title: "Unixtime",
       calculate: function (input) {
-        var date = parseDate(input);
+        var date = timeInput(input);
         return date ? Math.floor(date.getTime() / 1000) : "";
+      },
+      hint: function (input) {
+        var date = timeInput(input);
+        return date ? jwt.relative(Math.round((date.getTime() - Date.now()) / 1000)) : "";
       }
     },
     time11 : {
@@ -575,7 +624,7 @@ var hasher = {
       tab : tabs.time,
       title: "Unixtime (ms)",
       calculate: function (input) {
-        var date = parseDate(input);
+        var date = timeInput(input);
         return date ? date.getTime() : "";
       }
     },
@@ -584,7 +633,7 @@ var hasher = {
       tab : tabs.time,
       title: "Local time",
       calculate: function (input) {
-        var date = parseDate(input);
+        var date = timeInput(input);
         return date ? date.toLocaleString() : "";
       }
     },
@@ -593,7 +642,7 @@ var hasher = {
       tab : tabs.time,
       title: "DATETIME (local)",
       calculate: function (input) {
-        var d = parseDate(input);
+        var d = timeInput(input);
         if (!d) {
           return "";
         }
@@ -606,7 +655,7 @@ var hasher = {
       tab : tabs.time,
       title: "DATETIME (UTC)",
       calculate: function (input) {
-        var d = parseDate(input);
+        var d = timeInput(input);
         if (!d) {
           return "";
         }
@@ -619,7 +668,7 @@ var hasher = {
       tab : tabs.time,
       title: "RFC-1123",
       calculate: function (input) {
-        var date = parseDate(input);
+        var date = timeInput(input);
         return date ? date.toUTCString() : "";
       }
     },
@@ -628,7 +677,7 @@ var hasher = {
       tab : tabs.time,
       title: "ISO 8601",
       calculate: function (input) {
-        var date = parseDate(input);
+        var date = timeInput(input);
         return date ? date.toISOString() : "";
       }
     },
@@ -638,7 +687,6 @@ var hasher = {
       id: tabs.number+"i5",
       tab : tabs.number,
       title: "Dec to Hex",
-      ruler: 1,
       calculate: function (input) {
         return numbers.decToHex(input);
       }
@@ -655,9 +703,12 @@ var hasher = {
       id: tabs.number+"i7",
       tab : tabs.number,
       title: "Dec to Bin",
-      ruler: 1,
       calculate: function (input) {
         return numbers.decToBin(input);
+      },
+      hint: function (input) {
+        var bin = numbers.decToBin(input);
+        return /^[01]+$/.test(bin) ? bin.length + " bits" : "";
       }
     },
     n8 : {
@@ -710,7 +761,6 @@ var hasher = {
       id: tabs.string+"i1",
       tab : tabs.string,
       title: "ASCII to Hex",
-      ruler: 2,
       calculate: function (input) {
         try {
           var words = CryptoJS.enc.Latin1.parse(input);
@@ -741,7 +791,6 @@ var hasher = {
       id: tabs.string+"utf8-hex",
       tab : tabs.string,
       title: "UTF-8 to Hex",
-      ruler: 2,
       calculate: function (input) {
         try {
           var words = CryptoJS.enc.Utf8.parse(input);
@@ -772,7 +821,6 @@ var hasher = {
       id: tabs.string+"utf16-hex",
       tab : tabs.string,
       title: "UTF-16 to Hex",
-      ruler: 2,
       calculate: function (input) {
         try {
           var words = CryptoJS.enc.Utf16.parse(input);
@@ -797,6 +845,17 @@ var hasher = {
           return "Parse error";
         }
         return "";
+      }
+    },
+    s7 : {
+      id: tabs.string+"codepoints",
+      tab : tabs.string,
+      title: "Code points",
+      calculate: function (input) {
+        return Array.from(input).map(function (c) {
+          var hex = c.codePointAt(0).toString(16).toUpperCase();
+          return "U+" + (hex.length < 4 ? "0000".slice(hex.length) + hex : hex);
+        }).join(" ");
       }
     },
 
@@ -832,7 +891,6 @@ var hasher = {
       id : tabs.encode+"base64-d-h",
       tab : tabs.encode,
       title : "Base64 decode to Hex",
-      ruler: 2,
       calculate : function (input) {
         try {
           var words = CryptoJS.enc.Base64.parse(input);
@@ -864,7 +922,8 @@ var hasher = {
       title : "JavaScript decodeURI()",
       calculate : function (input) {
         try {
-          return decodeURI(input);
+          var decoded = decodeURI(input);
+          return decoded == input ? "" : decoded;
         } catch (err) {
           return "";
         }
@@ -876,7 +935,8 @@ var hasher = {
       title : "JavaScript decodeURIComponent()",
       calculate : function (input) {
         try {
-          return decodeURIComponent(input);
+          var decoded = decodeURIComponent(input);
+          return decoded == input ? "" : decoded;
         } catch (err) {
           return "";
         }
@@ -1003,7 +1063,6 @@ var hasher = {
       id : tabs.cron+"next",
       tab : tabs.cron,
       title : "Next runs (local time)",
-      expanded : true,
       calculate : function (input) {
         if (input.trim().length == 0) {
           return "";
@@ -1033,22 +1092,19 @@ var hasher = {
       id : tabs.json+"pretty",
       tab : tabs.json,
       title : "Pretty",
-      expanded : true,
       calculate : function (input) {
         var parsed = parseJson(input);
         if (parsed.empty) return "";
         if (parsed.error) return parsed.error;
-        return JSON.stringify(parsed.value, null, 2);
-      }
-    },
-    j2: {
-      id : tabs.json+"sorted",
-      tab : tabs.json,
-      title : "Pretty, keys sorted",
-      calculate : function (input) {
+        return JSON.stringify(hasher.jsonValue(parsed.value), null, 2);
+      },
+      hint : function (input) {
         var parsed = parseJson(input);
         if (parsed.empty || parsed.error) return "";
-        return JSON.stringify(sortKeys(parsed.value), null, 2);
+        var v = parsed.value;
+        var kind = Array.isArray(v) ? v.length + " items" : (v !== null && typeof v == "object") ? Object.keys(v).length + " keys" : typeof v;
+        var lines = JSON.stringify(v, null, 2).split("\n").length;
+        return kind + ", " + lines + " lines" + (hasher.options.json.sorted ? ", sorted" : "");
       }
     },
     j3: {
@@ -1058,7 +1114,12 @@ var hasher = {
       calculate : function (input) {
         var parsed = parseJson(input);
         if (parsed.empty || parsed.error) return "";
-        return JSON.stringify(parsed.value);
+        return JSON.stringify(hasher.jsonValue(parsed.value));
+      },
+      hint : function (input) {
+        var parsed = parseJson(input);
+        if (parsed.empty || parsed.error) return "";
+        return JSON.stringify(parsed.value).length + " chars";
       }
     },
     j4: {
@@ -1093,17 +1154,31 @@ var hasher = {
         } catch (err) {
           return "Invalid: " + err.message;
         }
+      },
+      hint : function (input) {
+        try {
+          return String(jwt.parse(input).header.alg || "");
+        } catch (err) {
+          return "";
+        }
       }
     },
     w2: {
       id : tabs.jwt+"payload",
       tab : tabs.jwt,
       title : "Payload",
-      expanded : true,
       calculate : function (input) {
         if (input.trim().length == 0) return "";
         try {
           return JSON.stringify(jwt.parse(input).payload, null, 2);
+        } catch (err) {
+          return "";
+        }
+      },
+      hint : function (input) {
+        try {
+          var payload = jwt.parse(input).payload;
+          return (payload !== null && typeof payload == "object") ? Object.keys(payload).length + " claims" : "";
         } catch (err) {
           return "";
         }
@@ -1113,7 +1188,6 @@ var hasher = {
       id : tabs.jwt+"claims",
       tab : tabs.jwt,
       title : "Claims",
-      expanded : true,
       calculate : function (input) {
         if (input.trim().length == 0) return "";
         try {
@@ -1144,6 +1218,10 @@ var hasher = {
           return alg + ": cannot verify here (only HS256/384/512)";
         }
         return alg + (ok ? ": valid, signed with this secret" : ": INVALID for this secret");
+      },
+      tone : function (input, password) {
+        var value = this.calculate(input, password);
+        return /: valid/.test(value) ? "ok" : /INVALID/.test(value) ? "bad" : "";
       }
     }
   },
@@ -1155,8 +1233,28 @@ var hasher = {
     }
     return null;
   },
+  /* What the empty output area says, per tab */
+  EMPTY : {
+    hash : "Enter text to hash it.",
+    hmac : "Enter a message and a secret key.",
+    crc : "Enter text to checksum it.",
+    cipher : "Enter text and a password.",
+    net : "Enter an IP, a CIDR block or a decimal.",
+    number : "Enter a number: decimal, hex, binary or Roman.",
+    string : "Enter text, or hex to decode.",
+    encode : "Enter text or an encoded value.",
+    cron : "Enter a crontab expression.",
+    json : "Paste JSON to format it.",
+    jwt : "Paste a token to decode it."
+  },
   /*
-   * Render current tab and register click handlers (once, delegated)
+   * JSON value as displayed: keys sorted when the option is on
+   */
+  jsonValue : function (value) {
+    return this.options.json.sorted ? sortKeys(value) : value;
+  },
+  /*
+   * Render current tab and register the copy handler (once, delegated)
    */
   init : function () {
     this.render();
@@ -1167,38 +1265,26 @@ var hasher = {
 
     var self = this;
     document.getElementById("output").addEventListener("click", function (e) {
-      var expand = e.target.closest(".expand");
-      if (expand) {
-        // expand/collapse multiline textarea
-        var id = expand.id.replace("-expand", "");
-        var element = self.findById(id);
-        var on = expand.classList.toggle("on");
-        document.getElementById(id).rows = (on && element) ? element.rows : 1;
+      var box = e.target.closest(".value");
+      if (!box) {
         return;
       }
-
-      var value = e.target.closest(".value");
-      if (value) {
-        // copy to clipboard on click
-        self.hideNotes();
-        var textarea = document.getElementById(value.id.replace("-value", ""));
-        if (textarea.value.length > 0) {
-          var note = document.getElementById(textarea.id + "-note");
-          note.textContent = "copied";
-          note.hidden = false;
-          copyToClipboard(textarea);
-        }
+      var text = document.getElementById(box.id.replace("-value", "")).textContent;
+      if (text.length == 0) {
+        return;
       }
+      copyToClipboard(text);
+      // "copied" replaces the "copy" affordance for a moment
+      document.querySelectorAll("#output .value.copied").forEach(function (other) {
+        other.classList.remove("copied");
+      });
+      box.classList.add("copied");
+      clearTimeout(self.copiedTimer);
+      self.copiedTimer = setTimeout(function () {
+        box.classList.remove("copied");
+      }, 1400);
     });
   },
-  hideNotes : function () {
-    document.querySelectorAll("#output .note").forEach(function (note) {
-      note.hidden = true;
-    });
-  },
-  /*
-   * Recalculate
-   */
   /*
    * Active input field: the textarea, or the password-type field when "mask" is on
    */
@@ -1206,47 +1292,45 @@ var hasher = {
     var masked = document.getElementById("input-masked");
     return masked.hidden ? document.getElementById("input-value") : masked;
   },
+  /*
+   * Recalculate. Rows without a value or a hint are hidden; an empty tab shows a prompt.
+   */
   update : function () {
-    this.hideNotes();
     var input = this.inputField().value;
     var password = document.getElementById("input-password").value;
-    for (var i in this.elements) {
-      var element = this.elements[i];
-      element.rows = 0;
-      if (element.tab == this.tab) {
-        // main calculation
-        var value = String(element.calculate(input, password));
-        document.getElementById(element.id).value = value;
-
-        // expand
-        var res = value.match(/(\n\r|\r\n|\n|\r)/g);
-        var rows = (res != null) ? res.length + 1 : 1;
-        element.rows = rows;
-
-        var expand = document.getElementById(element.id + "-expand");
-        if (element.expanded) {
-          // show every line (up to a screenful; the textarea scrolls past that), no toggle
-          document.getElementById(element.id).rows = Math.min(rows, 25);
-          expand.hidden = true;
-        } else if (rows > 1) {
-          expand.textContent = rows + " lines";
-          expand.hidden = false;
-        } else {
-          expand.textContent = "";
-          expand.hidden = true;
-        }
-
-        // show ruler
-        if (element.ruler != undefined) {
-          document.getElementById(element.id + "-ruler").innerHTML = this.ruler(value, element.ruler);
-        }
-
-        // hint next to the title (e.g. entropy)
-        if (element.hint != undefined) {
-          document.getElementById(element.id + "-hint").textContent = element.hint(input, password);
-        }
+    var tabName = null;
+    for (var name in tabs) {
+      if (tabs[name] == this.tab) {
+        tabName = name;
       }
     }
+    // tabs that need input show only the prompt until there is some
+    var waiting = input.length == 0 && this.EMPTY[tabName] != undefined;
+    var visible = 0;
+    for (var i in this.elements) {
+      var element = this.elements[i];
+      if (element.tab != this.tab) {
+        continue;
+      }
+      var value = waiting ? "" : String(element.calculate(input, password));
+      var hint = (element.hint != undefined && !waiting) ? String(element.hint(input, password)) : "";
+      var tone = (element.tone != undefined && !waiting) ? element.tone(input, password) : "";
+      if (!tone && /^Invalid/.test(value)) {
+        tone = "bad";
+      }
+      document.getElementById(element.id).textContent = value;
+      document.getElementById(element.id + "-hint").textContent = hint;
+      document.getElementById(element.id + "-hint").setAttribute("data-tone", tone);
+      document.getElementById(element.id + "-value").setAttribute("data-tone", tone);
+      var row = document.getElementById(element.id + "-element");
+      row.hidden = value.length == 0 && hint.length == 0;
+      if (!row.hidden) {
+        visible++;
+      }
+    }
+    var empty = document.getElementById("empty");
+    empty.textContent = this.EMPTY[tabName] || "Nothing to show.";
+    empty.hidden = visible > 0;
   },
   /*
    * Build output HTML for current tab
@@ -1257,47 +1341,19 @@ var hasher = {
       var element = this.elements[i];
       if (element.tab == this.tab) {
         html +=
-          '<div class="element">'+
+          '<div class="element" id="'+element.id+'-element">'+
             '<div class="element-head">'+
               '<span id="'+element.id+'-title" class="title">'+
                 element.title+
               '</span>'+
               '<span id="'+element.id+'-hint" class="hint"></span>'+
-              '<span id="'+element.id+'-expand" class="expand" hidden></span>'+
-              '<span id="'+element.id+'-note" class="note" hidden></span>'+
             '</div>'+
             '<div id="'+element.id+'-value" class="value">'+
-              '<textarea id="'+element.id+'" rows="1" readonly spellcheck="false"></textarea>';
-        // ruler
-        if (element.ruler != undefined) {
-          html += '<div id="'+element.id+'-ruler" class="ruler"></div>';
-        }
-        html +=
+              '<div id="'+element.id+'" class="text"></div>'+
             '</div>'+
           '</div>';
       }
     }
     document.getElementById("output").innerHTML = html;
-  },
-  /*
-   * Symbol's numbers
-   */
-  ruler : function (value, type) {
-    var html = "";
-    var length = value.length;
-    if (type == -1) {
-      for (var i = 0; i < value.length; i++) {
-        html += '<span title="'+(length - i - 1)+'">&nbsp;</span>';
-      }
-    } else if (type == 2) {
-      for (i = 0; i < value.length; i+= 2) {
-        html += '<span title="'+(i/2 + 1)+'">&nbsp;&nbsp;</span>';
-      }
-    } else {
-      for (i = 0; i < value.length; i++) {
-        html += '<span title="'+(i+1)+'">&nbsp;</span>';
-      }
-    }
-    return html;
   }
 }

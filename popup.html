@@ -23,10 +23,13 @@
   </head>
   <body>
 
-    <div id="screen-1" class="screens">
+    <div id="card">
       <div id="header">
         <ul id="tabs"><li id="hash" class="on">Hash</li><li id="hmac">HMAC</li><li id="crc">CRC</li><li id="password">Password</li><li id="cipher">Cipher</li><li id="net">Net</li><li id="time">Time</li><li id="number">Num</li><li id="string">Strings</li><li id="json">JSON</li><li id="encode">Encode</li><li id="cron">Cron</li><li id="jwt">JWT</li></ul>
         <div id="tools">
+          <button type="button" id="button-theme" class="icon-button" title="Theme: system">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="4.5"/><path d="M8 .8v1.6M8 13.6v1.6M.8 8h1.6M13.6 8h1.6M2.9 2.9l1.1 1.1M12 12l1.1 1.1M13.1 2.9 12 4M4 12l-1.1 1.1"/></svg>
+          </button>
           <a href="#info" id="button-info" class="icon-button" title="About">
             <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="M8 7.2v4"/><circle cx="8" cy="4.8" r=".7" fill="currentColor" stroke="none"/></svg>
           </a>
@@ -36,12 +39,13 @@
         </div>
       </div>
 
-      <div id="main">
+      <div id="screen-1" class="screen">
         <!-- input -->
         <div id="input">
           <div class="label-row">
             <span class="label">Input</span>
             <span id="input-options">
+              <span id="input-counter"></span>
               <label title="Hide what you type (single line)"><input type="checkbox" id="input-mask" /> mask</label>
               <button type="button" id="input-now" class="button" title="Current Unix time" hidden>Now</button>
             </span>
@@ -106,14 +110,19 @@
           </div>
         </div>
 
+        <!-- JSON options -->
+        <div id="json-options" class="options-row" hidden>
+          <span class="label">Output</span>
+          <label><input type="checkbox" id="json-sorted" /> sort keys</label>
+        </div>
+
         <!-- output -->
         <div id="output">
         </div>
+        <div id="empty" class="empty" hidden></div>
       </div>
-    </div>
 
-    <div id="screen-2" class="screens" hidden>
-      <div id="main">
+      <div id="screen-2" class="screen" hidden>
         <div class="about-head">
           <a href="#" class="button">&larr; Back</a>
           <h1>Hasher</h1>
@@ -133,8 +142,8 @@
           <li><b>Net</b> subnet calculator, IP &harr; decimal, IP &rarr; binary, IP &rarr; hex</li>
           <li><b>Time</b> Unix time (seconds or milliseconds) &harr; local / UTC datetime, RFC-1123, ISO 8601</li>
           <li><b>Num</b> decimal &harr; hex, binary, Roman</li>
-          <li><b>Strings</b> length in characters and bytes, ASCII / UTF-8 / UTF-16 &harr; hex</li>
-          <li><b>JSON</b> pretty-print (optionally with sorted keys), minify, quote / unquote as a JSON string, syntax errors with the position</li>
+          <li><b>Strings</b> length in characters and bytes, ASCII / UTF-8 / UTF-16 &harr; hex, code points</li>
+          <li><b>JSON</b> pretty-print, minify (both with optional sorted keys), quote / unquote as a JSON string, syntax errors with the position</li>
           <li><b>Encode</b> Base64, ROT-13, encodeURI, encodeURIComponent, HTML special characters</li>
           <li><b>Cron</b> schedule builder (every N minutes, hourly, daily, weekly with weekdays, monthly, yearly) &harr; crontab expression, plain-English description and the next 5 runs; lists, ranges, steps, names, @daily and friends</li>
           <li><b>JWT</b> decode, claims with expiry as local time, HS256 / HS384 / HS512 verification with the secret</li>
@@ -142,7 +151,7 @@
 
         <p>
           Enter text, click a result to copy it. The last tab is remembered.
-          Keyboard: <kbd>Alt</kbd>+<kbd>1</kbd>&hellip;<kbd>9</kbd>, <kbd>Alt</kbd>+<kbd>0</kbd> jump to a tab, <kbd>Alt</kbd>+<kbd>[</kbd> / <kbd>Alt</kbd>+<kbd>]</kbd> go to the previous / next one.
+          Keyboard: <kbd>Alt</kbd>+<kbd>1</kbd>&hellip;<kbd>9</kbd>, <kbd>Alt</kbd>+<kbd>0</kbd> jump to a tab, <kbd>Alt</kbd>+<kbd>[</kbd> / <kbd>Alt</kbd>+<kbd>]</kbd> go to the previous / next one. The sun icon switches the theme: system, light, dark.
         </p>
 
         <p class="fine-print">

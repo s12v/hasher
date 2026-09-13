@@ -20,6 +20,13 @@ test('empty input', () => {
   assert.equal(calc('3crc32b', ''), '0x00000000');
 });
 
+test('decimal hints', () => {
+  const { hasher } = require('./load').ctx;
+  assert.equal(hasher.elements.c4.hint('123456789'), '3421780262');
+  assert.equal(hasher.elements.c1.hint('123456789'), '252');
+  assert.equal(hasher.elements.c4.hint(''), '');
+});
+
 // python3 -c 'import zlib; print(hex(zlib.crc32("привет".encode())))'
 test('crc32 hashes UTF-8 bytes', () => {
   assert.equal(calc('3crc32b', 'привет'), '0x2E763E4E');

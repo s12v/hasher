@@ -77,6 +77,13 @@ test('elements', () => {
   assert.equal(calc('13signature', HS256, 'nope'), 'HS256: INVALID for this secret');
   assert.equal(calc('13signature', RS256, 'x'), 'RS256: cannot verify here (only HS256/384/512)');
   assert.equal(calc('13header', 'garbage'), 'Invalid: expected 3 dot-separated segments, got 1');
+  const { hasher } = ctx;
+  assert.equal(hasher.elements.w1.hint(HS256), 'HS256');
+  assert.equal(hasher.elements.w2.hint(HS256), '3 claims');
+  assert.equal(hasher.elements.w4.tone(HS256, 'your-256-bit-secret'), 'ok');
+  assert.equal(hasher.elements.w4.tone(HS256, 'nope'), 'bad');
+  assert.equal(hasher.elements.w4.tone(HS256, ''), '');
+  assert.equal(hasher.elements.w1.hint('garbage'), '');
   for (const id of ['13payload', '13claims', '13signature']) {
     assert.equal(calc(id, 'garbage', 'x'), '', id);
     assert.equal(calc(id, '', 'x'), '', id);

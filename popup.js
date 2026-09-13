@@ -1,6 +1,41 @@
+/* Input field height and placeholder per tab */
+var TAB_META = {
+  hash : { rows : 2 },
+  hmac : { rows : 2 },
+  crc : { rows : 2 },
+  cipher : { rows : 2 },
+  net : { rows : 1, placeholder : "10.0.12.42/22" },
+  time : { rows : 1, placeholder : "unix seconds, ms, or a date \u2014 empty is now" },
+  number : { rows : 1, placeholder : "42 / 2a / 101010 / XLII" },
+  string : { rows : 2 },
+  json : { rows : 4, placeholder : '{"b":2,"a":1}' },
+  encode : { rows : 2 },
+  cron : { rows : 1, placeholder : "*/15 9-17 * * mon-fri" },
+  jwt : { rows : 3, placeholder : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\u2026" }
+};
+
 document.addEventListener("DOMContentLoaded", function () {
 
+  // Standalone page or popped-out tab: the popup is shown as a card on a desk
+  var isExtensionPopup = typeof chrome != "undefined" && chrome.tabs && chrome.tabs.create && location.search.indexOf("tab") < 0;
+  if (!isExtensionPopup) {
+    document.documentElement.classList.add("page");
+  }
+
+  // localStorage may be unavailable (private mode, blocked storage); the popup works without it
+  var remember = function (key, value) {
+    try {
+      if (value === undefined) {
+        return localStorage.getItem(key);
+      }
+      localStorage.setItem(key, value);
+    } catch (err) {
+      return null;
+    }
+  };
+
   var inputValue = document.getElementById("input-value");
+  var inputCounter = document.getElementById("input-counter");
   var inputMasked = document.getElementById("input-masked");
   var inputMask = document.getElementById("input-mask");
   var inputNow = document.getElementById("input-now");
@@ -14,13 +49,19 @@ document.addEventListener("DOMContentLoaded", function () {
   /*
    * Events registration
    */
+  var counter = function () {
+    var length = hasher.inputField().value.length;
+    inputCounter.textContent = length > 0 ? length + " chars" : "";
+  };
   inputValue.addEventListener("input", function () {
+    counter();
     hasher.update();
     if (hasher.tab == tabs.cron) {
       cronFromExpression(inputValue.value);
     }
   });
   inputMasked.addEventListener("input", function () {
+    counter();
     hasher.update();
   });
   inputPassword.addEventListener("input", function () {
@@ -42,6 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
   inputNow.addEventListener("click", function () {
     var field = hasher.inputField();
     field.value = Math.floor(Date.now() / 1000);
+    counter();
     hasher.update();
     field.focus();
   });
@@ -70,6 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
   /*
    * Cron tab: schedule builder <-> expression in the input
    */
+  var cronAutoFilled = null;
   var crMode = document.getElementById("cr-mode");
   var crEvery = document.getElementById("cr-every");
   var crEveryUnit = document.getElementById("cr-every-unit");
@@ -173,24 +216,44 @@ document.addEventListener("DOMContentLoaded", function () {
   if (typeof chrome != "undefined" && chrome.tabs && chrome.tabs.create) {
     popout.addEventListener("click", function () {
       chrome.tabs.create({
-        url: "popup.html"
+        url: "popup.html?tab"
       });
     });
   } else {
     popout.hidden = true;
   }
 
-  // localStorage may be unavailable (private mode, blocked storage); the popup works without it
-  var remember = function (key, value) {
-    try {
-      if (value === undefined) {
-        return localStorage.getItem(key);
-      }
-      localStorage.setItem(key, value);
-    } catch (err) {
-      return null;
+  // Theme: system -> light -> dark, remembered
+  var themeButton = document.getElementById("button-theme");
+  var applyTheme = function (theme) {
+    if (theme == "light" || theme == "dark") {
+      document.documentElement.setAttribute("data-theme", theme);
+    } else {
+      theme = "system";
+      document.documentElement.removeAttribute("data-theme");
     }
+    themeButton.title = "Theme: " + theme;
+    return theme;
   };
+  var theme = applyTheme(remember("theme"));
+  themeButton.addEventListener("click", function () {
+    var order = ["system", "light", "dark"];
+    theme = applyTheme(order[(order.indexOf(theme) + 1) % order.length]);
+    remember("theme", theme);
+  });
+
+  // About: the info icon toggles it
+  document.getElementById("button-info").addEventListener("click", function (e) {
+    e.preventDefault();
+    location.hash = location.hash == "#info" ? "" : "#info";
+  });
+
+  // JSON: sort keys
+  var jsonSorted = document.getElementById("json-sorted");
+  jsonSorted.addEventListener("change", function () {
+    hasher.options.json.sorted = jsonSorted.checked;
+    hasher.update();
+  });
 
   // Switch to a tab (Hash/HMAC/...)
   var selectTab = function (li) {
@@ -200,6 +263,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     li.classList.add("on");
 
+    // the Cron tab's default schedule should not follow the user to other tabs
+    if (hasher.tab == tabs.cron && tabs[li.id] != tabs.cron && hasher.inputField().value == cronAutoFilled) {
+      hasher.inputField().value = "";
+      counter();
+    }
     hasher.tab = tabs[li.id];
     remember("tab", li.id);
 
@@ -210,11 +278,19 @@ document.addEventListener("DOMContentLoaded", function () {
     inputWrapper.hidden = hasher.tab == tabs.password;
     passwordOptions.hidden = hasher.tab != tabs.password;
     cronOptions.hidden = hasher.tab != tabs.cron;
+    document.getElementById("json-options").hidden = hasher.tab != tabs.json;
+
+    var meta = TAB_META[li.id] || {};
+    inputValue.rows = meta.rows || 2;
+    inputValue.placeholder = meta.placeholder || "";
+    inputMasked.placeholder = meta.placeholder || "";
 
     hasher.init();
     if (hasher.tab == tabs.cron) {
       if (hasher.inputField().value.trim().length == 0) {
         cronToExpression(); // start from the builder's default schedule
+        cronAutoFilled = hasher.inputField().value;
+        counter();
       } else {
         cronFromExpression(hasher.inputField().value);
       }
@@ -224,7 +300,10 @@ document.addEventListener("DOMContentLoaded", function () {
       hasher.inputField().focus();
     }
   };
-  tabItems.forEach(function (li) {
+  tabItems.forEach(function (li, i) {
+    if (i < 10) {
+      li.title = "Alt+" + ((i + 1) % 10);
+    }
     li.addEventListener("click", function () {
       selectTab(li);
     });
