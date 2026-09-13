@@ -73,6 +73,10 @@ test('quote as a JSON string; a pasted string literal is unwrapped', () => {
   assert.equal(hasher.elements.j1.hint('"\\u00e9"'), 'a JSON string with plain text inside, shown unquoted');
   assert.equal(calc('12min', '"\\u00e9"'), '', 'nothing to minify in plain text');
   assert.equal(hasher.findById('12unstring'), null, 'the separate unquote row is gone');
+  // and the input is not quoted a second time
+  assert.equal(calc('12string', quoted), '', 'a string literal with a document inside');
+  assert.equal(calc('12string', '"héllo \\"world\\""'), '', 'a string literal with plain text inside');
+  assert.equal(calc('12string', '{"a":"x"}'), '"{\\"a\\":\\"x\\"}"', 'a document is still quoted');
 });
 
 test('invalid JSON', () => {
