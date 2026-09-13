@@ -287,16 +287,10 @@ label {
 }
 .button:hover {
   background: var(--subtle-hover);
-  border-color: var(--accent-border);
   text-decoration: none;
 }
-.button.primary {
-  background: var(--accent);
-  border-color: transparent;
-  color: var(--accent-fg);
-}
-.button.primary:hover {
-  filter: brightness(1.1);
+.button:active {
+  background: var(--border);
 }
 
 /* ---- input ---- */
