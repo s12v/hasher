@@ -9,7 +9,8 @@ var tabs = {
   number : 8,
   string : 9,
   password : 10,
-  cron : 11
+  cron : 11,
+  json : 12
 };
 
 /*
@@ -54,6 +55,37 @@ function parseDate(input) {
 
 function pad2(n) {
   return (n < 10) ? "0" + n : "" + n;
+}
+
+/*
+ *  JSON.parse with the error message as the failure value ("Invalid: ...")
+ */
+function parseJson(input) {
+  if (input.trim().length == 0) {
+    return { empty : true };
+  }
+  try {
+    return { value : JSON.parse(input) };
+  } catch (err) {
+    return { error : "Invalid: " + err.message };
+  }
+}
+
+/*
+ *  Same object with keys sorted recursively (arrays keep their order)
+ */
+function sortKeys(value) {
+  if (Array.isArray(value)) {
+    return value.map(sortKeys);
+  }
+  if (value !== null && typeof value == "object") {
+    var out = {};
+    Object.keys(value).sort().forEach(function (key) {
+      out[key] = sortKeys(value[key]);
+    });
+    return out;
+  }
+  return value;
 }
 
 
@@ -962,6 +994,59 @@ var hasher = {
         }
         return lines.join("\n");
       }
+    },
+
+
+    // JSON
+    j1: {
+      id : tabs.json+"pretty",
+      tab : tabs.json,
+      title : "Pretty",
+      expanded : true,
+      calculate : function (input) {
+        var parsed = parseJson(input);
+        if (parsed.empty) return "";
+        if (parsed.error) return parsed.error;
+        return JSON.stringify(parsed.value, null, 2);
+      }
+    },
+    j2: {
+      id : tabs.json+"sorted",
+      tab : tabs.json,
+      title : "Pretty, keys sorted",
+      calculate : function (input) {
+        var parsed = parseJson(input);
+        if (parsed.empty || parsed.error) return "";
+        return JSON.stringify(sortKeys(parsed.value), null, 2);
+      }
+    },
+    j3: {
+      id : tabs.json+"min",
+      tab : tabs.json,
+      title : "Minified",
+      calculate : function (input) {
+        var parsed = parseJson(input);
+        if (parsed.empty || parsed.error) return "";
+        return JSON.stringify(parsed.value);
+      }
+    },
+    j4: {
+      id : tabs.json+"string",
+      tab : tabs.json,
+      title : "As a JSON string",
+      calculate : function (input) {
+        return input.length == 0 ? "" : JSON.stringify(input);
+      }
+    },
+    j5: {
+      id : tabs.json+"unstring",
+      tab : tabs.json,
+      title : "From a JSON string",
+      calculate : function (input) {
+        var parsed = parseJson(input);
+        if (parsed.empty || parsed.error || typeof parsed.value != "string") return "";
+        return parsed.value;
+      }
     }
   },
   findById : function (id) {
@@ -1042,8 +1127,8 @@ var hasher = {
 
         var expand = document.getElementById(element.id + "-expand");
         if (element.expanded) {
-          // always show every line, no toggle
-          document.getElementById(element.id).rows = rows;
+          // show every line (up to a screenful; the textarea scrolls past that), no toggle
+          document.getElementById(element.id).rows = Math.min(rows, 25);
           expand.hidden = true;
         } else if (rows > 1) {
           expand.textContent = rows + " lines";
