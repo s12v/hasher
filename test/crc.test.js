@@ -36,11 +36,13 @@ test('empty input and widths', () => {
   assert.equal(calc('3adler32', ''), '0x00000001');
 });
 
-test('rows and decimal hints', () => {
+test('rows, notes and the decimal column', () => {
   const titles = Object.values(hasher.elements).filter((e) => e.tab === ctx.tabs.crc).map((e) => e.title);
   assert.deepEqual(Array.from(titles), ['CRC-32', 'CRC-32C', 'CRC-16/MODBUS', 'CRC-16/CCITT-FALSE', 'CRC-16/XMODEM', 'CRC-8', 'CRC-64/XZ', 'Adler-32']);
-  assert.equal(hasher.elements.c1.hint('123456789'), 'zlib, PNG, gzip, zip, Ethernet · 3421780262');
-  assert.equal(hasher.elements.c3.hint('123456789'), '19255');
-  assert.equal(hasher.elements.c7.hint('123456789'), 'xz, ECMA-182 · 11051210869376104954');
-  assert.equal(hasher.elements.c1.hint(''), '');
+  assert.equal(hasher.elements.c1.hint('123456789'), 'zlib, PNG, gzip, zip, Ethernet');
+  assert.equal(hasher.elements.c1.alt.calculate('123456789'), '3421780262');
+  assert.equal(hasher.elements.c3.hint, undefined);
+  assert.equal(hasher.elements.c3.alt.calculate('123456789'), '19255');
+  assert.equal(hasher.elements.c7.alt.calculate('123456789'), '11051210869376104954');
+  assert.equal(hasher.elements.c8.alt.calculate('123456789'), '152961502');
 });
