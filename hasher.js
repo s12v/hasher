@@ -951,6 +951,36 @@ var hasher = {
         return "~" + passgen.passwordBits(hasher.options.password).toFixed(1) + " bits";
       }
     },
+    p3: {
+      id : tabs.password+"uuid4",
+      tab : tabs.password,
+      title : "UUID v4",
+      calculate : function () {
+        return ids.uuid4();
+      }
+    },
+    p4: {
+      id : tabs.password+"uuid7",
+      tab : tabs.password,
+      title : "UUID v7",
+      hint : function () {
+        return "time-ordered";
+      },
+      calculate : function () {
+        return ids.uuid7();
+      }
+    },
+    p5: {
+      id : tabs.password+"ulid",
+      tab : tabs.password,
+      title : "ULID",
+      hint : function () {
+        return "time-ordered";
+      },
+      calculate : function () {
+        return ids.ulid();
+      }
+    },
 
 
     // Cron
