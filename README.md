@@ -37,6 +37,7 @@ Every `calculate()` in `hasher.js` is checked against vectors produced with `ope
 * <b>Numbers:</b> Dec ↔ Hex, Dec ↔ Bin, Dec ↔ Roman
 * <b>Strings:</b> length (chars / UTF-8 bytes), ASCII ↔ Hex, UTF-8 ↔ Hex, UTF-16 ↔ Hex
 * <b>Encode:</b> Base64, ROT-13, JavaScript encodeURI(), encodeURIComponent(), HTML special chars encode/decode
+* <b>Password:</b> random passphrases from the EFF large wordlist (words, separator, digits, capitalize) and random passwords (length, symbols), with the entropy estimate; a port of [ppgen](https://github.com/s12v/ppgen)
 
 Usage: enter text and click on the result — it is copied to clipboard.
 **mask** hides the input (for hashing passwords); **Now** on the Time tab inserts the current Unix time.
@@ -44,5 +45,5 @@ Usage: enter text and click on the result — it is copied to clipboard.
 ## License
 
 MIT. Bundled libraries: [crypto-js](https://github.com/brix/crypto-js) (MIT),
-[js-sha3](https://github.com/emn178/js-sha3) (MIT), MD4 by Paul Johnston (BSD),
+[js-sha3](https://github.com/emn178/js-sha3) (MIT), [EFF large wordlist](https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases) (CC BY 4.0), MD4 by Paul Johnston (BSD),
 Whirlpool by Sean Catchpole (public domain), CRC tables by AnDan Software.

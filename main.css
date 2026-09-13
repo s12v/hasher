@@ -108,6 +108,40 @@ ul.buttons li.l2.on, ul.buttons li.l3.on {
   box-sizing: border-box;
 }
 
+#password-options {
+  margin-top: 5px;
+  font-size: 12px;
+}
+#password-options .title {
+  font-weight: bold;
+  margin-top: 5px;
+}
+#password-options .row {
+  margin: 3px 0 6px;
+}
+#password-options label {
+  margin-right: 14px;
+  cursor: pointer;
+}
+#password-options input[type="number"] {
+  width: 48px;
+  font-family: monospace;
+}
+#password-options input[type="text"] {
+  width: 30px;
+  font-family: monospace;
+}
+#password-options input[type="checkbox"] {
+  vertical-align: middle;
+  margin: 0 2px 0 0;
+}
+#password-options button.button {
+  height: 22px;
+  line-height: 22px;
+  padding: 0 10px;
+  vertical-align: middle;
+}
+
 #output .element {
   margin-top: 5px;
   font-size: 12px;
@@ -115,6 +149,11 @@ ul.buttons li.l2.on, ul.buttons li.l3.on {
 #output .title {
   font-weight: bold;
   font-family: sans-serif;
+}
+#output .hint {
+  margin-left: 8px;
+  color: #777;
+  font-size: 11px;
 }
 #output .expand {
   position: relative;

@@ -7,7 +7,8 @@ var tabs = {
   time : 6,
   encode : 7,
   number : 8,
-  string : 9
+  string : 9,
+  password : 10
 };
 
 /*
@@ -58,6 +59,11 @@ function pad2(n) {
 var hasher = {
   ipcalc : new ipCalc(),
   tab : tabs.hash,
+  /* Generator settings, kept in sync with the Password tab controls by popup.js */
+  options : {
+    passphrase : { words : 5, separator : "-", digits : 0, capitalize : false },
+    password : { length : 16, symbols : false }
+  },
   elements: {
     h1 : {
       id : tabs.hash+"md5",
@@ -884,6 +890,32 @@ var hasher = {
         var renc = new Rot13();
         return renc.encode(input);
       }
+    },
+
+
+    // Password (input is ignored; settings come from hasher.options)
+    p1: {
+      id : tabs.password+"phrase",
+      tab : tabs.password,
+      title : "Passphrase",
+      calculate : function () {
+        return passgen.passphrase(hasher.options.passphrase);
+      },
+      hint : function () {
+        var bits = passgen.passphraseBits(hasher.options.passphrase);
+        return bits ? "~" + bits.toFixed(1) + " bits" : "loading wordlist\u2026";
+      }
+    },
+    p2: {
+      id : tabs.password+"word",
+      tab : tabs.password,
+      title : "Password",
+      calculate : function () {
+        return passgen.password(hasher.options.password);
+      },
+      hint : function () {
+        return "~" + passgen.passwordBits(hasher.options.password).toFixed(1) + " bits";
+      }
     }
   },
   findById : function (id) {
@@ -975,6 +1007,11 @@ var hasher = {
         if (element.ruler != undefined) {
           document.getElementById(element.id + "-ruler").innerHTML = this.ruler(value, element.ruler);
         }
+
+        // hint next to the title (e.g. entropy)
+        if (element.hint != undefined) {
+          document.getElementById(element.id + "-hint").textContent = element.hint(input, password);
+        }
       }
     }
   },
@@ -992,6 +1029,7 @@ var hasher = {
               '<span id="'+element.id+'-title" class="title">'+
                 element.title+
               '</span>'+
+              '<span id="'+element.id+'-hint" class="hint"></span>'+
               '<span id="'+element.id+'-expand" class="expand" hidden></span>'+
               '<span id="'+element.id+'-note" class="note" hidden></span>'+
             '</div>'+
