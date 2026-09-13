@@ -18,7 +18,8 @@ test('utf-8 <-> hex', () => {
   assert.equal(calc('9utf8-hex', 'привет'), 'd0bfd180d0b8d0b2d0b5d182');
   assert.equal(calc('9hex-utf8', 'd0bfd180d0b8d0b2d0b5d182'), 'привет');
   assert.equal(calc('9utf8-hex', '😀'), 'f09f9880');
-  assert.equal(calc('9hex-utf8', 'zz'), 'NaN');
+  assert.equal(calc('9hex-utf8', 'zz'), '', 'not hex: the row stays hidden');
+  assert.equal(calc('9hex-utf8', 'abc'), '', 'odd length is not hex either');
   assert.equal(calc('9hex-utf8', 'ff'), 'Parse error', 'invalid UTF-8');
 });
 

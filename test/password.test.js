@@ -119,3 +119,17 @@ test('elements read hasher.options', () => {
   assert.equal(hasher.elements.p1.hint(), 'entropy: ~29.2 bits');
   assert.equal(hasher.elements.p2.hint(), 'entropy: ~47.6 bits');
 });
+
+test('random key', () => {
+  hasher.options.key = { bytes: 32 };
+  const hex = calc('10key', '');
+  assert.match(hex, /^[0-9a-f]{64}$/);
+  assert.notEqual(hex, calc('10key', ''));
+  assert.match(hasher.elements.p6.alt.calculate(), /^[A-Za-z0-9+/]{43}=$/, '32 bytes of base64');
+  assert.equal(hasher.elements.p6.hint(), 'entropy: 256 bits · openssl rand -hex 32');
+  hasher.options.key = { bytes: 16 };
+  assert.match(calc('10key', ''), /^[0-9a-f]{32}$/);
+  hasher.options.key = { bytes: 99999 };
+  assert.equal(calc('10key', '').length, 2048, 'clamped to 1024 bytes');
+  hasher.options.key = { bytes: 32 };
+});
