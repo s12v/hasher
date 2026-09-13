@@ -4,7 +4,7 @@ var TAB_META = {
   hmac : { rows : 2 },
   crc : { rows : 2 },
   cipher : { rows : 2, placeholder : "text to encrypt, or a Salted__ base64 payload to decrypt" },
-  net : { rows : 1, placeholder : "10.0.12.42/22" },
+  net : { rows : 1, placeholder : "10.0.12.42/22, 2001:db8::1, ::ffff:192.0.2.1, or a decimal" },
   time : { rows : 1, placeholder : "unix seconds or ms, ISO 8601, RFC-1123, 2019-02-27 09:36:55 \u2014 empty is now" },
   number : { rows : 1, placeholder : "42 / 2a / 101010 / XLII" },
   string : { rows : 2 },
