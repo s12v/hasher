@@ -1356,6 +1356,10 @@ var hasher = {
       title : "Random key, Base64",
       calculate : function () {
         return basex.base64(ids.randomBytes(passgen.clamp(hasher.options.key.bytes, 1, 1024, 32)));
+      },
+      hint : function () {
+        var n = passgen.clamp(hasher.options.key.bytes, 1, 1024, 32);
+        return "entropy: " + (n * 8) + " bits \u00b7 openssl rand -base64 " + n;
       }
     },
     // UUID: inspect a pasted UUID / ULID, derive v5 from a name, or generate

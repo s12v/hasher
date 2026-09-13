@@ -29,7 +29,7 @@
 
     <div id="card">
       <div id="header">
-        <ul id="tabs"><li id="hash" class="on"><span>Hash</span></li><li id="hmac"><span>HMAC</span></li><li id="crc"><span>CRC</span></li><li id="password"><span>Password</span></li><li id="uuid"><span>UUID</span></li><li id="cipher"><span>Cipher</span></li><li id="net"><span>IP</span></li><li id="url"><span>URL</span></li><li id="time"><span>Time</span></li><li id="number"><span>Num</span></li><li id="string"><span>Strings</span></li><li id="json"><span>JSON</span></li><li id="diff"><span>Diff</span></li><li id="encode"><span>Encode</span></li><li id="cron"><span>Cron</span></li><li id="jwt"><span>JWT</span></li></ul>
+        <ul id="tabs"><li id="hash" class="on"><span>Hash</span></li><li id="hmac"><span>HMAC</span></li><li id="crc"><span>CRC</span></li><li id="password"><span>Password</span></li><li id="uuid"><span>UUID</span></li><li id="cipher"><span>Cipher</span></li><li id="net"><span>IP</span></li><li id="url"><span>URL</span></li><li id="time"><span>Time</span></li><li id="number"><span>Num</span></li><li id="string"><span>Strings</span></li><li id="jwt"><span>JWT</span></li><li id="encode"><span>Encode</span></li><li id="cron"><span>Cron</span></li><li id="json"><span>JSON</span></li><li id="diff"><span>Diff</span></li></ul>
         <div id="tools">
           <button type="button" id="button-theme" class="icon-button" title="Theme: system (follows the OS)">
             <svg class="theme-system" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor" stroke="none"/></svg>
@@ -175,16 +175,16 @@
           <li><b>Password</b> passphrases from the <a href="https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases" target="_blank">EFF wordlist</a> (7776 words, ~12.9 bits each), random passwords and random keys (hex / Base64, like <code>openssl rand</code>), all from the browser's CSPRNG</li>
           <li><b>UUID</b> generate v4, v7 and ULID; paste one to see its version, variant and embedded time; a name gives its UUID v5 (DNS and URL namespaces)</li>
           <li><b>Cipher</b> AES-256-CBC with a passphrase, byte-compatible with <span class="help" title="openssl enc -aes-256-cbc -pbkdf2 -a -pass pass:&quot;Secret Passphrase&quot;">openssl enc -pbkdf2</span> (and the legacy -md md5 format); decrypt reads both</li>
-          <li><b>URL</b> scheme, host (with the Unicode form of an IDN), port, path, decoded query parameters, fragment, credentials, origin, normalized form; a bare host is read as https</li>
           <li><b>IP</b> IPv4 and IPv6: canonical form, decimal, hex, binary, PTR name, address type (private, link-local, ULA, documentation&hellip;); for a prefix &mdash; network, netmask and wildcard, first / last host, broadcast, host count</li>
+          <li><b>URL</b> scheme, host (with the Unicode form of an IDN), port, path, decoded query parameters, fragment, credentials, origin, normalized form; a bare host is read as https</li>
           <li><b>Time</b> Unix time (seconds or milliseconds), ISO 8601, RFC-1123 or "2019-02-27 09:36:55" in &rarr; all of them out, with the weekday, ISO week and day of the year; durations both ways: 90061 &rarr; 1d 1h 1m 1s, "1h 30m" / "01:30:00" / PT1H30M &rarr; seconds</li>
           <li><b>Num</b> a number in any base in (decimal, 0x hex, 0b binary, 0o octal, Roman, floating point), the others out: decimal, hex, octal, binary, Roman, bit count, size in KiB / kB, IEEE-754 double and single</li>
           <li><b>Strings</b> length in characters, bytes, words and lines; UTF-8 / UTF-16 (BE and LE) &harr; hex; code points; UPPER, lower, Title, Sentence, camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE, slug</li>
-          <li><b>JSON</b> pretty-print, minify and YAML (optionally with sorted keys), quote as a JSON string &mdash; a pasted string literal is unquoted on the spot; syntax errors with the position</li>
-          <li><b>Diff</b> compare two texts side by side, line by line, with the changed characters highlighted; ignore whitespace / case</li>
+          <li><b>JWT</b> decode, claims with expiry as local time; verify HS* with the secret, RS* / PS* / ES* / EdDSA with a PEM or JWK public key; sign a JSON payload with HS256</li>
           <li><b>Encode</b> Base64 / Base64url, Base32, Base58 (encode and decode, binary shown as hex), encodeURI, encodeURIComponent, HTML special characters, ROT13</li>
           <li><b>Cron</b> schedule builder (every N minutes, hourly, daily, weekly with weekdays, monthly, yearly) &harr; crontab expression, plain-English description and the next 5 runs; lists, ranges, steps, names, @daily and friends; six-field expressions with seconds (Quartz, Spring)</li>
-          <li><b>JWT</b> decode, claims with expiry as local time; verify HS* with the secret, RS* / PS* / ES* / EdDSA with a PEM or JWK public key; sign a JSON payload with HS256</li>
+          <li><b>JSON</b> pretty-print, minify and YAML (optionally with sorted keys), quote as a JSON string &mdash; a pasted string literal is unquoted on the spot; syntax errors with the position</li>
+          <li><b>Diff</b> compare two texts side by side, line by line, with the changed characters highlighted; ignore whitespace / case</li>
         </ul>
 
         <p>
