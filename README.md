@@ -59,7 +59,7 @@ directory over HTTP (`python3 -m http.server`) — `file://` blocks the wordlist
 * <b>Cipher:</b> AES-256-CBC with a passphrase, byte-compatible with `openssl enc -aes-256-cbc -pbkdf2 -a` (PBKDF2-SHA256, 10000 iterations) and with the legacy `-md md5` format; decrypt detects which
 * <b>IP:</b> IPv4 and IPv6 — canonical form (RFC 5952), decimal, hex, binary, PTR, address type (private, link-local, ULA, documentation…); for a prefix: network, netmask / wildcard, first / last host, broadcast, hosts
 * <b>Time:</b> Unix time (s or ms), ISO 8601, RFC-1123 or `2019-02-27 09:36:55` in → Unix s / ms, ISO 8601, RFC-1123, DATETIME UTC / local out
-* <b>Numbers:</b> Dec ↔ Hex, Dec ↔ Bin, Dec ↔ Roman
+* <b>Num:</b> any base in (decimal, `0x`, `0b`, `0o`, Roman, floating point), the others out — decimal, hex, octal, binary, Roman, bits, size in KiB / kB, IEEE-754 double / single; arbitrary size (BigInt)
 * <b>Strings:</b> length (chars / UTF-8 bytes / words / lines), UTF-8 ↔ Hex, UTF-16 BE / LE ↔ Hex, code points, case conversions (UPPER, lower, Title, Sentence, camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE, slug)
 * <b>JSON:</b> pretty-print and minify (optionally with sorted keys), quote as a JSON string (a pasted string literal is unquoted on the spot), syntax errors with position
 * <b>Diff:</b> compare two texts side by side, line by line, with changed characters highlighted; ignore whitespace / case

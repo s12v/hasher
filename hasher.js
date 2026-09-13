@@ -86,6 +86,17 @@ function timeInput(input) {
 }
 
 /*
+ *  Num tab: numbers.parse() with an error string instead of a throw
+ */
+function parseNumber(input) {
+  try {
+    return numbers.parse(input);
+  } catch (err) {
+    return { error : err.message };
+  }
+}
+
+/*
  *  IP tab: { version, address, prefix } for the input, { error } when it is not an address
  */
 function parseIp(input) {
@@ -591,6 +602,7 @@ var hasher = {
       tab : tabs.net,
       title: "Address",
       calculate: function (input) {
+        if (input.trim().length == 0) return "";
         var p = parseIp(input);
         if (p.error) return "Invalid: " + p.error;
         return p.version == 4 ? ip.v4(p.address) : ip.v6(p.address);
@@ -794,62 +806,90 @@ var hasher = {
       }
     },
 
-    // Numbers
-    n5 : {
-      id: tabs.number+"i5",
+    // Numbers (lib/snov/numbers.js): one input in any base, all the others out
+    n1 : {
+      id: tabs.number+"dec",
       tab : tabs.number,
-      title: "Dec to Hex",
+      title: "Decimal",
       calculate: function (input) {
-        return numbers.decToHex(input);
-      }
-    },
-    n6 : {
-      id: tabs.number+"i6",
-      tab : tabs.number,
-      title: "Hex to Dec",
-      calculate: function (input) {
-        return numbers.hexToDec(input);
-      }
-    },
-    n7 : {
-      id: tabs.number+"i7",
-      tab : tabs.number,
-      title: "Dec to Bin",
-      calculate: function (input) {
-        return numbers.decToBin(input);
+        if (input.trim().length == 0) return "";
+        var p = parseNumber(input);
+        if (p.error) return "Invalid: " + p.error;
+        return p.float !== undefined ? String(p.float) : p.value.toString();
       },
       hint: function (input) {
-        var bin = numbers.decToBin(input);
-        return /^[01]+$/.test(bin) ? bin.length + " bits" : "";
+        var p = parseNumber(input);
+        if (p.error) return "";
+        if (p.float !== undefined) return "floating point";
+        var size = numbers.size(p.value);
+        return "read as " + numbers.BASE_NAMES[p.base] + " \u00b7 " + numbers.bitLength(p.value) + " bits" + (size ? " \u00b7 " + size + " if bytes" : "");
       }
     },
-    n8 : {
-      id: tabs.number+"i8",
+    n2 : {
+      id: tabs.number+"hex",
       tab : tabs.number,
-      title: "Bin to Dec",
+      title: "Hex",
       calculate: function (input) {
-        return numbers.binToDec(input);
+        var p = parseNumber(input);
+        return (p.error || p.float !== undefined) ? "" : numbers.format(p.value, 16);
+      },
+      hint: function (input) {
+        var p = parseNumber(input);
+        if (p.error || p.float !== undefined || p.value < 0n) return "";
+        var digits = p.value.toString(16).length;
+        if (p.base == 16 && (digits == 8 || digits == 16)) {
+          return "as float" + (digits == 8 ? "32" : "64") + ": " + numbers.hexAsFloat(p.value, digits);
+        }
+        return "";
+      },
+      alt: {
+        title: "Octal",
+        calculate: function (input) {
+          var p = parseNumber(input);
+          return (p.error || p.float !== undefined) ? "" : numbers.format(p.value, 8);
+        }
       }
     },
-    n9 : {
-      id: tabs.number+"i3",
+    n3 : {
+      id: tabs.number+"bin",
       tab : tabs.number,
-      title: "Dec to Roman",
+      title: "Binary",
       calculate: function (input) {
-        var rc = new RomanConverter();
-        return rc.decToRoman(input);
+        var p = parseNumber(input);
+        return (p.error || p.float !== undefined) ? "" : numbers.binaryGrouped(p.value);
       }
     },
-    n10 : {
-      id: tabs.number+"i4",
+    n4 : {
+      id: tabs.number+"roman",
       tab : tabs.number,
-      title: "Roman to Dec",
+      title: "Roman",
       calculate: function (input) {
-        var rc = new RomanConverter();
-        return rc.romanToDec(input);
+        var p = parseNumber(input);
+        return (p.error || p.float !== undefined) ? "" : numbers.toRoman(p.value);
+      },
+      hint: function () {
+        return "1 to 3999";
       }
     },
-
+    n5 : {
+      id: tabs.number+"float64",
+      tab : tabs.number,
+      title: "IEEE-754 double",
+      calculate: function (input) {
+        var p = parseNumber(input);
+        return (p.error || p.float === undefined) ? "" : numbers.float64hex(p.float);
+      },
+      hint: function () {
+        return "big-endian bytes";
+      },
+      alt: {
+        title: "IEEE-754 single",
+        calculate: function (input) {
+          var p = parseNumber(input);
+          return (p.error || p.float === undefined) ? "" : numbers.float32hex(p.float);
+        }
+      }
+    },
 
     // Strings
     s0 : {
