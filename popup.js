@@ -12,7 +12,7 @@ var TAB_META = {
   diff : { rows : 6, placeholder : "original text" },
   encode : { rows : 2 },
   cron : { rows : 1, placeholder : "*/15 9-17 * * mon-fri" },
-  jwt : { rows : 3, placeholder : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\u2026" }
+  jwt : { rows : 3, placeholder : "a token to decode and verify, or a JSON payload to sign with HS256" }
 };
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -289,7 +289,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Diff: the second text and the options
   inputOther.addEventListener("input", function () {
-    hasher.options.diff.other = inputOther.value;
+    hasher.options.other = inputOther.value;
     document.getElementById("input-other-counter").textContent = inputOther.value.length ? inputOther.value.length + " chars" : "";
     hasher.update();
   });
@@ -340,7 +340,11 @@ document.addEventListener("DOMContentLoaded", function () {
     uuidOptions.hidden = hasher.tab != tabs.uuid;
     cronOptions.hidden = hasher.tab != tabs.cron;
     document.getElementById("json-options").hidden = hasher.tab != tabs.json;
-    otherWrapper.hidden = hasher.tab != tabs.diff;
+    // the second text area: the other text for Diff, the public key for JWT
+    otherWrapper.hidden = !(hasher.tab == tabs.diff || hasher.tab == tabs.jwt);
+    otherWrapper.querySelector(".label").textContent = hasher.tab == tabs.jwt ? "Public key" : "Compare with";
+    inputOther.placeholder = hasher.tab == tabs.jwt ? "-----BEGIN PUBLIC KEY----- or a JWK, for RS / PS / ES / EdDSA tokens" : "changed text";
+    inputOther.rows = hasher.tab == tabs.jwt ? 3 : 6;
     diffOptions.hidden = hasher.tab != tabs.diff;
     inputWrapper.classList.toggle("columns", hasher.tab == tabs.diff);
 

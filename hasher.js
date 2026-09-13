@@ -219,6 +219,20 @@ function jsonInput(input) {
 }
 
 /*
+ *  JWT tab: the input as a JSON object to sign, or null when it is a token / anything else
+ */
+function jwtPayload(input) {
+  var str = input.trim();
+  if (str.charAt(0) != "{") return null;
+  try {
+    var value = JSON.parse(str);
+    return (value !== null && typeof value == "object" && !Array.isArray(value)) ? value : null;
+  } catch (err) {
+    return null;
+  }
+}
+
+/*
  *  Same object with keys sorted recursively (arrays keep their order)
  */
 function sortKeys(value) {
@@ -244,7 +258,8 @@ var hasher = {
     password : { length : 16, symbols : false },
     key : { bytes : 32 },
     json : { sorted : false },
-    diff : { other : "", ignoreWhitespace : false, ignoreCase : false }
+    other : "",
+    diff : { ignoreWhitespace : false, ignoreCase : false }
   },
   elements: {
     // Hash, most used first
@@ -1396,13 +1411,14 @@ var hasher = {
     },
 
 
-    // JWT (the Password field is the HMAC secret)
+    // JWT: a token to decode (secret in the Password field, public key in the second text area),
+    // or a JSON payload to sign
     w1: {
       id : tabs.jwt+"header",
       tab : tabs.jwt,
       title : "Header",
       calculate : function (input) {
-        if (input.trim().length == 0) return "";
+        if (input.trim().length == 0 || jwtPayload(input)) return "";
         try {
           return JSON.stringify(jwt.parse(input).header, null, 2);
         } catch (err) {
@@ -1463,24 +1479,44 @@ var hasher = {
         } catch (err) {
           return "";
         }
-        var alg = parsed.header.alg || "?";
-        if (password.length == 0) {
-          return alg + (jwt.HMAC[alg] ? ": enter the secret above to verify" : ": cannot verify here (only HS256/384/512)");
+        var alg = String(parsed.header.alg || "?");
+        if (jwt.HMAC[alg]) {
+          if (password.length == 0) {
+            return { value : alg + ": enter the secret above to verify", hint : "", tone : "" };
+          }
+          var ok = jwt.verify(parsed, password);
+          return { value : alg + (ok ? ": valid, signed with this secret" : ": INVALID for this secret"), tone : ok ? "ok" : "bad" };
         }
-        var ok = jwt.verify(parsed, password);
-        if (ok === null) {
-          return alg + ": cannot verify here (only HS256/384/512)";
+        if (!jwt.ASYMMETRIC[alg]) {
+          return alg + ": cannot verify here";
         }
-        return alg + (ok ? ": valid, signed with this secret" : ": INVALID for this secret");
+        if (hasher.options.other.trim().length == 0) {
+          return alg + ": paste the public key (PEM or JWK) below to verify";
+        }
+        return jwt.verifyAsymmetric(parsed, hasher.options.other).then(function (ok) {
+          return { value : alg + (ok ? ": valid, signed by this key" : ": INVALID for this key"), tone : ok ? "ok" : "bad" };
+        }, function (err) {
+          return { value : alg + ": " + (err && err.message ? err.message : "the key could not be used"), tone : "bad" };
+        });
+      }
+    },
+    w5: {
+      id : tabs.jwt+"sign",
+      tab : tabs.jwt,
+      title : "Signed token, HS256",
+      calculate : function (input, password) {
+        var payload = jwtPayload(input);
+        if (!payload) return "";
+        if (password.length == 0) return "";
+        return jwt.signHS256(payload, password);
       },
-      tone : function (input, password) {
-        var value = this.calculate(input, password);
-        return /: valid/.test(value) ? "ok" : /INVALID/.test(value) ? "bad" : "";
+      hint : function (input, password) {
+        if (!jwtPayload(input)) return "";
+        return password.length ? "header {\"alg\":\"HS256\",\"typ\":\"JWT\"} \u00b7 secret from the field above" : "enter a secret above to sign this payload";
       }
     },
 
-
-    // Diff (input vs hasher.options.diff.other)
+    // Diff (input vs hasher.options.other)
     d1: {
       id : tabs.diff+"changes",
       tab : tabs.diff,
@@ -1489,7 +1525,7 @@ var hasher = {
       tall : true,
       nocopy : true,
       calculate : function (input) {
-        var ops = diff.lines(input, hasher.options.diff.other, hasher.options.diff);
+        var ops = diff.lines(input, hasher.options.other, hasher.options.diff);
         var s = diff.stats(ops);
         if (s.added == 0 && s.removed == 0) {
           return "";
@@ -1497,15 +1533,15 @@ var hasher = {
         return diff.html(ops);
       },
       hint : function (input) {
-        var s = diff.stats(diff.lines(input, hasher.options.diff.other, hasher.options.diff));
+        var s = diff.stats(diff.lines(input, hasher.options.other, hasher.options.diff));
         if (s.added == 0 && s.removed == 0) {
-          return (input.length || hasher.options.diff.other.length) ? "identical" : "";
+          return (input.length || hasher.options.other.length) ? "identical" : "";
         }
         return "+" + s.added + " \u2212" + s.removed + " lines";
       },
       tone : function (input) {
-        var s = diff.stats(diff.lines(input, hasher.options.diff.other, hasher.options.diff));
-        return (s.added == 0 && s.removed == 0 && (input.length || hasher.options.diff.other.length)) ? "ok" : "";
+        var s = diff.stats(diff.lines(input, hasher.options.other, hasher.options.diff));
+        return (s.added == 0 && s.removed == 0 && (input.length || hasher.options.other.length)) ? "ok" : "";
       }
     }
   },
@@ -1585,6 +1621,7 @@ var hasher = {
    * Recalculate. Rows without a value or a hint are hidden; an empty tab shows a prompt.
    */
   update : function () {
+    var self = this;
     var input = this.inputField().value;
     var password = document.getElementById("input-password").value;
     var tabName = null;
@@ -1596,34 +1633,66 @@ var hasher = {
     // tabs that need input show only the prompt until there is some
     var waiting = input.length == 0 && this.EMPTY[tabName] != undefined;
     if (tabName == "diff") {
-      waiting = input.length == 0 && this.options.diff.other.length == 0;
+      waiting = input.length == 0 && this.options.other.length == 0;
     }
-    var visible = 0;
+    // a later update() supersedes any async result still in flight
+    var seq = this.updateSeq = (this.updateSeq || 0) + 1;
     for (var i in this.elements) {
       var element = this.elements[i];
       if (element.tab != this.tab) {
         continue;
       }
-      var value = waiting ? "" : String(element.calculate(input, password));
-      var hint = (element.hint != undefined && !waiting) ? String(element.hint(input, password)) : "";
-      var tone = (element.tone != undefined && !waiting) ? element.tone(input, password) : "";
-      if (!tone && /^Invalid/.test(value)) {
-        tone = "bad";
+      if (waiting) {
+        this.show(element, "", "", "");
+        continue;
       }
-      if (element.html) {
-        document.getElementById(element.id).innerHTML = value;
-      } else {
-        document.getElementById(element.id).textContent = value;
+      var result = element.calculate(input, password);
+      if (result && typeof result.then == "function") {
+        // async element: resolves to a string or { value, hint, tone }
+        this.show(element, "\u2026", "", "");
+        (function (el) {
+          result.then(function (r) {
+            if (seq != self.updateSeq) return;
+            var value = (r !== null && typeof r == "object" && "value" in r) ? r.value : r;
+            self.show(el, String(value == null ? "" : value), (r && r.hint) || "", (r && r.tone) || "");
+            self.updateEmpty(tabName);
+          }, function (err) {
+            if (seq != self.updateSeq) return;
+            self.show(el, "Invalid: " + (err && err.message ? err.message : err), "", "bad");
+            self.updateEmpty(tabName);
+          });
+        })(element);
+        continue;
       }
-      document.getElementById(element.id + "-hint").textContent = hint;
-      document.getElementById(element.id + "-hint").setAttribute("data-tone", tone);
-      document.getElementById(element.id + "-value").setAttribute("data-tone", tone);
-      var row = document.getElementById(element.id + "-element");
-      row.hidden = value.length == 0 && hint.length == 0;
-      if (!row.hidden) {
-        visible++;
+      if (result !== null && typeof result == "object" && "value" in result) {
+        this.show(element, String(result.value == null ? "" : result.value), result.hint || "", result.tone || "");
+        continue;
       }
+      var hint = element.hint != undefined ? String(element.hint(input, password)) : "";
+      var tone = element.tone != undefined ? element.tone(input, password) : "";
+      this.show(element, String(result), hint, tone);
     }
+    this.updateEmpty(tabName);
+  },
+  /*
+   * Put a value (and hint, tone) into an element's row; empty rows are hidden
+   */
+  show : function (element, value, hint, tone) {
+    if (!tone && /^Invalid/.test(value)) {
+      tone = "bad";
+    }
+    if (element.html) {
+      document.getElementById(element.id).innerHTML = value;
+    } else {
+      document.getElementById(element.id).textContent = value;
+    }
+    document.getElementById(element.id + "-hint").textContent = hint;
+    document.getElementById(element.id + "-hint").setAttribute("data-tone", tone);
+    document.getElementById(element.id + "-value").setAttribute("data-tone", tone);
+    document.getElementById(element.id + "-element").hidden = value.length == 0 && hint.length == 0;
+  },
+  updateEmpty : function (tabName) {
+    var visible = document.querySelectorAll("#output .element:not([hidden])").length;
     var empty = document.getElementById("empty");
     empty.textContent = this.EMPTY[tabName] || "Nothing to show.";
     empty.hidden = visible > 0;

@@ -57,18 +57,18 @@
             <textarea id="input-value" rows="2" autofocus spellcheck="false"></textarea>
             <input id="input-masked" type="password" hidden />
           </div>
+          <div id="input-password-wrapper" hidden>
+            <div class="label-row">
+              <span class="label">Password</span>
+            </div>
+            <input id="input-password" type="password" />
+          </div>
           <div id="input-other-wrapper" hidden>
             <div class="label-row">
               <span class="label">Compare with</span>
               <span id="input-other-counter" class="counter"></span>
             </div>
             <textarea id="input-other" rows="6" spellcheck="false" placeholder="changed text"></textarea>
-          </div>
-          <div id="input-password-wrapper" hidden>
-            <div class="label-row">
-              <span class="label">Password</span>
-            </div>
-            <input id="input-password" type="password" />
           </div>
         </div>
 
@@ -180,7 +180,7 @@
           <li><b>Diff</b> compare two texts side by side, line by line, with the changed characters highlighted; ignore whitespace / case</li>
           <li><b>Encode</b> Base64 / Base64url, Base32, Base58 (encode and decode, binary shown as hex), encodeURI, encodeURIComponent, HTML special characters, ROT13</li>
           <li><b>Cron</b> schedule builder (every N minutes, hourly, daily, weekly with weekdays, monthly, yearly) &harr; crontab expression, plain-English description and the next 5 runs; lists, ranges, steps, names, @daily and friends</li>
-          <li><b>JWT</b> decode, claims with expiry as local time, HS256 / HS384 / HS512 verification with the secret</li>
+          <li><b>JWT</b> decode, claims with expiry as local time; verify HS* with the secret, RS* / PS* / ES* / EdDSA with a PEM or JWK public key; sign a JSON payload with HS256</li>
         </ul>
 
         <p>
