@@ -44,6 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var inputWrapper = document.getElementById("input");
   var passwordOptions = document.getElementById("password-options");
   var cronOptions = document.getElementById("cron-options");
+  var uuidOptions = document.getElementById("uuid-options");
   var tabItems = document.querySelectorAll("#tabs li");
 
   /*
@@ -106,6 +107,9 @@ document.addEventListener("DOMContentLoaded", function () {
     field.addEventListener("input", readPasswordOptions);
   });
   document.getElementById("pw-generate").addEventListener("click", function () {
+    hasher.update();
+  });
+  document.getElementById("uuid-generate").addEventListener("click", function () {
     hasher.update();
   });
 
@@ -275,8 +279,9 @@ document.addEventListener("DOMContentLoaded", function () {
     passwordWrapper.hidden = !(hasher.tab == tabs.hmac || hasher.tab == tabs.cipher || hasher.tab == tabs.jwt);
     passwordWrapper.querySelector(".label").textContent = hasher.tab == tabs.jwt ? "Secret" : "Password";
     inputNow.hidden = hasher.tab != tabs.time;
-    inputWrapper.hidden = hasher.tab == tabs.password;
+    inputWrapper.hidden = hasher.tab == tabs.password || hasher.tab == tabs.uuid;
     passwordOptions.hidden = hasher.tab != tabs.password;
+    uuidOptions.hidden = hasher.tab != tabs.uuid;
     cronOptions.hidden = hasher.tab != tabs.cron;
     document.getElementById("json-options").hidden = hasher.tab != tabs.json;
 

@@ -53,8 +53,8 @@ test('ulid', () => {
 });
 
 test('elements', () => {
-  assert.match(calc('10uuid4', ''), UUID);
-  assert.match(calc('10uuid7', ''), UUID);
-  assert.match(calc('10ulid', ''), /^[0-9A-HJKMNP-TV-Z]{26}$/);
-  assert.notEqual(calc('10uuid4', ''), calc('10uuid4', ''));
+  assert.match(calc('14uuid4', ''), UUID);
+  assert.match(calc('14uuid7', ''), UUID);
+  assert.match(calc('14ulid', ''), /^[0-9A-HJKMNP-TV-Z]{26}$/);
+  assert.notEqual(calc('14uuid4', ''), calc('14uuid4', ''));
 });
