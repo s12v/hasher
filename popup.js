@@ -1,6 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
 
   var inputValue = document.getElementById("input-value");
+  var inputMasked = document.getElementById("input-masked");
+  var inputMask = document.getElementById("input-mask");
+  var inputNow = document.getElementById("input-now");
   var inputPassword = document.getElementById("input-password");
   var passwordWrapper = document.getElementById("input-password-wrapper");
   var tabItems = document.querySelectorAll("#tabs li");
@@ -11,8 +14,30 @@ document.addEventListener("DOMContentLoaded", function () {
   inputValue.addEventListener("input", function () {
     hasher.update();
   });
+  inputMasked.addEventListener("input", function () {
+    hasher.update();
+  });
   inputPassword.addEventListener("input", function () {
     hasher.update();
+  });
+
+  // "mask": swap the textarea for a password-type field, keeping the text
+  inputMask.addEventListener("change", function () {
+    var from = hasher.inputField();
+    var to = inputMask.checked ? inputMasked : inputValue;
+    to.value = from.value;
+    from.hidden = true;
+    to.hidden = false;
+    hasher.update();
+    to.focus();
+  });
+
+  // "Now" (Time tab): current Unix time as input
+  inputNow.addEventListener("click", function () {
+    var field = hasher.inputField();
+    field.value = Math.floor(Date.now() / 1000);
+    hasher.update();
+    field.focus();
   });
 
   // Open in a separate tab (pop-out); unavailable in the standalone web version
@@ -40,10 +65,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // show/hide optional fields
       passwordWrapper.hidden = !(hasher.tab == tabs.hmac || hasher.tab == tabs.cipher);
+      inputNow.hidden = hasher.tab != tabs.time;
 
       hasher.init();
       hasher.update();
-      inputValue.focus();
+      hasher.inputField().focus();
     });
   });
 
