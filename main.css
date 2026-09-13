@@ -442,8 +442,8 @@ label {
 }
 #output .element.pair {
   display: grid;
-  grid-template-columns: 3fr 2fr;
-  gap: 0 10px;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 12px;
 }
 #output .element.pair .col {
   min-width: 0;
