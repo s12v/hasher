@@ -116,6 +116,6 @@ test('elements read hasher.options', () => {
   hasher.options.password = { length: 8, symbols: false };
   assert.match(calc('10phrase', 'ignored input'), new RegExp(`^${WORD}_${WORD}\\d$`));
   assert.match(calc('10word', 'ignored input'), /^[A-Za-z0-9]{8}$/);
-  assert.equal(hasher.elements.p1.hint(), '~29.2 bits');
-  assert.equal(hasher.elements.p2.hint(), '~47.6 bits');
+  assert.equal(hasher.elements.p1.hint(), 'entropy: ~29.2 bits');
+  assert.equal(hasher.elements.p2.hint(), 'entropy: ~47.6 bits');
 });
