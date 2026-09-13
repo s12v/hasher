@@ -254,12 +254,14 @@ var hasher = {
       title: "SHA-256",
       calculate: function (input) {
         return CryptoJS.SHA256(input);
-      },
-      alt: {
-        title: "Base64",
-        calculate: function (input) {
-          return CryptoJS.enc.Base64.stringify(CryptoJS.SHA256(input));
-        }
+      }
+    },
+    h4b : {
+      id : tabs.hash+"sha256-b64",
+      tab : tabs.hash,
+      title : "SHA-256, Base64",
+      calculate : function (input) {
+        return CryptoJS.enc.Base64.stringify(CryptoJS.SHA256(input));
       }
     },
     h6 : {
@@ -268,12 +270,14 @@ var hasher = {
       title: "SHA-512",
       calculate: function (input) {
         return CryptoJS.SHA512(input);
-      },
-      alt: {
-        title: "Base64",
-        calculate: function (input) {
-          return CryptoJS.enc.Base64.stringify(CryptoJS.SHA512(input));
-        }
+      }
+    },
+    h6b : {
+      id : tabs.hash+"sha512-b64",
+      tab : tabs.hash,
+      title : "SHA-512, Base64",
+      calculate : function (input) {
+        return CryptoJS.enc.Base64.stringify(CryptoJS.SHA512(input));
       }
     },
     h2 : {
@@ -375,12 +379,14 @@ var hasher = {
       title : "HMAC-SHA256",
       calculate : function (input, password) {
         return CryptoJS.HmacSHA256(input, password);
-      },
-      alt : {
-        title : "Base64",
-        calculate : function (input, password) {
-          return CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(input, password));
-        }
+      }
+    },
+    hm4b : {
+      id : tabs.hmac+"sha256-b64",
+      tab : tabs.hmac,
+      title : "HMAC-SHA256, Base64",
+      calculate : function (input, password) {
+        return CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(input, password));
       }
     },
     hm2 : {
@@ -397,12 +403,14 @@ var hasher = {
       title : "HMAC-SHA512",
       calculate : function (input, password) {
         return CryptoJS.HmacSHA512(input, password);
-      },
-      alt : {
-        title : "Base64",
-        calculate : function (input, password) {
-          return CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA512(input, password));
-        }
+      }
+    },
+    hm6b : {
+      id : tabs.hmac+"sha512-b64",
+      tab : tabs.hmac,
+      title : "HMAC-SHA512, Base64",
+      calculate : function (input, password) {
+        return CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA512(input, password));
       }
     },
     hm5: {
@@ -430,14 +438,8 @@ var hasher = {
       calculate: function (input) {
         return crc.of("CRC-32", input);
       },
-      hint: function () {
-        return "zlib, PNG, gzip, zip, Ethernet";
-      },
-      alt: {
-        title: "Decimal",
-        calculate: function (input) {
-          return crc.decimal("CRC-32", input);
-        }
+      hint: function (input) {
+        return input.length ? "zlib, PNG, gzip, zip, Ethernet \u00b7 " + crc.decimal("CRC-32", input) : "";
       }
     },
     c2 : {
@@ -447,14 +449,8 @@ var hasher = {
       calculate: function (input) {
         return crc.of("CRC-32C", input);
       },
-      hint: function () {
-        return "Castagnoli: ext4, iSCSI, Kafka, gRPC, S3/GCS checksums";
-      },
-      alt: {
-        title: "Decimal",
-        calculate: function (input) {
-          return crc.decimal("CRC-32C", input);
-        }
+      hint: function (input) {
+        return input.length ? "Castagnoli: ext4, iSCSI, Kafka, gRPC, S3/GCS checksums \u00b7 " + crc.decimal("CRC-32C", input) : "";
       }
     },
     c3 : {
@@ -464,11 +460,8 @@ var hasher = {
       calculate: function (input) {
         return crc.of("CRC-16/MODBUS", input);
       },
-      alt: {
-        title: "Decimal",
-        calculate: function (input) {
-          return crc.decimal("CRC-16/MODBUS", input);
-        }
+      hint: function (input) {
+        return input.length ? crc.decimal("CRC-16/MODBUS", input) : "";
       }
     },
     c4 : {
@@ -478,11 +471,8 @@ var hasher = {
       calculate: function (input) {
         return crc.of("CRC-16/CCITT-FALSE", input);
       },
-      alt: {
-        title: "Decimal",
-        calculate: function (input) {
-          return crc.decimal("CRC-16/CCITT-FALSE", input);
-        }
+      hint: function (input) {
+        return input.length ? crc.decimal("CRC-16/CCITT-FALSE", input) : "";
       }
     },
     c5 : {
@@ -492,11 +482,8 @@ var hasher = {
       calculate: function (input) {
         return crc.of("CRC-16/XMODEM", input);
       },
-      alt: {
-        title: "Decimal",
-        calculate: function (input) {
-          return crc.decimal("CRC-16/XMODEM", input);
-        }
+      hint: function (input) {
+        return input.length ? crc.decimal("CRC-16/XMODEM", input) : "";
       }
     },
     c6 : {
@@ -506,14 +493,8 @@ var hasher = {
       calculate: function (input) {
         return crc.of("CRC-8", input);
       },
-      hint: function () {
-        return "poly 0x07";
-      },
-      alt: {
-        title: "Decimal",
-        calculate: function (input) {
-          return crc.decimal("CRC-8", input);
-        }
+      hint: function (input) {
+        return input.length ? "poly 0x07 \u00b7 " + crc.decimal("CRC-8", input) : "";
       }
     },
     c7 : {
@@ -523,14 +504,8 @@ var hasher = {
       calculate: function (input) {
         return crc.of("CRC-64/XZ", input);
       },
-      hint: function () {
-        return "xz, ECMA-182";
-      },
-      alt: {
-        title: "Decimal",
-        calculate: function (input) {
-          return crc.decimal("CRC-64/XZ", input);
-        }
+      hint: function (input) {
+        return input.length ? "xz, ECMA-182 \u00b7 " + crc.decimal("CRC-64/XZ", input) : "";
       }
     },
     c8 : {
@@ -540,14 +515,8 @@ var hasher = {
       calculate: function (input) {
         return crc.hex(crc.adler32(input), 32);
       },
-      hint: function () {
-        return "zlib";
-      },
-      alt: {
-        title: "Decimal",
-        calculate: function (input) {
-          return String(crc.adler32(input));
-        }
+      hint: function (input) {
+        return input.length ? "zlib \u00b7 " + crc.adler32(input) : "";
       }
     },
 
@@ -842,13 +811,15 @@ var hasher = {
           return "as float" + (digits == 8 ? "32" : "64") + ": " + numbers.hexAsFloat(p.value, digits);
         }
         return "";
-      },
-      alt: {
-        title: "Octal",
-        calculate: function (input) {
-          var p = parseNumber(input);
-          return (p.error || p.float !== undefined) ? "" : numbers.format(p.value, 8);
-        }
+      }
+    },
+    n2b : {
+      id : tabs.number+"oct",
+      tab : tabs.number,
+      title : "Octal",
+      calculate : function (input) {
+        var p = parseNumber(input);
+        return (p.error || p.float !== undefined) ? "" : numbers.format(p.value, 8);
       }
     },
     n3 : {
@@ -882,13 +853,18 @@ var hasher = {
       },
       hint: function () {
         return "big-endian bytes";
+      }
+    },
+    n5b : {
+      id : tabs.number+"float32",
+      tab : tabs.number,
+      title : "IEEE-754 single",
+      hint : function () {
+        return "big-endian bytes";
       },
-      alt: {
-        title: "IEEE-754 single",
-        calculate: function (input) {
-          var p = parseNumber(input);
-          return (p.error || p.float === undefined) ? "" : numbers.float32hex(p.float);
-        }
+      calculate : function (input) {
+        var p = parseNumber(input);
+        return (p.error || p.float === undefined) ? "" : numbers.float32hex(p.float);
       }
     },
 
@@ -952,12 +928,14 @@ var hasher = {
       },
       calculate: function (input) {
         return textcase.utf16hex(input, false);
-      },
-      alt: {
-        title: "Little-endian",
-        calculate: function (input) {
-          return textcase.utf16hex(input, true);
-        }
+      }
+    },
+    s5b : {
+      id : tabs.string+"utf16le-hex",
+      tab : tabs.string,
+      title : "UTF-16 LE to Hex",
+      calculate : function (input) {
+        return textcase.utf16hex(input, true);
       }
     },
     s6 : {
@@ -996,12 +974,14 @@ var hasher = {
       title: "UPPER CASE",
       calculate: function (input) {
         return input.toUpperCase();
-      },
-      alt: {
-        title: "lower case",
-        calculate: function (input) {
-          return input.toLowerCase();
-        }
+      }
+    },
+    s8b : {
+      id : tabs.string+"lower",
+      tab : tabs.string,
+      title : "lower case",
+      calculate : function (input) {
+        return input.toLowerCase();
       }
     },
     s9 : {
@@ -1010,12 +990,14 @@ var hasher = {
       title: "Title Case",
       calculate: function (input) {
         return textcase.title(input);
-      },
-      alt: {
-        title: "Sentence case",
-        calculate: function (input) {
-          return textcase.sentence(input);
-        }
+      }
+    },
+    s9b : {
+      id : tabs.string+"sentence",
+      tab : tabs.string,
+      title : "Sentence case",
+      calculate : function (input) {
+        return textcase.sentence(input);
       }
     },
     s10 : {
@@ -1024,12 +1006,14 @@ var hasher = {
       title: "camelCase",
       calculate: function (input) {
         return textcase.camel(input);
-      },
-      alt: {
-        title: "PascalCase",
-        calculate: function (input) {
-          return textcase.pascal(input);
-        }
+      }
+    },
+    s10b : {
+      id : tabs.string+"pascal",
+      tab : tabs.string,
+      title : "PascalCase",
+      calculate : function (input) {
+        return textcase.pascal(input);
       }
     },
     s11 : {
@@ -1038,12 +1022,14 @@ var hasher = {
       title: "snake_case",
       calculate: function (input) {
         return textcase.snake(input);
-      },
-      alt: {
-        title: "kebab-case",
-        calculate: function (input) {
-          return textcase.kebab(input);
-        }
+      }
+    },
+    s11b : {
+      id : tabs.string+"kebab",
+      tab : tabs.string,
+      title : "kebab-case",
+      calculate : function (input) {
+        return textcase.kebab(input);
       }
     },
     s12 : {
@@ -1052,12 +1038,14 @@ var hasher = {
       title: "CONSTANT_CASE",
       calculate: function (input) {
         return textcase.constant(input);
-      },
-      alt: {
-        title: "slug",
-        calculate: function (input) {
-          return textcase.slug(input);
-        }
+      }
+    },
+    s12b : {
+      id : tabs.string+"slug",
+      tab : tabs.string,
+      title : "slug",
+      calculate : function (input) {
+        return textcase.slug(input);
       }
     },
 
@@ -1068,12 +1056,17 @@ var hasher = {
       title : "Base64",
       calculate : function (input) {
         return basex.base64(basex.bytes(input));
+      }
+    },
+    e1b : {
+      id : tabs.encode+"base64url",
+      tab : tabs.encode,
+      title : "Base64url",
+      hint : function () {
+        return "URL-safe alphabet, no padding \u00b7 JWT";
       },
-      alt : {
-        title : "Base64url",
-        calculate : function (input) {
-          return basex.base64url(basex.bytes(input));
-        }
+      calculate : function (input) {
+        return basex.base64url(basex.bytes(input));
       }
     },
     e2: {
@@ -1084,18 +1077,11 @@ var hasher = {
         var bytes = basex.unbase64(input);
         if (!bytes) return "";
         var text = basex.text(bytes);
-        return text === null ? "" : text;
+        return text === null ? basex.hex(bytes) : text;
       },
       hint : function (input) {
         var bytes = basex.unbase64(input);
-        return (bytes && basex.text(bytes) === null) ? "binary, not text \u2014 see the hex" : "";
-      },
-      alt : {
-        title : "Hex",
-        calculate : function (input) {
-          var bytes = basex.unbase64(input);
-          return bytes ? basex.hex(bytes) : "";
-        }
+        return (bytes && basex.text(bytes) === null) ? "binary, shown as hex" : "";
       }
     },
     e11: {
@@ -1117,18 +1103,11 @@ var hasher = {
         var bytes = basex.unbase32(input);
         if (!bytes) return "";
         var text = basex.text(bytes);
-        return text === null ? "" : text;
+        return text === null ? basex.hex(bytes) : text;
       },
       hint : function (input) {
         var bytes = basex.unbase32(input);
-        return (bytes && basex.text(bytes) === null) ? "binary, not text \u2014 see the hex" : "";
-      },
-      alt : {
-        title : "Hex",
-        calculate : function (input) {
-          var bytes = basex.unbase32(input);
-          return bytes ? basex.hex(bytes) : "";
-        }
+        return (bytes && basex.text(bytes) === null) ? "binary, shown as hex" : "";
       }
     },
     e13: {
@@ -1150,18 +1129,11 @@ var hasher = {
         var bytes = basex.unbase58(input);
         if (!bytes) return "";
         var text = basex.text(bytes);
-        return text === null ? "" : text;
+        return text === null ? basex.hex(bytes) : text;
       },
       hint : function (input) {
         var bytes = basex.unbase58(input);
-        return (bytes && basex.text(bytes) === null) ? "binary, not text \u2014 see the hex" : "";
-      },
-      alt : {
-        title : "Hex",
-        calculate : function (input) {
-          var bytes = basex.unbase58(input);
-          return bytes ? basex.hex(bytes) : "";
-        }
+        return (bytes && basex.text(bytes) === null) ? "binary, shown as hex" : "";
       }
     },
     e4: {
@@ -1285,12 +1257,14 @@ var hasher = {
       hint : function () {
         var n = passgen.clamp(hasher.options.key.bytes, 1, 1024, 32);
         return "entropy: " + (n * 8) + " bits \u00b7 openssl rand -hex " + n;
-      },
-      alt : {
-        title : "Base64",
-        calculate : function () {
-          return basex.base64(ids.randomBytes(passgen.clamp(hasher.options.key.bytes, 1, 1024, 32)));
-        }
+      }
+    },
+    p6b : {
+      id : tabs.password+"key-b64",
+      tab : tabs.password,
+      title : "Random key, Base64",
+      calculate : function () {
+        return basex.base64(ids.randomBytes(passgen.clamp(hasher.options.key.bytes, 1, 1024, 32)));
       }
     },
     p3: {
@@ -1641,9 +1615,6 @@ var hasher = {
       } else {
         document.getElementById(element.id).textContent = value;
       }
-      if (element.alt) {
-        document.getElementById(element.id + "-alt").textContent = waiting ? "" : String(element.alt.calculate(input, password));
-      }
       document.getElementById(element.id + "-hint").textContent = hint;
       document.getElementById(element.id + "-hint").setAttribute("data-tone", tone);
       document.getElementById(element.id + "-value").setAttribute("data-tone", tone);
@@ -1665,7 +1636,8 @@ var hasher = {
     for (var i in this.elements) {
       var element = this.elements[i];
       if (element.tab == this.tab) {
-        var main =
+        html +=
+          '<div class="element" id="'+element.id+'-element">'+
             '<div class="element-head">'+
               '<span id="'+element.id+'-title" class="title">'+
                 element.title+
@@ -1675,21 +1647,8 @@ var hasher = {
             '</div>'+
             '<div id="'+element.id+'-value" class="value' + (element.nocopy ? ' static' : '') + '">'+
               '<div id="'+element.id+'" class="text' + (element.tall ? ' tall' : '') + '"></div>'+
-            '</div>';
-        if (element.alt) {
-          // the same value in another representation, side by side
-          var alt =
-            '<div class="element-head">'+
-              '<span class="title">'+element.alt.title+'</span>'+
-              '<span id="'+element.id+'-alt-copy" class="copy">copy</span>'+
             '</div>'+
-            '<div id="'+element.id+'-alt-value" class="value">'+
-              '<div id="'+element.id+'-alt" class="text"></div>'+
-            '</div>';
-          html += '<div class="element pair" id="'+element.id+'-element"><div class="col">' + main + '</div><div class="col">' + alt + '</div></div>';
-        } else {
-          html += '<div class="element" id="'+element.id+'-element">' + main + '</div>';
-        }
+          '</div>';
       }
     }
     document.getElementById("output").innerHTML = html;

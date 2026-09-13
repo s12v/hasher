@@ -440,14 +440,6 @@ label {
 #output .element {
   margin-top: 10px;
 }
-#output .element.pair {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 12px;
-}
-#output .element.pair .col {
-  min-width: 0;
-}
 #output .element-head {
   display: flex;
   align-items: center;

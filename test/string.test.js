@@ -25,9 +25,9 @@ test('utf-8 <-> hex', () => {
 
 test('utf-16 <-> hex, big and little endian', () => {
   assert.equal(calc('9utf16-hex', 'abc'), '006100620063');
-  assert.equal(hasher.elements.s5.alt.calculate('abc'), '610062006300');
+  assert.equal(calc('9utf16le-hex', 'abc'), '610062006300');
   assert.equal(calc('9utf16-hex', 'привет'), '043f04400438043204350442');
-  assert.equal(hasher.elements.s5.alt.calculate('😀'), '3dd800de', 'surrogate pair, LE');
+  assert.equal(calc('9utf16le-hex', '😀'), '3dd800de', 'surrogate pair, LE');
   assert.equal(calc('9hex-utf16', '006100620063'), 'abc');
   assert.equal(hasher.findById('9i1'), null, 'ASCII rows are gone');
 });
@@ -50,24 +50,24 @@ test('word splitting', () => {
 test('case conversions', () => {
   const s = 'hello wonderful world';
   assert.equal(calc('9upper', s), 'HELLO WONDERFUL WORLD');
-  assert.equal(hasher.elements.s8.alt.calculate('HeLLo'), 'hello');
+  assert.equal(calc('9lower', 'HeLLo'), 'hello');
   assert.equal(calc('9title', s), 'Hello Wonderful World');
-  assert.equal(hasher.elements.s9.alt.calculate(s), 'Hello wonderful world');
+  assert.equal(calc('9sentence', s), 'Hello wonderful world');
   assert.equal(calc('9camel', s), 'helloWonderfulWorld');
-  assert.equal(hasher.elements.s10.alt.calculate(s), 'HelloWonderfulWorld');
+  assert.equal(calc('9pascal', s), 'HelloWonderfulWorld');
   assert.equal(calc('9snake', s), 'hello_wonderful_world');
-  assert.equal(hasher.elements.s11.alt.calculate(s), 'hello-wonderful-world');
+  assert.equal(calc('9kebab', s), 'hello-wonderful-world');
   assert.equal(calc('9constant', s), 'HELLO_WONDERFUL_WORLD');
-  assert.equal(hasher.elements.s12.alt.calculate(s), 'hello-wonderful-world');
+  assert.equal(calc('9slug', s), 'hello-wonderful-world');
   assert.equal(calc('9snake', 'fooBarBaz'), 'foo_bar_baz', 'camelCase in');
   assert.equal(calc('9camel', 'FOO_BAR'), 'fooBar', 'CONSTANT in');
 });
 
 test('slug strips diacritics and keeps other scripts', () => {
-  assert.equal(hasher.elements.s12.alt.calculate('  Ünïcödé Café, Straße!  '), 'unicode-cafe-straße');
-  assert.equal(hasher.elements.s12.alt.calculate('Привет, мир!'), 'привет-мир');
-  assert.equal(hasher.elements.s12.alt.calculate('fooBarBaz'), 'foo-bar-baz');
-  assert.equal(hasher.elements.s12.alt.calculate('---'), '');
+  assert.equal(calc('9slug', '  Ünïcödé Café, Straße!  '), 'unicode-cafe-straße');
+  assert.equal(calc('9slug', 'Привет, мир!'), 'привет-мир');
+  assert.equal(calc('9slug', 'fooBarBaz'), 'foo-bar-baz');
+  assert.equal(calc('9slug', '---'), '');
 });
 
 test('utf8() helper', () => {

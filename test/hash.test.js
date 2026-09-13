@@ -61,12 +61,11 @@ test('SRI and base64 hints', () => {
   // printf 'hello' | openssl dgst -sha384 -binary | base64
   assert.equal(calc('1sri', 'hello'), 'sha384-WeF0h3dEjGnea4ANejO7+5/xtGPkQ1TDVTvNucZm+pASWjx5+QOXvfX2oT3oKGhP');
   // printf 'hello' | openssl dgst -sha256 -binary | base64
-  assert.equal(ctx.hasher.elements.h4.alt.title, 'Base64');
-  assert.equal(ctx.hasher.elements.h4.alt.calculate('hello'), 'LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ=');
-  assert.match(ctx.hasher.elements.h6.alt.calculate('hello'), /^[A-Za-z0-9+/]{86}==$/);
+  assert.equal(calc('1sha256-b64', 'hello'), 'LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ=');
+  assert.match(calc('1sha512-b64', 'hello'), /^[A-Za-z0-9+/]{86}==$/);
 });
 
 test('row order: most used first, MD4 and Whirlpool gone', () => {
   const titles = Object.values(ctx.hasher.elements).filter((e) => e.tab === ctx.tabs.hash).map((e) => e.title);
-  assert.deepEqual(Array.from(titles), ['SHA-256', 'SHA-512', 'SHA-1', 'MD5', 'SHA3-256', 'SHA3-512', 'Keccak-256', 'SHA-384', 'SHA-224', 'RIPEMD-160', 'BLAKE2b-256', 'BLAKE2b-512', 'SRI']);
+  assert.deepEqual(Array.from(titles), ['SHA-256', 'SHA-256, Base64', 'SHA-512', 'SHA-512, Base64', 'SHA-1', 'MD5', 'SHA3-256', 'SHA3-512', 'Keccak-256', 'SHA-384', 'SHA-224', 'RIPEMD-160', 'BLAKE2b-256', 'BLAKE2b-512', 'SRI']);
 });
