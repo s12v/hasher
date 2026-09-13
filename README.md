@@ -30,6 +30,17 @@ npm test
 
 Every `calculate()` in `hasher.js` is checked against vectors produced with `openssl dgst` / `openssl enc`.
 
+To try it as an extension, load the directory unpacked (see Install). To try the standalone page, serve the
+directory over HTTP (`python3 -m http.server`) — `file://` blocks the wordlist fetch on the Password tab.
+
+## Release
+
+1. Set the same new version in `manifest.json` and `package.json`, commit.
+2. Tag and push: `git tag v1.6.0 && git push origin master v1.6.0`.
+3. The Release workflow runs the tests, builds `hasher-1.6.0.zip` (`npm run build` does the same locally into `dist/`)
+   and attaches it to a GitHub Release.
+4. Upload the zip in the [Chrome Web Store developer dashboard](https://chrome.google.com/webstore/devconsole).
+
 ## Features
 
 * <b>Hash</b>: MD5, SHA-1, SHA-2 (224, 256, 384, 512), SHA-3 (256, 512), Keccak-256, RIPEMD-160, MD4, Whirlpool

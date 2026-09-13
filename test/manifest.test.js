@@ -49,3 +49,18 @@ test('no jQuery', () => {
     assert.doesNotMatch(fs.readFileSync(path.join(root, src), 'utf8'), /\$\(|jQuery/, src);
   }
 });
+
+test('build script packs exactly the extension files', () => {
+  const src = fs.readFileSync(path.join(root, 'scripts/build.js'), 'utf8');
+  const listed = /const files = \[([^\]]*)\]/.exec(src)[1].match(/'([^']+)'/g).map((s) => s.slice(1, -1));
+  for (const file of ['manifest.json', 'popup.html', 'popup.js', 'hasher.js', 'main.css', 'LICENSE', 'images', 'lib']) {
+    assert.ok(listed.includes(file), `${file} is not packed`);
+  }
+  for (const file of listed) {
+    assert.ok(fs.existsSync(path.join(root, file)), `${file} is packed but missing`);
+  }
+  // every script popup.html loads must live inside a packed path
+  for (const src of [...popupScripts(), 'popup.js', 'main.css']) {
+    assert.ok(listed.some((f) => src === f || src.startsWith(f + '/')), `${src} would be left out of the zip`);
+  }
+});
