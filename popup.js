@@ -12,7 +12,8 @@ var TAB_META = {
   diff : { rows : 6, placeholder : "original text" },
   encode : { rows : 2 },
   cron : { rows : 1, placeholder : "*/15 9-17 * * mon-fri" },
-  jwt : { rows : 3, placeholder : "a token to decode and verify, or a JSON payload to sign with HS256" }
+  jwt : { rows : 3, placeholder : "a token to decode and verify, or a JSON payload to sign with HS256" },
+  uuid : { rows : 1, placeholder : "paste a UUID or ULID to inspect, or a name for UUID v5" }
 };
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -335,7 +336,7 @@ document.addEventListener("DOMContentLoaded", function () {
       inputMask.checked = false;
       applyMask();
     }
-    inputWrapper.hidden = hasher.tab == tabs.password || hasher.tab == tabs.uuid;
+    inputWrapper.hidden = hasher.tab == tabs.password;
     passwordOptions.hidden = hasher.tab != tabs.password;
     uuidOptions.hidden = hasher.tab != tabs.uuid;
     cronOptions.hidden = hasher.tab != tabs.cron;

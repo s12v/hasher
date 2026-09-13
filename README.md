@@ -30,7 +30,7 @@ Chrome Web Store listing is being republished. Until then, load it unpacked:
 * <b>HMAC:</b> SHA-256, SHA-1, SHA-512, SHA-384, MD5 (base64 hints for SHA-256/512)
 * <b>CRC:</b> CRC-32, CRC-32C, CRC-16/MODBUS, CRC-16/CCITT-FALSE, CRC-16/XMODEM, CRC-8, CRC-64/XZ, Adler-32 — one parametrised implementation checked against the CRC catalogue
 * <b>Password:</b> passphrases from the EFF large wordlist (words, separator, digits, capitalize) and passwords (length, symbols) with the entropy estimate — a port of [ppgen](https://github.com/s12v/ppgen); random keys of N bytes as hex and Base64 (`openssl rand`)
-* <b>UUID:</b> UUID v4, UUID v7, ULID
+* <b>UUID:</b> generate v4, v7, ULID; inspect a pasted UUID / ULID (version, variant, embedded time); UUID v5 from a name (DNS and URL namespaces)
 * <b>Cipher:</b> AES-256-CBC with a passphrase, byte-compatible with `openssl enc -aes-256-cbc -pbkdf2 -a` (PBKDF2-SHA256, 10000 iterations) and with the legacy `-md md5` format; decrypt detects which
 * <b>IP:</b> IPv4 and IPv6 — canonical form (RFC 5952), decimal, hex, binary, PTR, address type (private, link-local, ULA, documentation…); for a prefix: network, netmask / wildcard, first / last host, broadcast, hosts
 * <b>Time:</b> Unix time (s or ms), ISO 8601, RFC-1123 or `2019-02-27 09:36:55` in → Unix s / ms, ISO 8601, RFC-1123, DATETIME UTC / local out

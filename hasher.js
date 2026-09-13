@@ -1282,6 +1282,55 @@ var hasher = {
         return basex.base64(ids.randomBytes(passgen.clamp(hasher.options.key.bytes, 1, 1024, 32)));
       }
     },
+    // UUID: inspect a pasted UUID / ULID, derive v5 from a name, or generate
+    u1: {
+      id : tabs.uuid+"inspect",
+      tab : tabs.uuid,
+      title : "Inspect",
+      calculate : function (input) {
+        var u = ids.parseUuid(input);
+        if (u) {
+          if (u.nil) return "nil UUID (all zeros)";
+          if (u.max) return "max UUID (all ones)";
+          if (u.version === null) return u.variant + " variant, not an RFC 4122 UUID";
+          var names = { 1 : "time-based, MAC address", 2 : "DCE security", 3 : "name-based, MD5", 4 : "random", 5 : "name-based, SHA-1", 6 : "time-ordered (reordered v1)", 7 : "time-ordered, Unix ms", 8 : "custom" };
+          return "UUID v" + u.version + (names[u.version] ? " \u2014 " + names[u.version] : "") + " \u00b7 " + u.variant + " variant";
+        }
+        if (ids.parseUlid(input)) return "ULID \u2014 48-bit time + 80 random bits";
+        return "";
+      },
+      hint : function (input) {
+        var u = ids.parseUuid(input);
+        var l = ids.parseUlid(input);
+        var time = u && u.time !== null ? u.time : l ? l.time : null;
+        if (time === null) return "";
+        var d = new Date(time);
+        return "created " + d.toISOString() + " \u00b7 " + jwt.relative(Math.round((time - Date.now()) / 1000));
+      }
+    },
+    u2: {
+      id : tabs.uuid+"v5dns",
+      tab : tabs.uuid,
+      title : "UUID v5, DNS namespace",
+      calculate : function (input) {
+        var name = input.trim();
+        if (!name.length || ids.parseUuid(name) || ids.parseUlid(name)) return "";
+        return ids.uuid5(ids.NAMESPACES.DNS, name);
+      },
+      hint : function (input) {
+        return this.calculate(input).length ? "deterministic: the same name always gives this UUID" : "";
+      }
+    },
+    u3: {
+      id : tabs.uuid+"v5url",
+      tab : tabs.uuid,
+      title : "UUID v5, URL namespace",
+      calculate : function (input) {
+        var name = input.trim();
+        if (!name.length || ids.parseUuid(name) || ids.parseUlid(name)) return "";
+        return ids.uuid5(ids.NAMESPACES.URL, name);
+      }
+    },
     p3: {
       id : tabs.uuid+"uuid4",
       tab : tabs.uuid,
@@ -1568,6 +1617,8 @@ var hasher = {
     jwt : "Paste a token to decode it.",
     diff : "Enter two texts to compare."
   },
+  /* tabs whose rows do not need input at all */
+  GENERATORS : { password : true, uuid : true },
   /*
    * JSON value as displayed: keys sorted when the option is on
    */
@@ -1631,7 +1682,7 @@ var hasher = {
       }
     }
     // tabs that need input show only the prompt until there is some
-    var waiting = input.length == 0 && this.EMPTY[tabName] != undefined;
+    var waiting = input.length == 0 && this.EMPTY[tabName] != undefined && !this.GENERATORS[tabName];
     if (tabName == "diff") {
       waiting = input.length == 0 && this.options.other.length == 0;
     }

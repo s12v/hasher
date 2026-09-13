@@ -65,3 +65,37 @@ test('hints state the fixed entropy of each format', () => {
   assert.equal(hasher.elements.p4.hint(), 'time-ordered · 48-bit timestamp + 74 random bits');
   assert.equal(hasher.elements.p5.hint(), 'time-ordered · 48-bit timestamp + 80 random bits');
 });
+
+test('inspect a pasted UUID', () => {
+  const { hasher } = ctx;
+  assert.equal(calc('14inspect', '6ba7b810-9dad-11d1-80b4-00c04fd430c8'), 'UUID v1 — time-based, MAC address · RFC 4122 variant');
+  assert.match(hasher.elements.u1.hint('6ba7b810-9dad-11d1-80b4-00c04fd430c8'), /^created 1998-02-04T22:13:53\.151Z · \d+ years ago$/);
+  assert.equal(calc('14inspect', ids.uuid4()), 'UUID v4 — random · RFC 4122 variant');
+  assert.equal(hasher.elements.u1.hint(ids.uuid4()), '', 'v4 has no time');
+  const v7 = ids.uuid7(new Date(1700000000123));
+  assert.equal(calc('14inspect', v7), 'UUID v7 — time-ordered, Unix ms · RFC 4122 variant');
+  assert.match(hasher.elements.u1.hint(v7), /^created 2023-11-14T22:13:20\.123Z/);
+  // the RFC 9562 v6 example
+  assert.equal(calc('14inspect', '1EC9414C-232A-6B00-B3C8-9F6BDECED846'), 'UUID v6 — time-ordered (reordered v1) · RFC 4122 variant');
+  assert.match(hasher.elements.u1.hint('1EC9414C-232A-6B00-B3C8-9F6BDECED846'), /^created 2022-02-22T19:22:22\.000Z/);
+  assert.equal(calc('14inspect', '00000000-0000-0000-0000-000000000000'), 'nil UUID (all zeros)');
+  assert.equal(calc('14inspect', 'ffffffff-ffff-ffff-ffff-ffffffffffff'), 'max UUID (all ones)');
+  assert.equal(calc('14inspect', '{6BA7B810-9DAD-11D1-80B4-00C04FD430C8}'), 'UUID v1 — time-based, MAC address · RFC 4122 variant', 'braces and upper case');
+  assert.equal(calc('14inspect', 'urn:uuid:6ba7b810-9dad-11d1-80b4-00c04fd430c8').slice(0, 7), 'UUID v1', 'urn prefix');
+  assert.equal(calc('14inspect', '6ba7b8109dad11d180b400c04fd430c8').slice(0, 7), 'UUID v1', 'no dashes');
+  assert.equal(calc('14inspect', '01ARYZ6S41TSV4RRFFQ69G5FAV'), 'ULID — 48-bit time + 80 random bits');
+  assert.match(hasher.elements.u1.hint('01ARYZ6S41TSV4RRFFQ69G5FAV'), /^created 2016-07-30T22:36:16\.385Z/);
+  assert.equal(calc('14inspect', 'hello'), '');
+  assert.equal(calc('14inspect', ''), '');
+});
+
+// python3 -c 'import uuid; print(uuid.uuid5(uuid.NAMESPACE_DNS, "python.org"))'
+test('UUID v5 from a name', () => {
+  assert.equal(calc('14v5dns', 'python.org'), '886313e1-3b8a-5372-9b90-0c9aee199e5d');
+  assert.equal(calc('14v5url', 'http://python.org'), '50960143-e2b7-5b7a-9ca7-05375f51d5c1');
+  assert.equal(calc('14v5dns', 'привет'), '43eec7ca-0ff7-5d77-9faa-6955bd8e6dc9', 'UTF-8 name');
+  assert.equal(calc('14v5dns', ' python.org '), '886313e1-3b8a-5372-9b90-0c9aee199e5d', 'trimmed');
+  assert.equal(calc('14v5dns', ids.uuid4()), '', 'a UUID is inspected, not hashed');
+  assert.equal(calc('14v5dns', '01ARYZ6S41TSV4RRFFQ69G5FAV'), '', 'a ULID too');
+  assert.equal(calc('14v5dns', ''), '');
+});

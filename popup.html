@@ -170,7 +170,7 @@
           <li><b>HMAC</b> SHA-256, SHA-1, SHA-512, SHA-384, MD5 &mdash; webhook signatures, TOTP, JWT HS*</li>
           <li><b>CRC</b> CRC-32, CRC-32C, CRC-16 (MODBUS, CCITT-FALSE, XMODEM), CRC-8, CRC-64/XZ, Adler-32</li>
           <li><b>Password</b> passphrases from the <a href="https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases" target="_blank">EFF wordlist</a> (7776 words, ~12.9 bits each), random passwords and random keys (hex / Base64, like <code>openssl rand</code>), all from the browser's CSPRNG</li>
-          <li><b>UUID</b> UUID v4, UUID v7 and ULID</li>
+          <li><b>UUID</b> generate v4, v7 and ULID; paste one to see its version, variant and embedded time; a name gives its UUID v5 (DNS and URL namespaces)</li>
           <li><b>Cipher</b> AES-256-CBC with a passphrase, byte-compatible with <span class="help" title="openssl enc -aes-256-cbc -pbkdf2 -a -pass pass:&quot;Secret Passphrase&quot;">openssl enc -pbkdf2</span> (and the legacy -md md5 format); decrypt reads both</li>
           <li><b>IP</b> IPv4 and IPv6: canonical form, decimal, hex, binary, PTR name, address type (private, link-local, ULA, documentation&hellip;); for a prefix &mdash; network, netmask and wildcard, first / last host, broadcast, host count</li>
           <li><b>Time</b> Unix time (seconds or milliseconds), ISO 8601, RFC-1123 or "2019-02-27 09:36:55" in &rarr; all of them out</li>
