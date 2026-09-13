@@ -45,5 +45,6 @@ test('row order and base64 hints', () => {
   const titles = Object.values(ctx.hasher.elements).filter((e) => e.tab === ctx.tabs.hmac).map((e) => e.title);
   assert.deepEqual(Array.from(titles), ['HMAC-SHA256', 'HMAC-SHA1', 'HMAC-SHA512', 'HMAC-SHA384', 'HMAC-MD5']);
   // printf 'abc' | openssl dgst -sha256 -hmac key -binary | base64
-  assert.equal(ctx.hasher.elements.hm4.hint('abc', 'key'), 'base64: nBluMtwBdfhvSxy4konWYZ3mvuaZ5MN45oMJ7Zehpqs=');
+  assert.equal(ctx.hasher.elements.hm4.alt.calculate('abc', 'key'), 'nBluMtwBdfhvSxy4konWYZ3mvuaZ5MN45oMJ7Zehpqs=');
+  assert.equal(ctx.hasher.elements.hm6.alt.title, 'Base64');
 });

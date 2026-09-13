@@ -61,8 +61,9 @@ test('SRI and base64 hints', () => {
   // printf 'hello' | openssl dgst -sha384 -binary | base64
   assert.equal(calc('1sri', 'hello'), 'sha384-WeF0h3dEjGnea4ANejO7+5/xtGPkQ1TDVTvNucZm+pASWjx5+QOXvfX2oT3oKGhP');
   // printf 'hello' | openssl dgst -sha256 -binary | base64
-  assert.equal(ctx.hasher.elements.h4.hint('hello'), 'base64: LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ=');
-  assert.match(ctx.hasher.elements.h6.hint('hello'), /^base64: [A-Za-z0-9+/]{86}==$/);
+  assert.equal(ctx.hasher.elements.h4.alt.title, 'Base64');
+  assert.equal(ctx.hasher.elements.h4.alt.calculate('hello'), 'LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ=');
+  assert.match(ctx.hasher.elements.h6.alt.calculate('hello'), /^[A-Za-z0-9+/]{86}==$/);
 });
 
 test('row order: most used first, MD4 and Whirlpool gone', () => {
