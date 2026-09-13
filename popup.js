@@ -251,9 +251,25 @@ document.addEventListener("DOMContentLoaded", function () {
     return theme;
   };
   var theme = applyTheme(remember("theme"));
+  // what a setting looks like right now: "system" follows the OS
+  var effective = function (name) {
+    if (name != "system") {
+      return name;
+    }
+    return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  };
   themeButton.addEventListener("click", function () {
+    // every click must change the look: skip the setting that looks like the current one
     var order = ["system", "light", "dark"];
-    theme = applyTheme(order[(order.indexOf(theme) + 1) % order.length]);
+    var next = theme;
+    do {
+      next = order[(order.indexOf(next) + 1) % order.length];
+    } while (effective(next) == effective(theme) && next != theme);
+    // when the explicit setting would look like the OS, follow the OS instead
+    if (effective(next) == effective("system")) {
+      next = "system";
+    }
+    theme = applyTheme(next);
     remember("theme", theme);
   });
 
