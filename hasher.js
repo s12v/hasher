@@ -823,7 +823,11 @@ var hasher = {
       tab : tabs.encode,
       title : "JavaScript decodeURI()",
       calculate : function (input) {
-        return decodeURI(input);
+        try {
+          return decodeURI(input);
+        } catch (err) {
+          return "";
+        }
       }
     },
     e7: {
@@ -831,7 +835,11 @@ var hasher = {
       tab : tabs.encode,
       title : "JavaScript decodeURIComponent()",
       calculate : function (input) {
-        return decodeURIComponent(input);
+        try {
+          return decodeURIComponent(input);
+        } catch (err) {
+          return "";
+        }
       }
     },
     e8: {
