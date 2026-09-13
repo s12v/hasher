@@ -5,7 +5,7 @@ Everything runs locally in the popup — nothing is sent anywhere.
 
 Manifest V3, no dependencies except bundled crypto libraries.
 
-Standalone version for other browsers:  
+Standalone version for other browsers (the same popup, deployed from `master` by GitHub Actions):  
 https://s12v.github.io/hasher/
 
 ## Install
