@@ -7,8 +7,6 @@
 Developer's toolbox: hashes, HMAC, CRC, ciphers, IP/subnet, time, number and string conversions.
 Everything runs locally in the popup — nothing is sent anywhere.
 
-Manifest V3, no dependencies except bundled crypto libraries.
-
 Standalone version for other browsers (the same popup, deployed from `master` by GitHub Actions):  
 https://s12v.github.io/hasher/
 
@@ -26,28 +24,6 @@ Chrome Web Store listing is being republished. Until then, load it unpacked:
 1. `git clone https://github.com/s12v/hasher`
 2. Open `chrome://extensions`, enable **Developer mode**
 3. **Load unpacked** → select the `hasher` directory
-
-## Development
-
-No build step. Tests run on Node 20+ without dependencies:
-
-```
-npm test
-```
-
-Every `calculate()` in `hasher.js` is checked against vectors produced with `openssl dgst` / `openssl enc`.
-On GitHub Actions `npm run test:ci` runs the same tests and adds a pass/fail summary and per-test annotations to the pull request.
-
-To try it as an extension, load the directory unpacked (see Install). To try the standalone page, serve the
-directory over HTTP (`python3 -m http.server`) — `file://` blocks the wordlist fetch on the Password tab.
-
-## Release
-
-1. Set the same new version in `manifest.json` and `package.json`, commit.
-2. Tag and push: `git tag v1.6.0 && git push origin master v1.6.0`.
-3. The Release workflow runs the tests, builds `hasher-1.6.0.zip` (`npm run build` does the same locally into `dist/`)
-   and attaches it to a GitHub Release.
-4. Upload the zip in the [Chrome Web Store developer dashboard](https://chrome.google.com/webstore/devconsole).
 
 ## Features
 
@@ -70,6 +46,28 @@ directory over HTTP (`python3 -m http.server`) — `file://` blocks the wordlist
 Usage: enter text and click on the result — it is copied to clipboard.
 **mask** on the Hash and HMAC tabs hides the input (for hashing passwords); **Now** on the Time tab inserts the current Unix time.
 The last tab and the theme (the icon toggles between following the OS and the opposite look) are remembered. Keyboard: Alt+1…9 / Alt+0 jump to a tab, Alt+[ / Alt+] go to the previous / next one.
+
+## Development
+
+No build step. Tests run on Node 20+ without dependencies:
+
+```
+npm test
+```
+
+Every `calculate()` in `hasher.js` is checked against vectors produced with `openssl dgst` / `openssl enc`.
+On GitHub Actions `npm run test:ci` runs the same tests and adds a pass/fail summary and per-test annotations to the pull request.
+
+To try it as an extension, load the directory unpacked (see Install). To try the standalone page, serve the
+directory over HTTP (`python3 -m http.server`) — `file://` blocks the wordlist fetch on the Password tab.
+
+## Release
+
+1. Set the same new version in `manifest.json` and `package.json`, commit.
+2. Tag and push: `git tag v1.6.0 && git push origin master v1.6.0`.
+3. The Release workflow runs the tests, builds `hasher-1.6.0.zip` (`npm run build` does the same locally into `dist/`)
+   and attaches it to a GitHub Release.
+4. Upload the zip in the [Chrome Web Store developer dashboard](https://chrome.google.com/webstore/devconsole).
 
 ## License
 
