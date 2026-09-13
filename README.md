@@ -61,7 +61,7 @@ directory over HTTP (`python3 -m http.server`) — `file://` blocks the wordlist
 
 Usage: enter text and click on the result — it is copied to clipboard.
 **mask** on the Hash and HMAC tabs hides the input (for hashing passwords); **Now** on the Time tab inserts the current Unix time.
-The last tab and the theme (system / light / dark, the sun icon) are remembered. Keyboard: Alt+1…9 / Alt+0 jump to a tab, Alt+[ / Alt+] go to the previous / next one.
+The last tab and the theme (the icon toggles between following the OS and the opposite look) are remembered. Keyboard: Alt+1…9 / Alt+0 jump to a tab, Alt+[ / Alt+] go to the previous / next one.
 
 ## License
 
