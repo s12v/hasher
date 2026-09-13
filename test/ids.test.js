@@ -58,3 +58,10 @@ test('elements', () => {
   assert.match(calc('14ulid', ''), /^[0-9A-HJKMNP-TV-Z]{26}$/);
   assert.notEqual(calc('14uuid4', ''), calc('14uuid4', ''));
 });
+
+test('hints state the fixed entropy of each format', () => {
+  const { hasher } = ctx;
+  assert.equal(hasher.elements.p3.hint(), 'entropy: 122 random bits');
+  assert.equal(hasher.elements.p4.hint(), 'time-ordered · 48-bit timestamp + 74 random bits');
+  assert.equal(hasher.elements.p5.hint(), 'time-ordered · 48-bit timestamp + 80 random bits');
+});

@@ -1018,6 +1018,9 @@ var hasher = {
       id : tabs.uuid+"uuid4",
       tab : tabs.uuid,
       title : "UUID v4",
+      hint : function () {
+        return "entropy: 122 random bits";
+      },
       calculate : function () {
         return ids.uuid4();
       }
@@ -1027,7 +1030,7 @@ var hasher = {
       tab : tabs.uuid,
       title : "UUID v7",
       hint : function () {
-        return "time-ordered";
+        return "time-ordered \u00b7 48-bit timestamp + 74 random bits";
       },
       calculate : function () {
         return ids.uuid7();
@@ -1038,7 +1041,7 @@ var hasher = {
       tab : tabs.uuid,
       title : "ULID",
       hint : function () {
-        return "time-ordered";
+        return "time-ordered \u00b7 48-bit timestamp + 80 random bits";
       },
       calculate : function () {
         return ids.ulid();
