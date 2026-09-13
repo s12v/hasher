@@ -63,7 +63,7 @@ directory over HTTP (`python3 -m http.server`) — `file://` blocks the wordlist
 * <b>Strings:</b> length (chars / UTF-8 bytes), ASCII ↔ Hex, UTF-8 ↔ Hex, UTF-16 ↔ Hex, code points
 * <b>JSON:</b> pretty-print, minify (both with optional sorted keys), quote/unquote as a JSON string, syntax errors with position
 * <b>Diff:</b> compare two texts side by side, line by line, with changed characters highlighted; ignore whitespace / case
-* <b>Encode:</b> Base64, ROT-13, JavaScript encodeURI(), encodeURIComponent(), HTML special chars encode/decode
+* <b>Encode:</b> Base64 / Base64url, Base32, Base58 — encode and decode (binary output shown as hex), encodeURI(), encodeURIComponent(), HTML special chars, ROT13
 * <b>JWT:</b> decode, claims with expiry as local time, verify HS256/384/512 with a secret
 * <b>Cron:</b> schedule builder (every N minutes, hourly, daily, weekly with weekdays, monthly, yearly) ↔ crontab expression, plain English and the next 5 run times
 
