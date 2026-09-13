@@ -181,16 +181,36 @@ var aesPbkdf2 = {
     var body = CryptoJS.lib.WordArray.create(raw.words.slice(4), raw.sigBytes - 16);
     var k = this.keyIv(password, salt);
     try {
-      var words = CryptoJS.AES.decrypt({ ciphertext : body }, k.key, { iv : k.iv, mode : CryptoJS.mode.CBC, padding : CryptoJS.pad.Pkcs7 });
-      if (words.sigBytes < 0) {
-        return null;
-      }
-      return CryptoJS.enc.Utf8.stringify(words);
+      return aesPlaintext(CryptoJS.AES.decrypt({ ciphertext : body }, k.key, { iv : k.iv, mode : CryptoJS.mode.CBC, padding : CryptoJS.pad.NoPadding }));
     } catch (err) {
       return null;
     }
   }
 };
+
+/*
+ *  Decrypted blocks -> text, or null unless the PKCS#7 padding and the UTF-8 are both sound.
+ *  (CryptoJS's own unpadding trusts the last byte, so a wrong key would now and then
+ *  pass off a few bytes of noise, or nothing at all, as the plaintext.)
+ */
+function aesPlaintext(words) {
+  var n = words.sigBytes;
+  var bytes = CryptoJS.enc.Latin1.stringify(words);
+  var pad = n > 0 ? bytes.charCodeAt(n - 1) : 0;
+  if (pad < 1 || pad > 16 || pad > n) {
+    return null;
+  }
+  for (var i = n - pad; i < n; i++) {
+    if (bytes.charCodeAt(i) != pad) {
+      return null;
+    }
+  }
+  try {
+    return CryptoJS.enc.Utf8.stringify(CryptoJS.lib.WordArray.create(words.words, n - pad));
+  } catch (err) {
+    return null;
+  }
+}
 
 /*
  *  Legacy openssl format (-md md5, EVP_BytesToKey): what CryptoJS does by default
@@ -200,11 +220,7 @@ function aesLegacyDecrypt(base64, password) {
     return null;
   }
   try {
-    var words = CryptoJS.AES.decrypt(base64.trim(), password);
-    if (words.sigBytes <= 0) {
-      return null;
-    }
-    return CryptoJS.enc.Utf8.stringify(words);
+    return aesPlaintext(CryptoJS.AES.decrypt(base64.trim(), password, { padding : CryptoJS.pad.NoPadding }));
   } catch (err) {
     return null;
   }

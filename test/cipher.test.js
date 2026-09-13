@@ -40,6 +40,14 @@ test('encrypt round trips through both formats and looks like openssl output', (
   assert.notEqual(modern, calc('4aes256', 'secret text', 'pass'), 'fresh salt every time');
 });
 
+test('a legacy payload whose PBKDF2 reading happens to unpad cleanly still falls through', () => {
+  // the last "plaintext" byte of the wrong-key decrypt is a plausible pad length here and the
+  // leftover is valid UTF-8, so a reader trusting PKCS#7 would show noise instead of trying MD5
+  const unlucky = 'U2FsdGVkX19KJ3sID6J9qdFFJRQOHjxTE5WyGnR42ic=';
+  assert.equal(calc('4aes256-d', unlucky, 'pass'), 'secret text');
+  assert.equal(hasher.elements.ci3.hint(unlucky, 'pass'), 'legacy MD5-KDF payload');
+});
+
 test('wrong password and garbage give nothing, with a red hint', () => {
   assert.equal(calc('4aes256-d', PBKDF2, 'wrong'), '');
   assert.equal(hasher.elements.ci3.hint(PBKDF2, 'wrong'), 'a Salted__ payload, but not for this password');
