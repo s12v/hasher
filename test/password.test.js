@@ -127,6 +127,7 @@ test('random key', () => {
   assert.notEqual(hex, calc('10key', ''));
   assert.match(calc('10key-b64', ''), /^[A-Za-z0-9+/]{43}=$/, '32 bytes of base64');
   assert.equal(hasher.elements.p6.hint(), 'entropy: 256 bits · openssl rand -hex 32');
+  assert.equal(hasher.elements.p6b.hint(), 'entropy: 256 bits · openssl rand -base64 32');
   hasher.options.key = { bytes: 16 };
   assert.match(calc('10key', ''), /^[0-9a-f]{32}$/);
   hasher.options.key = { bytes: 99999 };

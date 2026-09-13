@@ -32,16 +32,16 @@ Chrome Web Store listing is being republished. Until then, load it unpacked:
 * <b>Password:</b> passphrases from the EFF large wordlist (words, separator, digits, capitalize) and passwords (length, symbols) with the entropy estimate — a port of [ppgen](https://github.com/s12v/ppgen); random keys of N bytes as hex and Base64 (`openssl rand`)
 * <b>UUID:</b> generate v4, v7, ULID; inspect a pasted UUID / ULID (version, variant, embedded time); UUID v5 from a name (DNS and URL namespaces)
 * <b>Cipher:</b> AES-256-CBC with a passphrase, byte-compatible with `openssl enc -aes-256-cbc -pbkdf2 -a` (PBKDF2-SHA256, 10000 iterations) and with the legacy `-md md5` format; decrypt detects which
-* <b>URL:</b> scheme, host (IDN shown in Unicode), port, path, decoded query parameters, fragment, credentials, origin, normalized form
 * <b>IP:</b> IPv4 and IPv6 — canonical form (RFC 5952), decimal, hex, binary, PTR, address type (private, link-local, ULA, documentation…); for a prefix: network, netmask / wildcard, first / last host, broadcast, hosts
+* <b>URL:</b> scheme, host (IDN shown in Unicode), port, path, decoded query parameters, fragment, credentials, origin, normalized form
 * <b>Time:</b> Unix time (s or ms), ISO 8601, RFC-1123 or `2019-02-27 09:36:55` in → Unix s / ms, ISO 8601, RFC-1123, DATETIME UTC / local out, with weekday, ISO week and day of the year; durations both ways (`90061` → `1d 1h 1m 1s`, `1h 30m` / `01:30:00` / `PT1H30M` → seconds)
 * <b>Num:</b> any base in (decimal, `0x`, `0b`, `0o`, Roman, floating point), the others out — decimal, hex, octal, binary, Roman, bits, size in KiB / kB, IEEE-754 double / single; arbitrary size (BigInt)
 * <b>Strings:</b> length (chars / UTF-8 bytes / words / lines), UTF-8 ↔ Hex, UTF-16 BE / LE ↔ Hex, code points, case conversions (UPPER, lower, Title, Sentence, camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE, slug)
+* <b>JWT:</b> decode, claims with expiry as local time; verify HS* with a secret, RS* / PS* / ES* / EdDSA with a PEM or JWK public key (WebCrypto); sign a JSON payload with HS256
+* <b>Encode:</b> Base64 / Base64url, Base32, Base58 — encode and decode (binary output shown as hex), encodeURI(), encodeURIComponent(), HTML special chars, ROT13
+* <b>Cron:</b> schedule builder (every N minutes, hourly, daily, weekly with weekdays, monthly, yearly) ↔ crontab expression, plain English and the next 5 run times; six-field expressions with seconds (Quartz, Spring)
 * <b>JSON:</b> pretty-print, minify and YAML (optionally with sorted keys), quote as a JSON string (a pasted string literal is unquoted on the spot), syntax errors with position
 * <b>Diff:</b> compare two texts side by side, line by line, with changed characters highlighted; ignore whitespace / case
-* <b>Encode:</b> Base64 / Base64url, Base32, Base58 — encode and decode (binary output shown as hex), encodeURI(), encodeURIComponent(), HTML special chars, ROT13
-* <b>JWT:</b> decode, claims with expiry as local time; verify HS* with a secret, RS* / PS* / ES* / EdDSA with a PEM or JWK public key (WebCrypto); sign a JSON payload with HS256
-* <b>Cron:</b> schedule builder (every N minutes, hourly, daily, weekly with weekdays, monthly, yearly) ↔ crontab expression, plain English and the next 5 run times; six-field expressions with seconds (Quartz, Spring)
 
 Usage: enter text and click on the result — it is copied to clipboard.
 **mask** on the Hash and HMAC tabs hides the input (for hashing passwords); **Now** on the Time tab inserts the current Unix time.
