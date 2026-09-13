@@ -1553,7 +1553,12 @@ var hasher = {
       tab : tabs.json,
       title : "As a JSON string",
       calculate : function (input) {
-        return input.length == 0 ? "" : JSON.stringify(input);
+        if (input.length == 0) {
+          return "";
+        }
+        // a pasted string literal already is one: quoting it again would just nest it
+        var doc = jsonInput(input);
+        return (doc.unwrapped || doc.plain) ? "" : JSON.stringify(input);
       },
       hint : function () {
         return "paste it back to get the document out";
