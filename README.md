@@ -7,8 +7,7 @@
 Developer's toolbox: hashes, HMAC, CRC, ciphers, IP/subnet, time, number and string conversions.
 Everything runs locally in the popup — nothing is sent anywhere.
 
-Standalone version for other browsers (the same popup, deployed from `master` by GitHub Actions):  
-https://s12v.github.io/hasher/
+Standalone version: https://s12v.github.io/hasher/
 
 ## Privacy
 
@@ -64,8 +63,8 @@ directory over HTTP (`python3 -m http.server`) — `file://` blocks the wordlist
 ## Release
 
 1. Set the same new version in `manifest.json` and `package.json`, commit.
-2. Tag and push: `git tag v1.6.0 && git push origin master v1.6.0`.
-3. The Release workflow runs the tests, builds `hasher-1.6.0.zip` (`npm run build` does the same locally into `dist/`)
+2. Tag and push: `git tag v2.2.0 && git push origin master v2.2.0`.
+3. The Release workflow runs the tests, builds `hasher-2.2.0.zip` (`npm run build` does the same locally into `dist/`)
    and attaches it to a GitHub Release.
 4. Upload the zip in the [Chrome Web Store developer dashboard](https://chrome.google.com/webstore/devconsole).
 
