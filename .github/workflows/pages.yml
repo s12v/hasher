@@ -30,6 +30,7 @@ jobs:
           mkdir site
           cp -r images lib main.css hasher.js popup.js LICENSE site/
           cp popup.html site/index.html
+          node scripts/privacy-page.js site/privacy.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -16,9 +16,9 @@ clipboard when you click it. It does not read the clipboard, your browsing histo
 https://s12v.github.io/hasher/ is a static site hosted on GitHub Pages; GitHub may log the requests that load it,
 as described in [GitHub's privacy statement](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
 
-**Changes.** If this policy ever changes, the new text will be published here, in the extension's source repository.
+**Changes.** If this policy ever changes, the new text will be published at this address and in the extension's
+source repository.
 
-**Contact.** Questions go to the [issue tracker](https://github.com/s12v/hasher/issues) or to Sergey Novikov,
-mail@snov.me.
+**Contact.** Questions go to the [issue tracker](https://github.com/s12v/hasher/issues).
 
 *Last updated: 13 September 2026.*

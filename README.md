@@ -14,7 +14,7 @@ Standalone version: https://s12v.github.io/hasher/
 Everything is computed in the popup: the extension makes no network requests and collects nothing — no analytics,
 no telemetry, no accounts. What you type stays in the window and is gone when you close it; only the chosen tab
 and theme are kept in `localStorage`. The only permission requested is `clipboardWrite`, used when you click a result.
-The standalone page is static and calls nothing either. Full text: [PRIVACY.md](PRIVACY.md).
+The standalone page is static and calls nothing either. Full text: [PRIVACY.md](PRIVACY.md), also at https://s12v.github.io/hasher/privacy.html.
 
 ## Install
 
