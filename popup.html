@@ -73,6 +73,39 @@
           </div>
         </div>
 
+        <!-- schedule builder (Cron tab) -->
+        <div id="cron-options" hidden>
+          <div class="row">
+            <span class="label">Schedule</span>
+            <select id="cr-mode">
+              <option value="minute">every minute</option>
+              <option value="minutes">every N minutes</option>
+              <option value="hourly">hourly</option>
+              <option value="daily" selected>daily</option>
+              <option value="weekly">weekly</option>
+              <option value="monthly">monthly</option>
+              <option value="yearly">yearly</option>
+              <option value="custom">custom expression</option>
+            </select>
+            <label id="cr-every-wrap">every <input id="cr-every" type="number" min="1" max="59" value="5" /> <span id="cr-every-unit">minutes</span></label>
+            <label id="cr-minute-wrap">at minute <input id="cr-minute" type="number" min="0" max="59" value="0" /></label>
+            <label id="cr-time-wrap">at <input id="cr-time" type="time" value="09:00" /></label>
+            <label id="cr-day-wrap">on day <input id="cr-day" type="number" min="1" max="31" value="1" /></label>
+            <label id="cr-month-wrap">of <select id="cr-month">
+              <option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option>
+            </select></label>
+            <span id="cr-days-wrap" class="chips">
+              <label class="chip"><input type="checkbox" value="1" checked /> Mon</label>
+              <label class="chip"><input type="checkbox" value="2" checked /> Tue</label>
+              <label class="chip"><input type="checkbox" value="3" checked /> Wed</label>
+              <label class="chip"><input type="checkbox" value="4" checked /> Thu</label>
+              <label class="chip"><input type="checkbox" value="5" checked /> Fri</label>
+              <label class="chip"><input type="checkbox" value="6" /> Sat</label>
+              <label class="chip"><input type="checkbox" value="0" /> Sun</label>
+            </span>
+          </div>
+        </div>
+
         <!-- output -->
         <div id="output">
         </div>
@@ -103,7 +136,7 @@
           <li><b>Strings</b> length in characters and bytes, ASCII / UTF-8 / UTF-16 &harr; hex</li>
           <li><b>JSON</b> pretty-print (optionally with sorted keys), minify, quote / unquote as a JSON string, syntax errors with the position</li>
           <li><b>Encode</b> Base64, ROT-13, encodeURI, encodeURIComponent, HTML special characters</li>
-          <li><b>Cron</b> crontab expression &rarr; plain English and the next 5 runs; lists, ranges, steps, names, @daily and friends</li>
+          <li><b>Cron</b> schedule builder (every N minutes, hourly, daily, weekly with weekdays, monthly, yearly) &harr; crontab expression, plain-English description and the next 5 runs; lists, ranges, steps, names, @daily and friends</li>
           <li><b>JWT</b> decode, claims with expiry as local time, HS256 / HS384 / HS512 verification with the secret</li>
         </ul>
 

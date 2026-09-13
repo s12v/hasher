@@ -258,6 +258,58 @@ label {
   padding: 4px 6px;
 }
 
+/* ---- cron schedule builder ---- */
+
+#cron-options {
+  padding: 8px 0 4px;
+}
+#cron-options .row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  font-size: 12px;
+}
+#cron-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+#cron-options select,
+#cron-options input[type="number"],
+#cron-options input[type="time"] {
+  padding: 4px 6px;
+}
+#cron-options input[type="number"] {
+  width: 58px;
+}
+.chips {
+  display: inline-flex;
+  gap: 4px;
+}
+.chip {
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--subtle);
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 14px;
+  user-select: none;
+}
+.chip input {
+  display: none;
+}
+.chip:has(input:checked) {
+  background: var(--accent-subtle);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  font-weight: 600;
+}
+.chip:hover {
+  border-color: var(--accent-border);
+}
+
 /* ---- output ---- */
 
 #output .element {
