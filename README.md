@@ -44,6 +44,7 @@ Every `calculate()` in `hasher.js` is checked against vectors produced with `ope
 
 Usage: enter text and click on the result — it is copied to clipboard.
 **mask** hides the input (for hashing passwords); **Now** on the Time tab inserts the current Unix time.
+The last tab is remembered. Keyboard: Alt+1…9 / Alt+0 jump to a tab, Alt+[ / Alt+] go to the previous / next one.
 
 ## License
 

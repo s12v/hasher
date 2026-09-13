@@ -101,30 +101,72 @@ document.addEventListener("DOMContentLoaded", function () {
     popout.hidden = true;
   }
 
-  // Click on tab (Hash/HMAC/...)
+  // localStorage may be unavailable (private mode, blocked storage); the popup works without it
+  var remember = function (key, value) {
+    try {
+      if (value === undefined) {
+        return localStorage.getItem(key);
+      }
+      localStorage.setItem(key, value);
+    } catch (err) {
+      return null;
+    }
+  };
+
+  // Switch to a tab (Hash/HMAC/...)
+  var selectTab = function (li) {
+    // highlight active tab, remove highlight on everything else
+    tabItems.forEach(function (item) {
+      item.classList.remove("on");
+    });
+    li.classList.add("on");
+
+    hasher.tab = tabs[li.id];
+    remember("tab", li.id);
+
+    // show/hide optional fields
+    passwordWrapper.hidden = !(hasher.tab == tabs.hmac || hasher.tab == tabs.cipher || hasher.tab == tabs.jwt);
+    passwordWrapper.querySelector(".title").textContent = hasher.tab == tabs.jwt ? "Secret:" : "Password:";
+    inputNow.hidden = hasher.tab != tabs.time;
+    inputWrapper.hidden = hasher.tab == tabs.password;
+    passwordOptions.hidden = hasher.tab != tabs.password;
+
+    hasher.init();
+    hasher.update();
+    if (!inputWrapper.hidden) {
+      hasher.inputField().focus();
+    }
+  };
   tabItems.forEach(function (li) {
     li.addEventListener("click", function () {
-      // highlight active tab, remove highlight on everything else
-      tabItems.forEach(function (item) {
-        item.classList.remove("on");
-      });
-      li.classList.add("on");
+      selectTab(li);
+    });
+  });
 
-      hasher.tab = tabs[li.id];
-
-      // show/hide optional fields
-      passwordWrapper.hidden = !(hasher.tab == tabs.hmac || hasher.tab == tabs.cipher || hasher.tab == tabs.jwt);
-      passwordWrapper.querySelector(".title").textContent = hasher.tab == tabs.jwt ? "Secret:" : "Password:";
-      inputNow.hidden = hasher.tab != tabs.time;
-      inputWrapper.hidden = hasher.tab == tabs.password;
-      passwordOptions.hidden = hasher.tab != tabs.password;
-
-      hasher.init();
-      hasher.update();
-      if (!inputWrapper.hidden) {
-        hasher.inputField().focus();
+  // Keyboard: Alt+1..9, Alt+0 jump to a tab; Alt+[ and Alt+] go to the previous / next one
+  document.addEventListener("keydown", function (e) {
+    if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+      return;
+    }
+    var current = -1;
+    tabItems.forEach(function (li, i) {
+      if (li.classList.contains("on")) {
+        current = i;
       }
     });
+    var target = -1;
+    var digit = /^Digit(\d)$/.exec(e.code);
+    if (digit) {
+      target = digit[1] == "0" ? 9 : parseInt(digit[1], 10) - 1;
+    } else if (e.code == "BracketLeft") {
+      target = (current + tabItems.length - 1) % tabItems.length;
+    } else if (e.code == "BracketRight") {
+      target = (current + 1) % tabItems.length;
+    }
+    if (target >= 0 && target < tabItems.length) {
+      e.preventDefault();
+      selectTab(tabItems[target]);
+    }
   });
 
   /*
@@ -142,7 +184,6 @@ document.addEventListener("DOMContentLoaded", function () {
    * Init
    */
   onHashChange();
-  hasher.init();
-  hasher.update();
-  inputValue.focus();
+  var lastTab = remember("tab") && document.querySelector("#tabs li#" + remember("tab"));
+  selectTab(lastTab || document.querySelector("#tabs li.on"));
 });
