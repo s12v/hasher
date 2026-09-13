@@ -5,6 +5,7 @@ var TAB_META = {
   crc : { rows : 2 },
   cipher : { rows : 2, placeholder : "text to encrypt, or a Salted__ base64 payload to decrypt" },
   net : { rows : 1, placeholder : "10.0.12.42/22, 2001:db8::1, ::ffff:192.0.2.1, or a decimal" },
+  url : { rows : 2, placeholder : "https://example.com/path?x=1&y=2#frag" },
   time : { rows : 1, placeholder : "unix seconds or ms, ISO 8601, RFC-1123, 2019-02-27 09:36:55 \u2014 empty is now" },
   number : { rows : 1, placeholder : "42, 0x2a, 0b101010, 0o52, XLII, 3.14 \u2014 any size" },
   string : { rows : 2, placeholder : "text, or hex to decode; fooBarBaz for the case conversions" },
