@@ -20,6 +20,15 @@ test('subnet with prefix length', () => {
   assert.equal(calc('5hostnum', '192.168.1.10/24'), '254');
 });
 
+test('prefix length hint', () => {
+  const { hasher } = require('./load').ctx;
+  assert.equal(hasher.elements.net5.hint('192.168.1.10/24'), '/24');
+  assert.equal(hasher.elements.net5.hint('10.1.2.3/255.255.0.0'), '/16');
+  assert.equal(hasher.elements.net5.hint('200.200.200.200/8'), '/8');
+  assert.equal(hasher.elements.net5.hint('1.2.3.4/32'), '', '/32 is not a valid netmask here');
+  assert.equal(hasher.elements.net5.hint('1.2.3.4'), '');
+});
+
 test('subnet with dotted netmask', () => {
   assert.equal(calc('5network', '10.1.2.3/255.255.0.0'), '10.1.0.0/255.255.0.0');
   assert.equal(calc('5hostnum', '10.1.2.3/255.255.0.0'), '65534');

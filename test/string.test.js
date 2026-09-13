@@ -30,6 +30,11 @@ test('utf-16 <-> hex (big endian)', () => {
   assert.equal(calc('9utf16-hex', 'привет'), '043f04400438043204350442');
 });
 
+test('code points', () => {
+  assert.equal(calc('9codepoints', ''), '');
+  assert.equal(calc('9codepoints', 'aé😀'), 'U+0061 U+00E9 U+1F600');
+});
+
 test('utf8() helper', () => {
   assert.equal(ctx.utf8('abc'), 'abc');
   assert.equal(ctx.utf8('привет').length, 12);

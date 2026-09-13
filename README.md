@@ -51,15 +51,15 @@ directory over HTTP (`python3 -m http.server`) — `file://` blocks the wordlist
 * <b>Net:</b> Subnet calculator, Ip ↔ Dec, Ip → Bin, Ip → Hex
 * <b>Time:</b> Unix (s or ms) ↔ Datetime, Unix ↔ RFC-1123, Unix ↔ ISO 8601
 * <b>Numbers:</b> Dec ↔ Hex, Dec ↔ Bin, Dec ↔ Roman
-* <b>Strings:</b> length (chars / UTF-8 bytes), ASCII ↔ Hex, UTF-8 ↔ Hex, UTF-16 ↔ Hex
-* <b>JSON:</b> pretty-print (optionally with sorted keys), minify, quote/unquote as a JSON string, syntax errors with position
+* <b>Strings:</b> length (chars / UTF-8 bytes), ASCII ↔ Hex, UTF-8 ↔ Hex, UTF-16 ↔ Hex, code points
+* <b>JSON:</b> pretty-print, minify (both with optional sorted keys), quote/unquote as a JSON string, syntax errors with position
 * <b>Encode:</b> Base64, ROT-13, JavaScript encodeURI(), encodeURIComponent(), HTML special chars encode/decode
 * <b>JWT:</b> decode, claims with expiry as local time, verify HS256/384/512 with a secret
 * <b>Cron:</b> schedule builder (every N minutes, hourly, daily, weekly with weekdays, monthly, yearly) ↔ crontab expression, plain English (crontab.guru style) and the next 5 run times
 
 Usage: enter text and click on the result — it is copied to clipboard.
 **mask** hides the input (for hashing passwords); **Now** on the Time tab inserts the current Unix time.
-The last tab is remembered. Keyboard: Alt+1…9 / Alt+0 jump to a tab, Alt+[ / Alt+] go to the previous / next one.
+The last tab and the theme (system / light / dark, the sun icon) are remembered. Keyboard: Alt+1…9 / Alt+0 jump to a tab, Alt+[ / Alt+] go to the previous / next one.
 
 ## License
 

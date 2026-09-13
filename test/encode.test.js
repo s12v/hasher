@@ -23,6 +23,11 @@ test('malformed uri does not throw', () => {
   assert.equal(calc('7decodeURIComponent', '%E0%A4%A'), '');
 });
 
+test('decode rows are empty when nothing was encoded', () => {
+  assert.equal(calc('7decodeURI', 'plain text'), '');
+  assert.equal(calc('7decodeURIComponent', 'plain text'), '');
+});
+
 test('html special chars', () => {
   assert.equal(calc('7htmlspecialchars', '<a href="x">&\'</a>'), '&lt;a href=&quot;x&quot;&gt;&amp;&#039;&lt;/a&gt;');
   assert.equal(calc('7htmlspecialchars-d', '&lt;a href=&quot;x&quot;&gt;&amp;&#039;&lt;/a&gt;'), '<a href="x">&\'</a>');
