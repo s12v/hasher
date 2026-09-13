@@ -113,7 +113,8 @@ document.addEventListener("DOMContentLoaded", function () {
       hasher.tab = tabs[li.id];
 
       // show/hide optional fields
-      passwordWrapper.hidden = !(hasher.tab == tabs.hmac || hasher.tab == tabs.cipher);
+      passwordWrapper.hidden = !(hasher.tab == tabs.hmac || hasher.tab == tabs.cipher || hasher.tab == tabs.jwt);
+      passwordWrapper.querySelector(".title").textContent = hasher.tab == tabs.jwt ? "Secret:" : "Password:";
       inputNow.hidden = hasher.tab != tabs.time;
       inputWrapper.hidden = hasher.tab == tabs.password;
       passwordOptions.hidden = hasher.tab != tabs.password;
