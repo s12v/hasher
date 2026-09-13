@@ -44,7 +44,7 @@ Every `calculate()` in `hasher.js` is checked against vectors produced with `ope
 * <b>JSON:</b> pretty-print (optionally with sorted keys), minify, quote/unquote as a JSON string, syntax errors with position
 * <b>Encode:</b> Base64, ROT-13, JavaScript encodeURI(), encodeURIComponent(), HTML special chars encode/decode
 * <b>JWT:</b> decode, claims with expiry as local time, verify HS256/384/512 with a secret
-* <b>Cron:</b> crontab expression → plain English (crontab.guru style) and the next 5 run times
+* <b>Cron:</b> schedule builder (every N minutes, hourly, daily, weekly with weekdays, monthly, yearly) ↔ crontab expression, plain English (crontab.guru style) and the next 5 run times
 
 Usage: enter text and click on the result — it is copied to clipboard.
 **mask** hides the input (for hashing passwords); **Now** on the Time tab inserts the current Unix time.

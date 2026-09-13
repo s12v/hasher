@@ -111,3 +111,54 @@ test('elements', () => {
   assert.equal(lines.length, 5);
   assert.match(lines[0], /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}  (Mon|Tue|Wed|Thu|Fri|Sat|Sun)$/);
 });
+
+test('builder: schedule -> expression', () => {
+  assert.equal(cron.build({ mode: 'minute' }), '* * * * *');
+  assert.equal(cron.build({ mode: 'minutes', every: 5 }), '*/5 * * * *');
+  assert.equal(cron.build({ mode: 'minutes', every: 1 }), '* * * * *');
+  assert.equal(cron.build({ mode: 'hourly', minute: 15, every: 1 }), '15 * * * *');
+  assert.equal(cron.build({ mode: 'hourly', minute: 0, every: 6 }), '0 */6 * * *');
+  assert.equal(cron.build({ mode: 'daily', minute: 0, hour: 22 }), '0 22 * * *');
+  assert.equal(cron.build({ mode: 'weekly', minute: 30, hour: 9, days: [1, 2, 3, 4, 5] }), '30 9 * * 1-5');
+  assert.equal(cron.build({ mode: 'weekly', minute: 0, hour: 0, days: [6, 0] }), '0 0 * * 0,6');
+  assert.equal(cron.build({ mode: 'weekly', minute: 0, hour: 0, days: [1, 3, 5] }), '0 0 * * 1,3,5');
+  assert.equal(cron.build({ mode: 'weekly', minute: 0, hour: 0, days: [1, 2, 4, 5, 6] }), '0 0 * * 1,2,4-6');
+  assert.equal(cron.build({ mode: 'weekly', minute: 0, hour: 0, days: [] }), '0 0 * * *', 'no days = every day');
+  assert.equal(cron.build({ mode: 'weekly', minute: 0, hour: 0, days: [0, 1, 2, 3, 4, 5, 6] }), '0 0 * * *');
+  assert.equal(cron.build({ mode: 'monthly', minute: 0, hour: 3, day: 15 }), '0 3 15 * *');
+  assert.equal(cron.build({ mode: 'yearly', minute: 0, hour: 0, day: 25, month: 12 }), '0 0 25 12 *');
+  assert.equal(cron.build({ mode: 'daily', minute: '99', hour: '-1' }), '59 0 * * *', 'clamped');
+  assert.equal(cron.build({ mode: 'hourly', minute: 0, every: 50 }), '0 */23 * * *', 'hours clamped to 23');
+  assert.throws(() => cron.build({ mode: 'custom' }), /unknown mode/);
+});
+
+test('builder: expression -> schedule', () => {
+  const u = (e) => { const o = cron.unbuild(e); return o && JSON.parse(JSON.stringify(o)); };
+  assert.deepEqual(u('* * * * *'), { mode: 'minute' });
+  assert.deepEqual(u('*/15 * * * *'), { mode: 'minutes', every: 15 });
+  assert.deepEqual(u('15 * * * *'), { mode: 'hourly', minute: 15, every: 1 });
+  assert.deepEqual(u('0 */6 * * *'), { mode: 'hourly', minute: 0, every: 6 });
+  assert.deepEqual(u('0 22 * * *'), { mode: 'daily', minute: 0, hour: 22 });
+  assert.deepEqual(u('@daily'), { mode: 'daily', minute: 0, hour: 0 });
+  assert.deepEqual(u('30 9 * * 1-5'), { mode: 'weekly', minute: 30, hour: 9, days: [1, 2, 3, 4, 5] });
+  assert.deepEqual(u('0 0 * * mon,wed,fri'), { mode: 'weekly', minute: 0, hour: 0, days: [1, 3, 5] });
+  assert.deepEqual(u('0 0 * * 7'), { mode: 'weekly', minute: 0, hour: 0, days: [0] });
+  assert.deepEqual(u('0 3 15 * *'), { mode: 'monthly', minute: 0, hour: 3, day: 15 });
+  assert.deepEqual(u('0 0 25 dec *'), { mode: 'yearly', minute: 0, hour: 0, day: 25, month: 12 });
+  // not builder shapes
+  for (const e of ['0 0 1,15 * 3', '23 0-20/2 * * *', '0 9-17 * * 1-5', '0,30 * * * *', '5 4 */2 * *', '0 0 1 * 1', 'garbage', '']) {
+    assert.equal(cron.unbuild(e), null, e);
+  }
+});
+
+test('builder round trip', () => {
+  const schedules = [
+    { mode: 'minute' }, { mode: 'minutes', every: 10 }, { mode: 'hourly', minute: 5, every: 1 }, { mode: 'hourly', minute: 5, every: 3 },
+    { mode: 'daily', minute: 45, hour: 6 }, { mode: 'weekly', minute: 0, hour: 12, days: [0, 6] }, { mode: 'monthly', minute: 0, hour: 0, day: 1 },
+    { mode: 'yearly', minute: 30, hour: 8, day: 29, month: 2 },
+  ];
+  for (const s of schedules) {
+    const back = JSON.parse(JSON.stringify(cron.unbuild(cron.build(s))));
+    assert.deepEqual(back, s, JSON.stringify(s));
+  }
+});

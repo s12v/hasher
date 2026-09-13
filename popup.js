@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var passwordWrapper = document.getElementById("input-password-wrapper");
   var inputWrapper = document.getElementById("input");
   var passwordOptions = document.getElementById("password-options");
+  var cronOptions = document.getElementById("cron-options");
   var tabItems = document.querySelectorAll("#tabs li");
 
   /*
@@ -15,6 +16,9 @@ document.addEventListener("DOMContentLoaded", function () {
    */
   inputValue.addEventListener("input", function () {
     hasher.update();
+    if (hasher.tab == tabs.cron) {
+      cronFromExpression(inputValue.value);
+    }
   });
   inputMasked.addEventListener("input", function () {
     hasher.update();
@@ -61,6 +65,81 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   document.getElementById("pw-generate").addEventListener("click", function () {
     hasher.update();
+  });
+
+  /*
+   * Cron tab: schedule builder <-> expression in the input
+   */
+  var crMode = document.getElementById("cr-mode");
+  var crEvery = document.getElementById("cr-every");
+  var crEveryUnit = document.getElementById("cr-every-unit");
+  var crMinute = document.getElementById("cr-minute");
+  var crTime = document.getElementById("cr-time");
+  var crDay = document.getElementById("cr-day");
+  var crMonth = document.getElementById("cr-month");
+  var crDays = cronOptions.querySelectorAll("#cr-days-wrap input");
+  var show = function (id, visible) {
+    document.getElementById(id).hidden = !visible;
+  };
+  var cronLayout = function () {
+    var mode = crMode.value;
+    show("cr-every-wrap", mode == "minutes" || mode == "hourly");
+    crEveryUnit.textContent = mode == "hourly" ? "hours" : "minutes";
+    crEvery.max = mode == "hourly" ? 23 : 59;
+    show("cr-minute-wrap", mode == "hourly");
+    show("cr-time-wrap", mode == "daily" || mode == "weekly" || mode == "monthly" || mode == "yearly");
+    show("cr-day-wrap", mode == "monthly" || mode == "yearly");
+    show("cr-month-wrap", mode == "yearly");
+    show("cr-days-wrap", mode == "weekly");
+  };
+  // builder -> expression
+  var cronToExpression = function () {
+    cronLayout();
+    if (crMode.value == "custom") {
+      return;
+    }
+    var time = /^(\d{1,2}):(\d{2})/.exec(crTime.value) || [0, 0, 0];
+    var days = [];
+    crDays.forEach(function (box) {
+      if (box.checked) {
+        days.push(parseInt(box.value, 10));
+      }
+    });
+    var expr = cron.build({
+      mode : crMode.value,
+      every : crEvery.value,
+      minute : crMode.value == "hourly" ? crMinute.value : parseInt(time[2], 10),
+      hour : parseInt(time[1], 10),
+      days : days,
+      day : crDay.value,
+      month : crMonth.value
+    });
+    if (hasher.inputField().value != expr) {
+      hasher.inputField().value = expr;
+      hasher.update();
+    }
+  };
+  // expression -> builder (only when it is one of the simple shapes)
+  var cronFromExpression = function (expr) {
+    var o = cron.unbuild(expr);
+    crMode.value = o ? o.mode : "custom";
+    if (o) {
+      if (o.every != undefined) crEvery.value = o.every;
+      if (o.mode == "hourly") crMinute.value = o.minute;
+      if (o.hour != undefined) crTime.value = (o.hour < 10 ? "0" : "") + o.hour + ":" + (o.minute < 10 ? "0" : "") + o.minute;
+      if (o.day != undefined) crDay.value = o.day;
+      if (o.month != undefined) crMonth.value = o.month;
+      if (o.days) {
+        crDays.forEach(function (box) {
+          box.checked = o.days.indexOf(parseInt(box.value, 10)) >= 0;
+        });
+      }
+    }
+    cronLayout();
+  };
+  cronOptions.querySelectorAll("input, select").forEach(function (field) {
+    field.addEventListener("input", cronToExpression);
+    field.addEventListener("change", cronToExpression);
   });
 
   // Wordlist is gzip-compressed; DecompressionStream is native in every MV3-capable browser
@@ -130,8 +209,16 @@ document.addEventListener("DOMContentLoaded", function () {
     inputNow.hidden = hasher.tab != tabs.time;
     inputWrapper.hidden = hasher.tab == tabs.password;
     passwordOptions.hidden = hasher.tab != tabs.password;
+    cronOptions.hidden = hasher.tab != tabs.cron;
 
     hasher.init();
+    if (hasher.tab == tabs.cron) {
+      if (hasher.inputField().value.trim().length == 0) {
+        cronToExpression(); // start from the builder's default schedule
+      } else {
+        cronFromExpression(hasher.inputField().value);
+      }
+    }
     hasher.update();
     if (!inputWrapper.hidden) {
       hasher.inputField().focus();
