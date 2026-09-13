@@ -9,6 +9,7 @@ var TAB_META = {
   number : { rows : 1, placeholder : "42 / 2a / 101010 / XLII" },
   string : { rows : 2 },
   json : { rows : 4, placeholder : '{"b":2,"a":1}' },
+  diff : { rows : 3, placeholder : "original text" },
   encode : { rows : 2 },
   cron : { rows : 1, placeholder : "*/15 9-17 * * mon-fri" },
   jwt : { rows : 3, placeholder : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\u2026" }
@@ -16,9 +17,10 @@ var TAB_META = {
 
 document.addEventListener("DOMContentLoaded", function () {
 
-  // Standalone page or popped-out tab: the popup is shown as a card on a desk
-  var isExtensionPopup = typeof chrome != "undefined" && chrome.tabs && chrome.tabs.create && location.search.indexOf("tab") < 0;
-  if (!isExtensionPopup) {
+  // The standalone web page shows the popup as a card on a desk; the extension
+  // popup and the popped-out tab fill their window
+  var isExtension = typeof chrome != "undefined" && chrome.tabs && chrome.tabs.create;
+  if (!isExtension) {
     document.documentElement.classList.add("page");
   }
 
@@ -45,6 +47,9 @@ document.addEventListener("DOMContentLoaded", function () {
   var passwordOptions = document.getElementById("password-options");
   var cronOptions = document.getElementById("cron-options");
   var uuidOptions = document.getElementById("uuid-options");
+  var otherWrapper = document.getElementById("input-other-wrapper");
+  var inputOther = document.getElementById("input-other");
+  var diffOptions = document.getElementById("diff-options");
   var tabItems = document.querySelectorAll("#tabs li");
 
   /*
@@ -279,6 +284,20 @@ document.addEventListener("DOMContentLoaded", function () {
     location.hash = location.hash == "#info" ? "" : "#info";
   });
 
+  // Diff: the second text and the options
+  inputOther.addEventListener("input", function () {
+    hasher.options.diff.other = inputOther.value;
+    document.getElementById("input-other-counter").textContent = inputOther.value.length ? inputOther.value.length + " chars" : "";
+    hasher.update();
+  });
+  ["diff-ignore-ws", "diff-ignore-case"].forEach(function (id) {
+    document.getElementById(id).addEventListener("change", function () {
+      hasher.options.diff.ignoreWhitespace = document.getElementById("diff-ignore-ws").checked;
+      hasher.options.diff.ignoreCase = document.getElementById("diff-ignore-case").checked;
+      hasher.update();
+    });
+  });
+
   // JSON: sort keys
   var jsonSorted = document.getElementById("json-sorted");
   jsonSorted.addEventListener("change", function () {
@@ -318,6 +337,8 @@ document.addEventListener("DOMContentLoaded", function () {
     uuidOptions.hidden = hasher.tab != tabs.uuid;
     cronOptions.hidden = hasher.tab != tabs.cron;
     document.getElementById("json-options").hidden = hasher.tab != tabs.json;
+    otherWrapper.hidden = hasher.tab != tabs.diff;
+    diffOptions.hidden = hasher.tab != tabs.diff;
 
     var meta = TAB_META[li.id] || {};
     inputValue.rows = meta.rows || 2;

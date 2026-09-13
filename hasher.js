@@ -12,7 +12,8 @@ var tabs = {
   cron : 11,
   json : 12,
   jwt : 13,
-  uuid : 14
+  uuid : 14,
+  diff : 15
 };
 
 /*
@@ -123,7 +124,8 @@ var hasher = {
   options : {
     passphrase : { words : 4, separator : "-", digits : 2, capitalize : false },
     password : { length : 16, symbols : false },
-    json : { sorted : false }
+    json : { sorted : false },
+    diff : { other : "", ignoreWhitespace : false, ignoreCase : false }
   },
   elements: {
     h1 : {
@@ -1224,6 +1226,42 @@ var hasher = {
         var value = this.calculate(input, password);
         return /: valid/.test(value) ? "ok" : /INVALID/.test(value) ? "bad" : "";
       }
+    },
+
+
+    // Diff (input vs hasher.options.diff.other)
+    d1: {
+      id : tabs.diff+"changes",
+      tab : tabs.diff,
+      title : "Changes",
+      html : true,
+      calculate : function (input) {
+        var ops = diff.lines(input, hasher.options.diff.other, hasher.options.diff);
+        var s = diff.stats(ops);
+        if (s.added == 0 && s.removed == 0) {
+          return "";
+        }
+        return diff.html(ops);
+      },
+      hint : function (input) {
+        var s = diff.stats(diff.lines(input, hasher.options.diff.other, hasher.options.diff));
+        if (s.added == 0 && s.removed == 0) {
+          return (input.length || hasher.options.diff.other.length) ? "identical" : "";
+        }
+        return "+" + s.added + " \u2212" + s.removed + " lines";
+      },
+      tone : function (input) {
+        var s = diff.stats(diff.lines(input, hasher.options.diff.other, hasher.options.diff));
+        return (s.added == 0 && s.removed == 0 && (input.length || hasher.options.diff.other.length)) ? "ok" : "";
+      }
+    },
+    d2: {
+      id : tabs.diff+"unified",
+      tab : tabs.diff,
+      title : "Unified diff",
+      calculate : function (input) {
+        return diff.unified(diff.lines(input, hasher.options.diff.other, hasher.options.diff));
+      }
     }
   },
   findById : function (id) {
@@ -1246,7 +1284,8 @@ var hasher = {
     encode : "Enter text or an encoded value.",
     cron : "Enter a crontab expression.",
     json : "Paste JSON to format it.",
-    jwt : "Paste a token to decode it."
+    jwt : "Paste a token to decode it.",
+    diff : "Enter two texts to compare."
   },
   /*
    * JSON value as displayed: keys sorted when the option is on
@@ -1311,6 +1350,9 @@ var hasher = {
     }
     // tabs that need input show only the prompt until there is some
     var waiting = input.length == 0 && this.EMPTY[tabName] != undefined;
+    if (tabName == "diff") {
+      waiting = input.length == 0 && this.options.diff.other.length == 0;
+    }
     var visible = 0;
     for (var i in this.elements) {
       var element = this.elements[i];
@@ -1323,7 +1365,11 @@ var hasher = {
       if (!tone && /^Invalid/.test(value)) {
         tone = "bad";
       }
-      document.getElementById(element.id).textContent = value;
+      if (element.html) {
+        document.getElementById(element.id).innerHTML = value;
+      } else {
+        document.getElementById(element.id).textContent = value;
+      }
       document.getElementById(element.id + "-hint").textContent = hint;
       document.getElementById(element.id + "-hint").setAttribute("data-tone", tone);
       document.getElementById(element.id + "-value").setAttribute("data-tone", tone);

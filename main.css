@@ -11,7 +11,11 @@
   --accent-subtle: #ddf4ff;
   --accent-border: #54aeff;
   --success: #1a7f37;
+  --success-subtle: #dafbe1;
+  --success-strong: #abf2bc;
   --danger: #cf222e;
+  --danger-subtle: #ffebe9;
+  --danger-strong: #ffc1bc;
   --warn-subtle: #fff8c5;
   --warn-fg: #7d4e00;
   --tab-underline: #fd8c73;
@@ -37,7 +41,11 @@
     --accent-subtle: #1c2d47;
     --accent-border: #1f6feb;
     --success: #3fb950;
+    --success-subtle: #12261e;
+    --success-strong: #1f5a30;
     --danger: #f85149;
+    --danger-subtle: #3c1618;
+    --danger-strong: #7a2a2a;
     --warn-subtle: #3b2300;
     --warn-fg: #f0c674;
     --focus: rgba(88, 166, 255, 0.35);
@@ -57,7 +65,11 @@
   --accent-subtle: #1c2d47;
   --accent-border: #1f6feb;
   --success: #3fb950;
+  --success-subtle: #12261e;
+  --success-strong: #1f5a30;
   --danger: #f85149;
+  --danger-subtle: #3c1618;
+  --danger-strong: #7a2a2a;
   --warn-subtle: #3b2300;
   --warn-fg: #f0c674;
   --focus: rgba(88, 166, 255, 0.35);
@@ -313,8 +325,19 @@ label {
 #input-options .button {
   height: 24px;
 }
-#input-password-wrapper {
+#input-password-wrapper,
+#input-other-wrapper {
   margin-top: 6px;
+}
+#input-other-wrapper .counter {
+  font-size: 12px;
+  color: var(--muted);
+}
+#input #input-other {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  resize: vertical;
 }
 
 /* ---- option rows: password generator, cron builder, json ---- */
@@ -469,6 +492,32 @@ label {
 }
 #output .value[data-tone="bad"] .text {
   color: var(--danger);
+}
+/* diff lines inside a result */
+#output .d-line {
+  margin: 0 -8px;
+  padding: 0 8px;
+  white-space: pre-wrap;
+}
+#output .d-mark {
+  display: inline-block;
+  width: 14px;
+  color: var(--muted);
+  user-select: none;
+}
+#output .d-add {
+  background: var(--success-subtle);
+}
+#output .d-del {
+  background: var(--danger-subtle);
+}
+#output .d-add mark {
+  background: var(--success-strong);
+  color: inherit;
+}
+#output .d-del mark {
+  background: var(--danger-strong);
+  color: inherit;
 }
 .empty {
   margin-top: 12px;
