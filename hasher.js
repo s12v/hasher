@@ -1,4 +1,3 @@
-
 var tabs = {
   hash : 1,
   hmac : 2,
@@ -7,15 +6,23 @@ var tabs = {
   net : 5,
   time : 6,
   encode : 7,
-  number : 8
+  number : 8,
+  string : 9
 };
 
 /*
  *  Copy to clipboard
  */
-function copyToClipboard(id) {
-  $("#"+id).select(); 
-  document.execCommand('copy');
+function copyToClipboard(textarea) {
+  var fallback = function () {
+    textarea.select();
+    document.execCommand('copy');
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(textarea.value).catch(fallback);
+  } else {
+    fallback();
+  }
 }
 
 
@@ -132,7 +139,7 @@ var hasher = {
     hm5: {
       id : tabs.hmac+"sha384",
       tab : tabs.hmac,
-      title : "HMAC-SHA256",
+      title : "HMAC-SHA384",
       calculate : function (input, password) {
         return CryptoJS.HmacSHA384(input, password);
       }
@@ -859,8 +866,8 @@ var hasher = {
       }
     }
   },
-  getElementById : function (id) {
-    for (i in this.elements) {
+  findById : function (id) {
+    for (var i in this.elements) {
       if (this.elements[i].id == id) {
         return this.elements[i];
       }
@@ -868,105 +875,111 @@ var hasher = {
     return null;
   },
   /*
+   * Render current tab and register click handlers (once, delegated)
    */
   init : function () {
-    // render HTML
     this.render();
-    // Register click events
-    for (var i in this.elements) {
-      if (this.elements[i].tab == this.tab) {
-        // expand textarea
-        $("#"+this.elements[i].id+"-expand").click(function () {
-          var id = this.id.toString().replace("-expand", "");
-          if (!$("#"+this.id).hasClass("on")) {
-            var element = hasher.getElementById(id);
-            if (element) {
-              $("#"+id).attr("rows", element.rows);
-            }
-            //var h = $("#"+id)[0].scrollHeight;
-            //$("#"+id).height(h);
-          } else {
-            $("#"+id).attr("rows", "1");
-            //$("#"+id).height("auto");
-          }
-          $("#"+this.id).toggleClass("on");
-        });
-        // copy to clibboard on click
-        $("#"+this.elements[i].id+"-value").click(function () {
-          $("#output .note").hide();
-          var id = this.id.toString().replace("-value", "");
-          if ($("#"+id).val().length > 0) {
-            $("#"+id+"-note").text("copied").show('fast');
-            copyToClipboard(id);
-          }
-        });
-      }
+    if (this.bound) {
+      return;
     }
+    this.bound = true;
+
+    var self = this;
+    document.getElementById("output").addEventListener("click", function (e) {
+      var expand = e.target.closest(".expand");
+      if (expand) {
+        // expand/collapse multiline textarea
+        var id = expand.id.replace("-expand", "");
+        var element = self.findById(id);
+        var on = expand.classList.toggle("on");
+        document.getElementById(id).rows = (on && element) ? element.rows : 1;
+        return;
+      }
+
+      var value = e.target.closest(".value");
+      if (value) {
+        // copy to clipboard on click
+        self.hideNotes();
+        var textarea = document.getElementById(value.id.replace("-value", ""));
+        if (textarea.value.length > 0) {
+          var note = document.getElementById(textarea.id + "-note");
+          note.textContent = "copied";
+          note.hidden = false;
+          copyToClipboard(textarea);
+        }
+      }
+    });
+  },
+  hideNotes : function () {
+    document.querySelectorAll("#output .note").forEach(function (note) {
+      note.hidden = true;
+    });
   },
   /*
    * Recalculate
    */
   update : function () {
-    $("#output .note").hide();
-    var input = $("#input-value").val();
-    var password = $("#input-password").val();
+    this.hideNotes();
+    var input = document.getElementById("input-value").value;
+    var password = document.getElementById("input-password").value;
     for (var i in this.elements) {
-      this.elements[i].rows = 0;
-      if (this.elements[i].tab == this.tab) {
+      var element = this.elements[i];
+      element.rows = 0;
+      if (element.tab == this.tab) {
         // main calculation
-        var value = this.elements[i].calculate(input, password);
-        $("#"+this.elements[i].id).val(value);
+        var value = String(element.calculate(input, password));
+        document.getElementById(element.id).value = value;
 
         // expand
-        var res = value.toString().match(/(\n\r|\r\n|\n|\r)/g);
-        var rows = 1;
-        if (res != null && res.length != undefined) {
-          rows = res.length + 1;
-        }
-        
-        this.elements[i].rows = rows;
+        var res = value.match(/(\n\r|\r\n|\n|\r)/g);
+        var rows = (res != null) ? res.length + 1 : 1;
+        element.rows = rows;
+
+        var expand = document.getElementById(element.id + "-expand");
         if (rows > 1) {
-          $("#"+this.elements[i].id+"-expand").show().text(rows + " lines").show();
+          expand.textContent = rows + " lines";
+          expand.hidden = false;
         } else {
-          $("#"+this.elements[i].id+"-expand").text("").hide();
+          expand.textContent = "";
+          expand.hidden = true;
         }
 
         // show ruler
-        if (this.elements[i].ruler != undefined) {
-          $("#"+this.elements[i].id+"-ruler").html(this.ruler(value, this.elements[i].ruler));
+        if (element.ruler != undefined) {
+          document.getElementById(element.id + "-ruler").innerHTML = this.ruler(value, element.ruler);
         }
       }
     }
   },
   /*
-   * 
+   * Build output HTML for current tab
    */
   render : function () {
-    $("#output").html("");
+    var html = "";
     for (var i in this.elements) {
-      if (this.elements[i].tab == this.tab) {
-        var html = 
+      var element = this.elements[i];
+      if (element.tab == this.tab) {
+        html +=
           '<div class="element">'+
             '<div>'+
-              '<span id="'+this.elements[i].id+'-title" class="title">'+
-                this.elements[i].title+
+              '<span id="'+element.id+'-title" class="title">'+
+                element.title+
               '</span>'+
-              '<span id="'+this.elements[i].id+'-expand" class="expand"></span>'+
-              '<span id="'+this.elements[i].id+'-note" class="note"></span>'+
+              '<span id="'+element.id+'-expand" class="expand" hidden></span>'+
+              '<span id="'+element.id+'-note" class="note" hidden></span>'+
             '</div>'+
-            '<div id="'+this.elements[i].id+'-value" class="value">'+
-              //'<input id="'+this.elements[i].id+'" type="text" />';
-              '<textarea id="'+this.elements[i].id+'" rows="1"></textarea>';
-              // ruler
-              if (this.elements[i].ruler != undefined) {
-                html += '<div id="'+this.elements[i].id+'-ruler" class="ruler"></div>'
-              }
-        html += 
+            '<div id="'+element.id+'-value" class="value">'+
+              '<textarea id="'+element.id+'" rows="1"></textarea>';
+        // ruler
+        if (element.ruler != undefined) {
+          html += '<div id="'+element.id+'-ruler" class="ruler"></div>';
+        }
+        html +=
             '</div>'+
           '</div>';
-        $("#output").append(html);
       }
     }
+    document.getElementById("output").innerHTML = html;
   },
   /*
    * Symbol's numbers

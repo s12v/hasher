@@ -1,98 +1,62 @@
-$(document).ready(function() {
+document.addEventListener("DOMContentLoaded", function () {
 
-/*
- * I decided to leave popout button on the popout page
- *
-  if (typeof chrome.extension != "undefined") {
-    if (chrome.extension.getBackgroundPage().separatePopup == true) {
-      $("#popup").hide();
-    } else {
-      $("#popup").show();
-    }
-  }
-*/  
-  
+  var inputValue = document.getElementById("input-value");
+  var inputPassword = document.getElementById("input-password");
+  var passwordWrapper = document.getElementById("input-password-wrapper");
+  var tabItems = document.querySelectorAll("#tabs li");
+
   /*
    * Events registration
-  */
-  $("#input").keyup(function () {
+   */
+  inputValue.addEventListener("input", function () {
     hasher.update();
   });
-  $("#input").change(function () {
+  inputPassword.addEventListener("input", function () {
     hasher.update();
   });
 
-  // Open separate window (pop-out)
-  $("#button-popout").click(function () {
-    if (typeof chrome.extension != "undefined") {
-      //chrome.extension.getBackgroundPage().separatePopup = true;
-/*      
-      chrome.windows.create({
-        url: 'popup.html',
-        type: 'popup',
-        width: 700,
-        height: 800
-      });
-*/      
+  // Open in a separate tab (pop-out); unavailable in the standalone web version
+  var popout = document.getElementById("popout");
+  if (typeof chrome != "undefined" && chrome.tabs && chrome.tabs.create) {
+    document.getElementById("button-popout").addEventListener("click", function () {
       chrome.tabs.create({
-        url: 'popup.html'
+        url: "popup.html"
       });
-    }
-  });
+    });
+  } else {
+    popout.hidden = true;
+  }
 
   // Click on tab (Hash/HMAC/...)
-  $("#tabs li").click(function () {
-    // highlight active tab, remove highlight on everything else
-    $("#tabs li").removeClass("on");
-    $(this).addClass("on");
+  tabItems.forEach(function (li) {
+    li.addEventListener("click", function () {
+      // highlight active tab, remove highlight on everything else
+      tabItems.forEach(function (item) {
+        item.classList.remove("on");
+      });
+      li.classList.add("on");
 
-    // show/hide optional fields
-    if (tabs[this.id] == tabs.hmac || tabs[this.id] == tabs.cipher) {
-      $("#input-password-wrapper").show();
-    } else {
-      $("#input-password-wrapper").hide();
-    }
+      hasher.tab = tabs[li.id];
 
-    hasher.tab = tabs[this.id];
-    hasher.init();
-    hasher.update();
-    $("#input-value").focus();
+      // show/hide optional fields
+      passwordWrapper.hidden = !(hasher.tab == tabs.hmac || hasher.tab == tabs.cipher);
+
+      hasher.init();
+      hasher.update();
+      inputValue.focus();
+    });
   });
-  
+
   /*
-   * Animations
+   * Hash navigation (#info -> About screen)
    */
-  $(".buttons-2").mouseenter(function(){
-    $(this).animate(
-      {
-        opacity: 0.8
-      },
-      150
-    );
-  });
-  $(".buttons-2").mouseleave(function(){
-    $(this).animate(
-      {
-        opacity: 0.4
-      },
-      300
-    );
-  });
-  
-  
-  /*
-   * Hash navigation
-   */
-  onHashChange = function () {
-    var hash = window.location.hash.slice(1)
-    $(".screens").hide();
-    if (hash == "info") {
-      $("#screen-2").show().scrollTop();
-    } else {
-      $("#screen-1").show().scrollTop();
-    }
-  }
-  $(window).bind('hashchange', onHashChange);  
+  var onHashChange = function () {
+    var info = window.location.hash == "#info";
+    document.getElementById("screen-1").hidden = info;
+    document.getElementById("screen-2").hidden = !info;
+    window.scrollTo(0, 0);
+  };
+  window.addEventListener("hashchange", onHashChange);
 
   /*
    * Init
@@ -100,9 +64,5 @@ $(document).ready(function() {
   onHashChange();
   hasher.init();
   hasher.update();
-  
-  // Focus hack, see http://stackoverflow.com/a/11400653/1295557
-  if (location.search != "?focusHack") location.search = "?focusHack";
-  //$("#input-value").focus();
-  window.scrollTo(0, 0);
+  inputValue.focus();
 });
