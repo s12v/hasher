@@ -302,52 +302,95 @@ var hasher = {
       }
     },
 
-    // CRC
+    // CRC (lib/snov/crc.js, catalogue models)
     c1 : {
+      id: tabs.crc+"crc32",
+      tab : tabs.crc,
+      title: "CRC-32",
+      calculate: function (input) {
+        return crc.of("CRC-32", input);
+      },
+      hint: function (input) {
+        return input.length ? "zlib, PNG, gzip, zip, Ethernet \u00b7 " + crc.decimal("CRC-32", input) : "";
+      }
+    },
+    c2 : {
+      id: tabs.crc+"crc32c",
+      tab : tabs.crc,
+      title: "CRC-32C",
+      calculate: function (input) {
+        return crc.of("CRC-32C", input);
+      },
+      hint: function (input) {
+        return input.length ? "Castagnoli: ext4, iSCSI, Kafka, gRPC, S3/GCS checksums \u00b7 " + crc.decimal("CRC-32C", input) : "";
+      }
+    },
+    c3 : {
+      id: tabs.crc+"modbus",
+      tab : tabs.crc,
+      title: "CRC-16/MODBUS",
+      calculate: function (input) {
+        return crc.of("CRC-16/MODBUS", input);
+      },
+      hint: function (input) {
+        return input.length ? crc.decimal("CRC-16/MODBUS", input) : "";
+      }
+    },
+    c4 : {
+      id: tabs.crc+"ccitt",
+      tab : tabs.crc,
+      title: "CRC-16/CCITT-FALSE",
+      calculate: function (input) {
+        return crc.of("CRC-16/CCITT-FALSE", input);
+      },
+      hint: function (input) {
+        return input.length ? crc.decimal("CRC-16/CCITT-FALSE", input) : "";
+      }
+    },
+    c5 : {
+      id: tabs.crc+"xmodem",
+      tab : tabs.crc,
+      title: "CRC-16/XMODEM",
+      calculate: function (input) {
+        return crc.of("CRC-16/XMODEM", input);
+      },
+      hint: function (input) {
+        return input.length ? crc.decimal("CRC-16/XMODEM", input) : "";
+      }
+    },
+    c6 : {
       id: tabs.crc+"crc8",
       tab : tabs.crc,
       title: "CRC-8",
       calculate: function (input) {
-        return Hex8(Crc8Str(utf8(input)));
+        return crc.of("CRC-8", input);
       },
       hint: function (input) {
-        return input.length ? String(Crc8Str(utf8(input)) >>> 0) : "";
+        return input.length ? "poly 0x07 \u00b7 " + crc.decimal("CRC-8", input) : "";
       }
     },
-    c2 : {
-      id: tabs.crc+"crc16",
+    c7 : {
+      id: tabs.crc+"crc64",
       tab : tabs.crc,
-      title: "CRC-16",
+      title: "CRC-64/XZ",
       calculate: function (input) {
-        return Hex16(Crc16Str(utf8(input)));
+        return crc.of("CRC-64/XZ", input);
       },
       hint: function (input) {
-        return input.length ? String(Crc16Str(utf8(input)) >>> 0) : "";
+        return input.length ? "xz, ECMA-182 \u00b7 " + crc.decimal("CRC-64/XZ", input) : "";
       }
     },
-    c3 : {
-      id: tabs.crc+"fsc16",
+    c8 : {
+      id: tabs.crc+"adler32",
       tab : tabs.crc,
-      title: "FCS-16",
+      title: "Adler-32",
       calculate: function (input) {
-        return Hex16(Fcs16Str(utf8(input)));
+        return crc.hex(crc.adler32(input), 32);
       },
       hint: function (input) {
-        return input.length ? String(Fcs16Str(utf8(input)) >>> 0) : "";
+        return input.length ? "zlib \u00b7 " + crc.adler32(input) : "";
       }
     },
-    c4 : {
-      id: tabs.crc+"crc32b",
-      tab : tabs.crc,
-      title: "FCS/CRC-32",
-      calculate: function (input) {
-        return Hex32(Crc32Str(utf8(input)));
-      },
-      hint: function (input) {
-        return input.length ? String(Crc32Str(utf8(input)) >>> 0) : "";
-      }
-    },
-
 
     // Cipher
     ci1: {
