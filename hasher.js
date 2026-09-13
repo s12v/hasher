@@ -958,11 +958,12 @@ var hasher = {
       tab : tabs.encode,
       title : "Base64",
       calculate : function (input) {
-        try {
-          var words = CryptoJS.enc.Utf8.parse(input);
-          return CryptoJS.enc.Base64.stringify(words);
-        } catch (err) {
-          return "Parse error";
+        return basex.base64(basex.bytes(input));
+      },
+      alt : {
+        title : "Base64url",
+        calculate : function (input) {
+          return basex.base64url(basex.bytes(input));
         }
       }
     },
@@ -971,24 +972,86 @@ var hasher = {
       tab : tabs.encode,
       title : "Base64 decode",
       calculate : function (input) {
-        try {
-          var words = CryptoJS.enc.Base64.parse(input);
-          return CryptoJS.enc.Utf8.stringify(words);
-        } catch (err) {
-          return "";
+        var bytes = basex.unbase64(input);
+        if (!bytes) return "";
+        var text = basex.text(bytes);
+        return text === null ? "" : text;
+      },
+      hint : function (input) {
+        var bytes = basex.unbase64(input);
+        return (bytes && basex.text(bytes) === null) ? "binary, not text \u2014 see the hex" : "";
+      },
+      alt : {
+        title : "Hex",
+        calculate : function (input) {
+          var bytes = basex.unbase64(input);
+          return bytes ? basex.hex(bytes) : "";
         }
       }
     },
-    e3: {
-      id : tabs.encode+"base64-d-h",
+    e11: {
+      id : tabs.encode+"base32",
       tab : tabs.encode,
-      title : "Base64 decode to Hex",
+      title : "Base32",
       calculate : function (input) {
-        try {
-          var words = CryptoJS.enc.Base64.parse(input);
-          return CryptoJS.enc.Hex.stringify(words);
-        } catch (err) {
-          return "Parse error";
+        return basex.base32(basex.bytes(input));
+      },
+      hint : function () {
+        return "RFC 4648 \u00b7 TOTP secrets";
+      }
+    },
+    e12: {
+      id : tabs.encode+"base32-d",
+      tab : tabs.encode,
+      title : "Base32 decode",
+      calculate : function (input) {
+        var bytes = basex.unbase32(input);
+        if (!bytes) return "";
+        var text = basex.text(bytes);
+        return text === null ? "" : text;
+      },
+      hint : function (input) {
+        var bytes = basex.unbase32(input);
+        return (bytes && basex.text(bytes) === null) ? "binary, not text \u2014 see the hex" : "";
+      },
+      alt : {
+        title : "Hex",
+        calculate : function (input) {
+          var bytes = basex.unbase32(input);
+          return bytes ? basex.hex(bytes) : "";
+        }
+      }
+    },
+    e13: {
+      id : tabs.encode+"base58",
+      tab : tabs.encode,
+      title : "Base58",
+      calculate : function (input) {
+        return basex.base58(basex.bytes(input));
+      },
+      hint : function () {
+        return "Bitcoin alphabet";
+      }
+    },
+    e14: {
+      id : tabs.encode+"base58-d",
+      tab : tabs.encode,
+      title : "Base58 decode",
+      calculate : function (input) {
+        var bytes = basex.unbase58(input);
+        if (!bytes) return "";
+        var text = basex.text(bytes);
+        return text === null ? "" : text;
+      },
+      hint : function (input) {
+        var bytes = basex.unbase58(input);
+        return (bytes && basex.text(bytes) === null) ? "binary, not text \u2014 see the hex" : "";
+      },
+      alt : {
+        title : "Hex",
+        calculate : function (input) {
+          var bytes = basex.unbase58(input);
+          return bytes ? basex.hex(bytes) : "";
         }
       }
     },
