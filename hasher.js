@@ -1274,14 +1274,18 @@ var hasher = {
         return;
       }
       copyToClipboard(text);
-      // "copied" replaces the "copy" affordance for a moment
-      document.querySelectorAll("#output .value.copied").forEach(function (other) {
-        other.classList.remove("copied");
+      // the "copy" hint becomes a "copied" chip for a moment
+      document.querySelectorAll("#output .copy.on").forEach(function (other) {
+        other.classList.remove("on");
+        other.textContent = "copy";
       });
-      box.classList.add("copied");
+      var chip = document.getElementById(box.id.replace("-value", "-copy"));
+      chip.textContent = "copied";
+      chip.classList.add("on");
       clearTimeout(self.copiedTimer);
       self.copiedTimer = setTimeout(function () {
-        box.classList.remove("copied");
+        chip.classList.remove("on");
+        chip.textContent = "copy";
       }, 1400);
     });
   },
@@ -1347,6 +1351,7 @@ var hasher = {
                 element.title+
               '</span>'+
               '<span id="'+element.id+'-hint" class="hint"></span>'+
+              '<span id="'+element.id+'-copy" class="copy">copy</span>'+
             '</div>'+
             '<div id="'+element.id+'-value" class="value">'+
               '<div id="'+element.id+'" class="text"></div>'+
