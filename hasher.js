@@ -1466,9 +1466,10 @@ var hasher = {
         if (input.trim().length == 0) {
           return "";
         }
-        var runs;
+        var runs, seconds;
         try {
           runs = cron.next(input, new Date(), 5);
+          seconds = cron.hasSeconds(input);
         } catch (err) {
           return "";
         }
@@ -1479,9 +1480,16 @@ var hasher = {
         for (var i = 0; i < runs.length; i++) {
           var d = runs[i];
           lines.push(d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + " " +
-            pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + "  " + cron.DAYS[d.getDay()].substring(0, 3));
+            pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + (seconds ? ":" + pad2(d.getSeconds()) : "") + "  " + cron.DAYS[d.getDay()].substring(0, 3));
         }
         return lines.join("\n");
+      },
+      hint : function (input) {
+        try {
+          return cron.hasSeconds(input) ? "six fields: the first one is seconds (Quartz, Spring)" : "";
+        } catch (err) {
+          return "";
+        }
       }
     },
 

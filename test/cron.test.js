@@ -3,7 +3,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { ctx, calc } = require('./load');
 
-const { cron } = ctx;
+const { cron, hasher } = ctx;
 
 // Wording follows crontab.guru for the same expressions
 const descriptions = {
@@ -46,7 +46,8 @@ test('invalid expressions throw with a reason', () => {
   const bad = {
     '': /expected 5 fields/,
     '* * * *': /expected 5 fields/,
-    '* * * * * *': /expected 5 fields/,
+    '* * * * * * *': /expected 5 fields \(or 6 with seconds\), got 7/,
+    '60 * * * * *': /second 60 out of range/,
     '60 * * * *': /minute 60 out of range/,
     '* 24 * * *': /hour 24 out of range/,
     '* * 0 * *': /day-of-month 0 out of range/,
@@ -67,18 +68,47 @@ test('invalid expressions throw with a reason', () => {
 
 test('parsed values', () => {
   const f = cron.parse('*/15 9-17 1,15 jan-mar mon-fri');
-  assert.deepEqual(Object.keys(f[0].values).map(Number), [0, 15, 30, 45]);
-  assert.deepEqual(Object.keys(f[1].values).map(Number), [9, 10, 11, 12, 13, 14, 15, 16, 17]);
-  assert.deepEqual(Object.keys(f[2].values).map(Number), [1, 15]);
-  assert.deepEqual(Object.keys(f[3].values).map(Number), [1, 2, 3]);
-  assert.deepEqual(Object.keys(f[4].values).map(Number), [1, 2, 3, 4, 5]);
-  assert.equal(f[0].star, true);
-  assert.equal(f[2].star, false);
-  assert.deepEqual(Object.keys(cron.parse('* * * * 7')[4].values), ['0'], '7 is Sunday');
+  assert.deepEqual(Object.keys(f[0].values).map(Number), [0], 'five fields: second 0 is implied');
+  assert.equal(f[0].implicit, true);
+  assert.deepEqual(Object.keys(f[1].values).map(Number), [0, 15, 30, 45]);
+  assert.deepEqual(Object.keys(f[2].values).map(Number), [9, 10, 11, 12, 13, 14, 15, 16, 17]);
+  assert.deepEqual(Object.keys(f[3].values).map(Number), [1, 15]);
+  assert.deepEqual(Object.keys(f[4].values).map(Number), [1, 2, 3]);
+  assert.deepEqual(Object.keys(f[5].values).map(Number), [1, 2, 3, 4, 5]);
+  assert.equal(f[1].star, true);
+  assert.equal(f[3].star, false);
+  assert.deepEqual(Object.keys(cron.parse('* * * * 7')[5].values), ['0'], '7 is Sunday');
+  const six = cron.parse('*/20 5 4 * * *');
+  assert.deepEqual(Object.keys(six[0].values).map(Number), [0, 20, 40]);
+  assert.equal(six[0].implicit, false);
+  assert.equal(cron.hasSeconds('*/20 5 4 * * *'), true);
+  assert.equal(cron.hasSeconds('5 4 * * *'), false);
+  assert.equal(cron.hasSeconds('@daily'), false, 'shortcuts expand to five fields');
 });
 
+// six fields: seconds first (Quartz, Spring)
+const withSeconds = {
+  '0 5 4 * * *': 'At 04:05.',
+  '30 5 4 * * *': 'At 04:05:30.',
+  '* * * * * *': 'At every second.',
+  '*/30 * * * * *': 'At every 30th second.',
+  '0,30 * * * * *': 'At second 0 and 30.',
+  '*/10 */5 * * * *': 'At every 10th second past every 5th minute.',
+  '15 30 * * * *': 'At second 15 past minute 30.',
+  '0-30/5 0 12 * * *': 'At every 5th second from 0 through 30 past 12:00.',
+  '0 * * * * *': 'At every minute.',
+  '0 0 * * * *': 'At minute 0.',
+  '15 0 9-17 * * mon-fri': 'At second 15 past minute 0 past every hour from 9 through 17 on every day-of-week from Monday through Friday.',
+};
+
+for (const [expr, expected] of Object.entries(withSeconds)) {
+  test(`describe ${JSON.stringify(expr)}`, () => {
+    assert.equal(cron.describe(expr), expected);
+  });
+}
+
 const from = new Date(2026, 8, 13, 10, 30, 45); // Sunday 2026-09-13 10:30:45 local
-const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}` + (d.getSeconds() ? `:${String(d.getSeconds()).padStart(2, '0')}` : '');
 // Array.from: arrays made inside the vm context have a different Array.prototype, which strict deepEqual rejects
 const next = (expr, n) => Array.from(cron.next(expr, from, n), fmt);
 
@@ -91,6 +121,15 @@ test('next runs', () => {
   assert.deepEqual(next('@yearly', 1), ['2027-01-01 00:00']);
   assert.deepEqual(next('0 0 29 2 *', 2), ['2028-02-29 00:00'], 'leap day; only one within the 5-year horizon');
   assert.deepEqual(next('0 0 30 2 *', 5), [], 'never');
+});
+
+test('next runs with seconds', () => {
+  assert.deepEqual(next('* * * * * *', 2), ['2026-09-13 10:30:46', '2026-09-13 10:30:47'], 'starts at the next whole second');
+  assert.deepEqual(next('*/30 * * * * *', 3), ['2026-09-13 10:31', '2026-09-13 10:31:30', '2026-09-13 10:32']);
+  assert.deepEqual(next('50 30 10 * * *', 1), ['2026-09-13 10:30:50']);
+  assert.deepEqual(next('40 30 10 * * *', 1), ['2026-09-14 10:30:40'], 'the current second is not "next"');
+  assert.deepEqual(next('15 0 22 * * 1-5', 2), ['2026-09-14 22:00:15', '2026-09-15 22:00:15']);
+  assert.deepEqual(next('0 5 4 * * *', 1), next('5 4 * * *', 1), 'second 0 spelled out changes nothing');
 });
 
 test('day-of-month OR day-of-week when both are restricted (Vixie cron)', () => {
@@ -110,6 +149,13 @@ test('elements', () => {
   const lines = calc('11next', '* * * * *').split('\n');
   assert.equal(lines.length, 5);
   assert.match(lines[0], /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}  (Mon|Tue|Wed|Thu|Fri|Sat|Sun)$/);
+  assert.equal(hasher.elements.cr2.hint('* * * * *'), '');
+  const secs = calc('11next', '*/20 * * * * *').split('\n');
+  assert.equal(secs.length, 5);
+  assert.match(secs[0], /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:[024]0  (Mon|Tue|Wed|Thu|Fri|Sat|Sun)$/, 'seconds are shown for six-field expressions');
+  assert.equal(hasher.elements.cr2.hint('*/20 * * * * *'), 'six fields: the first one is seconds (Quartz, Spring)');
+  assert.equal(hasher.elements.cr2.hint('garbage'), '');
+  assert.equal(calc('11describe', '* * * * * * *'), 'Invalid: expected 5 fields (or 6 with seconds), got 7');
 });
 
 test('builder: schedule -> expression', () => {
@@ -138,6 +184,7 @@ test('builder: expression -> schedule', () => {
   assert.deepEqual(u('*/15 * * * *'), { mode: 'minutes', every: 15 });
   assert.deepEqual(u('15 * * * *'), { mode: 'hourly', minute: 15, every: 1 });
   assert.deepEqual(u('0 */6 * * *'), { mode: 'hourly', minute: 0, every: 6 });
+  assert.equal(u('0 0 9 * * *'), null, 'six fields never fit the builder, which writes five');
   assert.deepEqual(u('0 22 * * *'), { mode: 'daily', minute: 0, hour: 22 });
   assert.deepEqual(u('@daily'), { mode: 'daily', minute: 0, hour: 0 });
   assert.deepEqual(u('30 9 * * 1-5'), { mode: 'weekly', minute: 30, hour: 9, days: [1, 2, 3, 4, 5] });

@@ -41,7 +41,7 @@ Chrome Web Store listing is being republished. Until then, load it unpacked:
 * <b>Diff:</b> compare two texts side by side, line by line, with changed characters highlighted; ignore whitespace / case
 * <b>Encode:</b> Base64 / Base64url, Base32, Base58 — encode and decode (binary output shown as hex), encodeURI(), encodeURIComponent(), HTML special chars, ROT13
 * <b>JWT:</b> decode, claims with expiry as local time; verify HS* with a secret, RS* / PS* / ES* / EdDSA with a PEM or JWK public key (WebCrypto); sign a JSON payload with HS256
-* <b>Cron:</b> schedule builder (every N minutes, hourly, daily, weekly with weekdays, monthly, yearly) ↔ crontab expression, plain English and the next 5 run times
+* <b>Cron:</b> schedule builder (every N minutes, hourly, daily, weekly with weekdays, monthly, yearly) ↔ crontab expression, plain English and the next 5 run times; six-field expressions with seconds (Quartz, Spring)
 
 Usage: enter text and click on the result — it is copied to clipboard.
 **mask** on the Hash and HMAC tabs hides the input (for hashing passwords); **Now** on the Time tab inserts the current Unix time.
