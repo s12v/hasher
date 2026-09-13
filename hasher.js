@@ -8,7 +8,8 @@ var tabs = {
   encode : 7,
   number : 8,
   string : 9,
-  password : 10
+  password : 10,
+  cron : 11
 };
 
 /*
@@ -916,6 +917,51 @@ var hasher = {
       hint : function () {
         return "~" + passgen.passwordBits(hasher.options.password).toFixed(1) + " bits";
       }
+    },
+
+
+    // Cron
+    cr1: {
+      id : tabs.cron+"describe",
+      tab : tabs.cron,
+      title : "Schedule",
+      calculate : function (input) {
+        if (input.trim().length == 0) {
+          return "";
+        }
+        try {
+          return cron.describe(input);
+        } catch (err) {
+          return "Invalid: " + err.message;
+        }
+      }
+    },
+    cr2: {
+      id : tabs.cron+"next",
+      tab : tabs.cron,
+      title : "Next runs (local time)",
+      expanded : true,
+      calculate : function (input) {
+        if (input.trim().length == 0) {
+          return "";
+        }
+        var runs;
+        try {
+          runs = cron.next(input, new Date(), 5);
+        } catch (err) {
+          return "";
+        }
+        if (runs.length == 0) {
+          return "never (nothing in the next 5 years)";
+        }
+        var lines = [];
+        for (var i = 0; i < runs.length; i++) {
+          var d = runs[i];
+          lines.push(d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + " " +
+            pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + "  " + cron.DAYS[d.getDay()].substring(0, 3));
+        }
+        return lines.join("\n");
+      }
     }
   },
   findById : function (id) {
@@ -995,7 +1041,11 @@ var hasher = {
         element.rows = rows;
 
         var expand = document.getElementById(element.id + "-expand");
-        if (rows > 1) {
+        if (element.expanded) {
+          // always show every line, no toggle
+          document.getElementById(element.id).rows = rows;
+          expand.hidden = true;
+        } else if (rows > 1) {
           expand.textContent = rows + " lines";
           expand.hidden = false;
         } else {
