@@ -25,6 +25,35 @@ function copyToClipboard(textarea) {
   }
 }
 
+/*
+ *  JS string -> string of UTF-8 bytes, for the byte-oriented legacy libs (MD4, Whirlpool, CRC)
+ */
+function utf8(str) {
+  return unescape(encodeURIComponent(str));
+}
+
+/*
+ *  Unix seconds, Unix milliseconds (13+ digits) or anything Date() understands; null if unparseable
+ */
+function parseDate(input) {
+  var str = input.trim();
+  if (str.length == 0) {
+    return null;
+  }
+  var date;
+  if (/^\d+$/.test(str)) {
+    var num = parseInt(str, 10);
+    date = new Date(str.length >= 13 ? num : num * 1000);
+  } else {
+    date = new Date(str);
+  }
+  return isNaN(date.getTime()) ? null : date;
+}
+
+function pad2(n) {
+  return (n < 10) ? "0" + n : "" + n;
+}
+
 
 var hasher = {
   ipcalc : new ipCalc(),
@@ -78,12 +107,36 @@ var hasher = {
         return CryptoJS.SHA512(input);
       }
     },
+    h10 : {
+      id: tabs.hash+"sha3-256",
+      tab : tabs.hash,
+      title: "SHA3-256",
+      calculate: function (input) {
+        return sha3_256(input);
+      }
+    },
+    h11 : {
+      id: tabs.hash+"sha3-512",
+      tab : tabs.hash,
+      title: "SHA3-512",
+      calculate: function (input) {
+        return sha3_512(input);
+      }
+    },
+    h12 : {
+      id: tabs.hash+"keccak256",
+      tab : tabs.hash,
+      title: "Keccak-256",
+      calculate: function (input) {
+        return keccak256(input);
+      }
+    },
     h8 : {
       id: tabs.hash+"ripemd160",
       tab : tabs.hash,
       title: "RIPEMD-160",
       calculate: function (input) {
-        return hex_rmd160(input);
+        return CryptoJS.RIPEMD160(input);
       }
     },
     h7 : {
@@ -91,15 +144,15 @@ var hasher = {
       tab : tabs.hash,
       title: "MD4",
       calculate: function (input) {
-        return hex_md4(input);
+        return hex_md4(utf8(input));
       }
     },
     h9 : {
       id: tabs.hash+"whirpool",
       tab : tabs.hash,
-      title: "Whirpool",
+      title: "Whirlpool",
       calculate: function (input) {
-        return Whirlpool(input);
+        return Whirlpool(utf8(input));
       }
     },
 
@@ -157,7 +210,7 @@ var hasher = {
       tab : tabs.hmac,
       title : "HMAC-RIPEMD160",
       calculate : function (input, password) {
-        return hex_hmac_rmd160(password, input);
+        return CryptoJS.HmacRIPEMD160(input, password);
       }
     },
     hm8: {
@@ -165,7 +218,7 @@ var hasher = {
       tab : tabs.hmac,
       title : "HMAC-MD4",
       calculate : function (input, password) {
-        return hex_hmac_md4(password, input);
+        return hex_hmac_md4(utf8(password), utf8(input));
       }
     },
 
@@ -175,7 +228,7 @@ var hasher = {
       tab : tabs.crc,
       title: "CRC-8",
       calculate: function (input) {
-        return Hex8(Crc8Str(input));
+        return Hex8(Crc8Str(utf8(input)));
       }
     },
     c2 : {
@@ -183,7 +236,7 @@ var hasher = {
       tab : tabs.crc,
       title: "CRC-16",
       calculate: function (input) {
-        return Hex16(Crc16Str(input));
+        return Hex16(Crc16Str(utf8(input)));
       }
     },
     c3 : {
@@ -191,7 +244,7 @@ var hasher = {
       tab : tabs.crc,
       title: "FCS-16",
       calculate: function (input) {
-        return Hex16(Fcs16Str(input));
+        return Hex16(Fcs16Str(utf8(input)));
       }
     },
     c4 : {
@@ -199,7 +252,7 @@ var hasher = {
       tab : tabs.crc,
       title: "FCS/CRC-32",
       calculate: function (input) {
-        return Hex32(Crc32Str(input));
+        return Hex32(Crc32Str(utf8(input)));
       }
     },
 
@@ -473,16 +526,17 @@ var hasher = {
       tab : tabs.time,
       title: "Unixtime",
       calculate: function (input) {
-        var date;
-        if (/[^\d]/.test(input)) {
-          date = new Date(input);
-        } else {
-          date = new Date(1000*parseInt(input));
-        }
-        if (!isNaN(date.getTime())) {
-          return date.getTime()/1000;
-        }
-        return "";
+        var date = parseDate(input);
+        return date ? Math.floor(date.getTime() / 1000) : "";
+      }
+    },
+    time11 : {
+      id: tabs.time+"date2ms",
+      tab : tabs.time,
+      title: "Unixtime (ms)",
+      calculate: function (input) {
+        var date = parseDate(input);
+        return date ? date.getTime() : "";
       }
     },
     time2 : {
@@ -490,16 +544,8 @@ var hasher = {
       tab : tabs.time,
       title: "Local time",
       calculate: function (input) {
-        var date;
-        if (/[^\d]/.test(input)) {
-          date = new Date(input);
-        } else {
-          date = new Date(1000*parseInt(input));
-        }
-        if (!isNaN(date.getTime())) {
-          return date.toLocaleString();
-        }
-        return "";
+        var date = parseDate(input);
+        return date ? date.toLocaleString() : "";
       }
     },
     time3 : {
@@ -507,29 +553,12 @@ var hasher = {
       tab : tabs.time,
       title: "DATETIME (local)",
       calculate: function (input) {
-        var ddd;
-        if (/[^\d]/.test(input)) {
-          ddd = new Date(input);
-        } else {
-          ddd = new Date(1000*parseInt(input));
+        var d = parseDate(input);
+        if (!d) {
+          return "";
         }
-        if (!isNaN(ddd.getTime())) {
-          var y = ddd.getFullYear();
-          var m = ddd.getMonth() + 1;
-          var d = ddd.getDate();
-          var h = ddd.getHours();
-          var i = ddd.getMinutes();
-          var s = ddd.getSeconds();
-          
-          m = (m < 10) ? "0" + m : m;
-          d = (d < 10) ? "0" + d : d;
-          h = (h < 10) ? "0" + h : h;
-          i = (i < 10) ? "0" + i : i;
-          s = (s < 10) ? "0" + s : s;
-          
-          return y + "-" + m + "-" + d + " " + h + ":" + i + ":" + s;
-        }
-        return "";
+        return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + " " +
+          pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + ":" + pad2(d.getSeconds());
       }
     },
     time31 : {
@@ -537,29 +566,12 @@ var hasher = {
       tab : tabs.time,
       title: "DATETIME (UTC)",
       calculate: function (input) {
-        var ddd;
-        if (/[^\d]/.test(input)) {
-          ddd = new Date(input);
-        } else {
-          ddd = new Date(1000*parseInt(input));
+        var d = parseDate(input);
+        if (!d) {
+          return "";
         }
-        if (!isNaN(ddd.getTime())) {
-          var y = ddd.getUTCFullYear();
-          var m = ddd.getUTCMonth() + 1;
-          var d = ddd.getUTCDate();
-          var h = ddd.getUTCHours();
-          var i = ddd.getUTCMinutes();
-          var s = ddd.getUTCSeconds();
-          
-          m = (m < 10) ? "0" + m : m;
-          d = (d < 10) ? "0" + d : d;
-          h = (h < 10) ? "0" + h : h;
-          i = (i < 10) ? "0" + i : i;
-          s = (s < 10) ? "0" + s : s;
-          
-          return y + "-" + m + "-" + d + " " + h + ":" + i + ":" + s;
-        }
-        return "";
+        return d.getUTCFullYear() + "-" + pad2(d.getUTCMonth() + 1) + "-" + pad2(d.getUTCDate()) + " " +
+          pad2(d.getUTCHours()) + ":" + pad2(d.getUTCMinutes()) + ":" + pad2(d.getUTCSeconds());
       }
     },
     time4 : {
@@ -567,16 +579,8 @@ var hasher = {
       tab : tabs.time,
       title: "RFC-1123",
       calculate: function (input) {
-        var date;
-        if (/[^\d]/.test(input)) {
-          date = new Date(input);
-        } else {
-          date = new Date(1000*parseInt(input));
-        }
-        if (!isNaN(date.getTime())) {
-          return date.toUTCString();
-        }
-        return "";
+        var date = parseDate(input);
+        return date ? date.toUTCString() : "";
       }
     },
     time5 : {
@@ -584,19 +588,10 @@ var hasher = {
       tab : tabs.time,
       title: "ISO 8601",
       calculate: function (input) {
-        var date;
-        if (/[^\d]/.test(input)) {
-          date = new Date(input);
-        } else {
-          date = new Date(1000*parseInt(input));
-        }
-        if (!isNaN(date.getTime())) {
-          return date.toISOString();
-        }
-        return "";
+        var date = parseDate(input);
+        return date ? date.toISOString() : "";
       }
     },
-
 
     // Numbers
     n5 : {
@@ -654,6 +649,23 @@ var hasher = {
 
 
     // Strings
+    s0 : {
+      id: tabs.string+"length",
+      tab : tabs.string,
+      title: "Length",
+      calculate: function (input) {
+        if (input.length == 0) {
+          return "";
+        }
+        var chars = Array.from(input).length;
+        var bytes = utf8(input).length;
+        var out = chars + " chars, " + bytes + " bytes (UTF-8)";
+        if (chars != input.length) {
+          out += ", " + input.length + " UTF-16 units";
+        }
+        return out;
+      }
+    },
     s1 : {
       id: tabs.string+"i1",
       tab : tabs.string,
@@ -918,9 +930,16 @@ var hasher = {
   /*
    * Recalculate
    */
+  /*
+   * Active input field: the textarea, or the password-type field when "mask" is on
+   */
+  inputField : function () {
+    var masked = document.getElementById("input-masked");
+    return masked.hidden ? document.getElementById("input-value") : masked;
+  },
   update : function () {
     this.hideNotes();
-    var input = document.getElementById("input-value").value;
+    var input = this.inputField().value;
     var password = document.getElementById("input-password").value;
     for (var i in this.elements) {
       var element = this.elements[i];

@@ -17,7 +17,7 @@ ul.buttons {
   padding: 0;
   list-style-type: none;
 }
-ul.buttons li, a.button {
+ul.buttons li, a.button, button.button {
   display: inline-block;
   background: linear-gradient(to bottom, #f7f7f7, #ededed);
   border: 1px solid #d9d9d9;
@@ -50,7 +50,7 @@ ul.buttons li.l3 {
   border-left: none;
   border-radius: 0 3px 3px 0;
 }
-ul.buttons li:hover, a.button:hover {
+ul.buttons li:hover, a.button:hover, button.button:hover {
   border: 1px solid #bebebe;
   box-shadow: 1px 1px 1px #e9e9e9;
 }
@@ -83,6 +83,29 @@ ul.buttons li.l2.on, ul.buttons li.l3.on {
   font-size: 12px;
   font-weight: bold;
   font-family: sans-serif;
+}
+#input-options {
+  float: right;
+  font-weight: normal;
+}
+#input-options label {
+  cursor: pointer;
+  margin-right: 10px;
+}
+#input-options input[type="checkbox"] {
+  width: auto;
+  vertical-align: middle;
+  margin: 0 2px 0 0;
+}
+#input-options button.button {
+  height: 20px;
+  line-height: 20px;
+  padding: 0 8px;
+  vertical-align: middle;
+}
+#input #input-masked {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 #output .element {

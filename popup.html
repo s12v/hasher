@@ -4,27 +4,9 @@
     <title>Hasher</title>
     <meta charset="utf-8" />
     <link href="main.css" type="text/css" rel="stylesheet" />
-    <script src="lib/cryptojs/components/core-min.js"></script>
-    <script src="lib/cryptojs/components/enc-base64-min.js"></script>
-    <script src="lib/cryptojs/components/enc-utf16-min.js"></script>
-    <script src="lib/cryptojs/rollups/md5.js"></script>
-    <script src="lib/cryptojs/rollups/sha1.js"></script>
-    <script src="lib/cryptojs/rollups/sha224.js"></script>
-    <script src="lib/cryptojs/rollups/sha256.js"></script>
-    <script src="lib/cryptojs/rollups/sha384.js"></script>
-    <script src="lib/cryptojs/rollups/sha512.js"></script>
-    <script src="lib/cryptojs/rollups/hmac-md5.js"></script>
-    <script src="lib/cryptojs/rollups/hmac-sha1.js"></script>
-    <script src="lib/cryptojs/rollups/hmac-sha224.js"></script>
-    <script src="lib/cryptojs/rollups/hmac-sha256.js"></script>
-    <script src="lib/cryptojs/rollups/hmac-sha384.js"></script>
-    <script src="lib/cryptojs/rollups/hmac-sha512.js"></script>
-    <script src="lib/cryptojs/rollups/aes.js"></script>
-    <script src="lib/cryptojs/rollups/tripledes.js"></script>
-    <script src="lib/cryptojs/rollups/rabbit.js"></script>
-    <script src="lib/cryptojs/rollups/rc4.js"></script>
+    <script src="lib/cryptojs/crypto-js.js"></script>
+    <script src="lib/sha3/sha3.min.js"></script>
     <script src="lib/hash/md4.js"></script>
-    <script src="lib/hash/ripemd.js"></script>
     <script src="lib/hash/whirpool.js"></script>
     <script src="lib/hash/crc.js"></script>
     <script src="lib/snov/numbers.js"></script>
@@ -43,8 +25,13 @@
       <div id="input">
         <div class="title">
           Input:
+          <span id="input-options">
+            <label title="Hide what you type (single line)"><input type="checkbox" id="input-mask" /> mask</label>
+            <button type="button" id="input-now" class="button" title="Current Unix time" hidden>Now</button>
+          </span>
         </div>
         <textarea id="input-value" style="min-width: 400px;" autofocus></textarea>
+        <input id="input-masked" type="password" hidden />
         <div id="input-password-wrapper" hidden>
           <div class="title">
             Password:
@@ -82,7 +69,7 @@
       <ul>
         <li>
           <b>Hash</b>:
-          MD5, SHA-1, SHA-2 (224, 256, 384, 512), RIPEMD-160, MD4, Whirpool
+          MD5, SHA-1, SHA-2 (224, 256, 384, 512), SHA-3 (256, 512), Keccak-256, RIPEMD-160, MD4, Whirlpool
         </li>
         <li>
           <b>HMAC</b>:
@@ -93,7 +80,7 @@
           CRC-8, CRC-16, FCS-16, FCS/CRC-32
         </li>
         <li>
-          <b>Cipher</b> <i title='openssl enc -aes-256-cbc -in infile -out outfile -pass pass:"Secret Passphrase" -e -base64' style="cursor: help; border-bottom: 1px dashed #111;">(interoperable with OpenSSL)</i>:
+          <b>Cipher</b> <i title='openssl enc -aes-256-cbc -md md5 -in infile -out outfile -pass pass:"Secret Passphrase" -e -base64' style="cursor: help; border-bottom: 1px dashed #111;">(interoperable with OpenSSL)</i>:
           AES-256, DES, Triple DES, Rabbit, RC4, RC4Drop. CBC/Pkcs7 is used.
         </li>
         <li>
@@ -123,8 +110,8 @@
       </p>
 
       <p>
-        Extension is using <a href="https://github.com/brix/crypto-js" target="_blank">crypto-js</a> and other open-source libraries.<br/>
-        See the source code on&nbsp;<a href="https://github.com/s12v/hasher" target="_blank">github</a>.
+        Extension is using <a href="https://github.com/brix/crypto-js" target="_blank">crypto-js</a>, <a href="https://github.com/emn178/js-sha3" target="_blank">js-sha3</a> and other open-source libraries.<br/>
+        MIT license. See the source code on&nbsp;<a href="https://github.com/s12v/hasher" target="_blank">github</a>.
       </p>
 
       <p>
