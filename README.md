@@ -47,7 +47,8 @@ directory over HTTP (`python3 -m http.server`) — `file://` blocks the wordlist
 * <b>Hash</b>: MD5, SHA-1, SHA-2 (224, 256, 384, 512), SHA-3 (256, 512), Keccak-256, RIPEMD-160, MD4, Whirlpool
 * <b>HMAC:</b> MD5, SHA-1, SHA-2 (224, 256, 384, 512), RIPEMD-160, MD4
 * <b>CRC:</b> CRC-8, CRC-16, FCS-16, FCS/CRC-32
-* <b>Password:</b> passphrases from the EFF large wordlist (words, separator, digits, capitalize) and passwords (length, symbols) with the entropy estimate — a port of [ppgen](https://github.com/s12v/ppgen); UUID v4, UUID v7, ULID
+* <b>Password:</b> passphrases from the EFF large wordlist (words, separator, digits, capitalize) and passwords (length, symbols) with the entropy estimate — a port of [ppgen](https://github.com/s12v/ppgen)
+* <b>UUID:</b> UUID v4, UUID v7, ULID
 * <b>Cipher</b> <i>(interoperable with OpenSSL)</i>: AES-256, DES, Triple DES, Rabbit, RC4, RC4Drop. CBC/Pkcs7 is used.
 * <b>Net:</b> Subnet calculator, Ip ↔ Dec, Ip → Bin, Ip → Hex
 * <b>Time:</b> Unix (s or ms) ↔ Datetime, Unix ↔ RFC-1123, Unix ↔ ISO 8601

@@ -11,7 +11,8 @@ var tabs = {
   password : 10,
   cron : 11,
   json : 12,
-  jwt : 13
+  jwt : 13,
+  uuid : 14
 };
 
 /*
@@ -1012,16 +1013,16 @@ var hasher = {
       }
     },
     p3: {
-      id : tabs.password+"uuid4",
-      tab : tabs.password,
+      id : tabs.uuid+"uuid4",
+      tab : tabs.uuid,
       title : "UUID v4",
       calculate : function () {
         return ids.uuid4();
       }
     },
     p4: {
-      id : tabs.password+"uuid7",
-      tab : tabs.password,
+      id : tabs.uuid+"uuid7",
+      tab : tabs.uuid,
       title : "UUID v7",
       hint : function () {
         return "time-ordered";
@@ -1031,8 +1032,8 @@ var hasher = {
       }
     },
     p5: {
-      id : tabs.password+"ulid",
-      tab : tabs.password,
+      id : tabs.uuid+"ulid",
+      tab : tabs.uuid,
       title : "ULID",
       hint : function () {
         return "time-ordered";
