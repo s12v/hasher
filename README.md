@@ -18,11 +18,11 @@ The standalone page is static and calls nothing either. Full text: [PRIVACY.md](
 
 ## Install
 
-Chrome Web Store listing is being republished. Until then, load it unpacked:
+[Chrome Web Store](https://chromewebstore.google.com/detail/kignjplbjlocolcfldfhbonmbblpfbjb), or the standalone page
+above — same code, no install.
 
-1. `git clone https://github.com/s12v/hasher`
-2. Open `chrome://extensions`, enable **Developer mode**
-3. **Load unpacked** → select the `hasher` directory
+To run from source: `git clone https://github.com/s12v/hasher`, open `chrome://extensions`, enable **Developer mode**,
+**Load unpacked** → select the `hasher` directory.
 
 ## Features
 
